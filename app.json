@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "PACKMATE",
+    "slug": "packmate",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.packmate.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#172B4D"
+      },
+      "package": "com.packmate.app"
+    },
+    "plugins": [
+      "expo-sqlite"
+    ]
+  }
+}
