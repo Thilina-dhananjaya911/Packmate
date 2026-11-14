@@ -70,9 +70,59 @@ CREATE TABLE IF NOT EXISTS packing_items (
   FOREIGN KEY (category_id) REFERENCES item_categories(id) ON DELETE RESTRICT
 );
 
+CREATE TABLE IF NOT EXISTS essential_categories (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL UNIQUE,
+  icon_name TEXT NOT NULL,
+  color_hex TEXT NOT NULL,
+  description TEXT NOT NULL,
+  sort_order INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS essential_item_definitions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  category_id INTEGER NOT NULL,
+  item_name TEXT NOT NULL UNIQUE,
+  description TEXT NOT NULL DEFAULT '',
+  is_critical INTEGER NOT NULL DEFAULT 0,
+  priority TEXT NOT NULL DEFAULT 'Standard' CHECK(priority IN ('Critical', 'High', 'Standard')),
+  scope TEXT NOT NULL DEFAULT 'general' CHECK(scope IN ('general', 'trip_specific')),
+  applicable_trip_types TEXT NOT NULL DEFAULT '',
+  applicable_dest_types TEXT NOT NULL DEFAULT '',
+  min_duration INTEGER NOT NULL DEFAULT 1,
+  is_default_selected INTEGER NOT NULL DEFAULT 1,
+  FOREIGN KEY (category_id) REFERENCES essential_categories(id) ON DELETE RESTRICT
+);
+
+CREATE TABLE IF NOT EXISTS trip_essential_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  trip_id INTEGER NOT NULL,
+  definition_id INTEGER,
+  category_id INTEGER NOT NULL,
+  item_name TEXT NOT NULL,
+  notes TEXT NOT NULL DEFAULT '',
+  scope TEXT NOT NULL DEFAULT 'general' CHECK(scope IN ('general', 'trip_specific')),
+  is_critical INTEGER NOT NULL DEFAULT 0,
+  priority TEXT NOT NULL DEFAULT 'Standard' CHECK(priority IN ('Critical', 'High', 'Standard')),
+  is_checked INTEGER NOT NULL DEFAULT 0,
+  is_verified INTEGER NOT NULL DEFAULT 0,
+  is_custom INTEGER NOT NULL DEFAULT 0,
+  verified_at TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE,
+  FOREIGN KEY (category_id) REFERENCES essential_categories(id) ON DELETE RESTRICT,
+  FOREIGN KEY (definition_id) REFERENCES essential_item_definitions(id) ON DELETE SET NULL,
+  UNIQUE(trip_id, item_name)
+);
+
 CREATE INDEX IF NOT EXISTS idx_trips_status ON trips(status);
 CREATE INDEX IF NOT EXISTS idx_trips_departure ON trips(departure_date);
 CREATE INDEX IF NOT EXISTS idx_packing_items_trip ON packing_items(trip_id);
 CREATE INDEX IF NOT EXISTS idx_packing_items_category ON packing_items(category_id);
 CREATE INDEX IF NOT EXISTS idx_template_items_template ON template_items(template_id);
+CREATE INDEX IF NOT EXISTS idx_trip_essential_trip ON trip_essential_items(trip_id);
+CREATE INDEX IF NOT EXISTS idx_trip_essential_category ON trip_essential_items(category_id);
+CREATE INDEX IF NOT EXISTS idx_trip_essential_critical ON trip_essential_items(is_critical);
+CREATE INDEX IF NOT EXISTS idx_essential_defs_cat ON essential_item_definitions(category_id);
 `;

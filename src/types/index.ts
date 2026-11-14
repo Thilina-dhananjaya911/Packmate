@@ -28,6 +28,118 @@ export type CategoryName =
   | 'Travel Essentials'
   | 'Health & Safety';
 
+export type EssentialCategoryName =
+  | 'Travel Documents'
+  | 'Money and Payments'
+  | 'Electronics'
+  | 'Personal Essentials'
+  | 'Health and Safety'
+  | 'Trip-Specific Essentials';
+
+export type EssentialPriority = 'Critical' | 'High' | 'Standard';
+export type EssentialScope = 'general' | 'trip_specific';
+export type VerificationState = 'Not Checked' | 'Checked' | 'Verified';
+
+export interface EssentialCategory {
+  id: number;
+  name: EssentialCategoryName;
+  icon_name: string;
+  color_hex: string;
+  description: string;
+  sort_order: number;
+}
+
+export interface EssentialItemDefinition {
+  id: number;
+  category_id: number;
+  category_name?: EssentialCategoryName;
+  item_name: string;
+  description: string;
+  is_critical: number; // 0 | 1
+  priority: EssentialPriority;
+  scope: EssentialScope;
+  applicable_trip_types: string;
+  applicable_dest_types: string;
+  min_duration: number;
+  is_default_selected: number; // 0 | 1
+}
+
+export interface TripEssentialItem {
+  id: number;
+  trip_id: number;
+  definition_id: number | null;
+  category_id: number;
+  category_name: EssentialCategoryName;
+  category_color: string;
+  category_icon: string;
+  item_name: string;
+  notes: string;
+  scope: EssentialScope;
+  is_critical: number; // 0 | 1
+  priority: EssentialPriority;
+  is_checked: number; // 0 | 1
+  is_verified: number; // 0 | 1
+  is_custom: number; // 0 | 1
+  verified_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateTripEssentialInput {
+  trip_id: number;
+  definition_id?: number | null;
+  category_id: number;
+  item_name: string;
+  notes?: string;
+  scope?: EssentialScope;
+  is_critical?: number;
+  priority?: EssentialPriority;
+  is_custom?: number;
+}
+
+export interface UpdateTripEssentialInput {
+  item_name?: string;
+  category_id?: number;
+  notes?: string;
+  scope?: EssentialScope;
+  is_critical?: number;
+  priority?: EssentialPriority;
+}
+
+export interface DepartureReadinessSummary {
+  tripId: number;
+  totalItems: number;
+  checkedItems: number;
+  verifiedCriticalItems: number;
+  totalCriticalItems: number;
+  unverifiedCriticalItems: number;
+  missingItems: number;
+  remainingImportantItems: number;
+  readinessPercentage: number;
+  isFullyReady: boolean;
+}
+
+export interface ForgetPreventionAlert {
+  id: string;
+  itemId?: number;
+  title: string;
+  message: string;
+  severity: 'critical' | 'warning' | 'info';
+  categoryName?: EssentialCategoryName;
+}
+
+export interface EssentialCategorySummary {
+  category_id: number;
+  category_name: EssentialCategoryName;
+  icon_name: string;
+  color_hex: string;
+  total: number;
+  checked: number;
+  verifiedCritical: number;
+  totalCritical: number;
+  missing: number;
+}
+
 export type ScalingRule = 'fixed' | 'daily' | 'half_days' | 'third_days' | 'weekly';
 
 export type ThemeMode = 'light' | 'dark';
@@ -224,4 +336,12 @@ export type RootStackParamList = {
   ItemDetails: { itemId: number; tripId: number };
   TemplateDetails: { templateId: number; targetTripId?: number };
   Settings: undefined;
+  DontForgetDashboard: { tripId?: number } | undefined;
+  EssentialChecklist: {
+    tripId: number;
+    initialCategory?: EssentialCategoryName | 'All';
+    initialFilter?: 'all' | 'missing' | 'critical' | 'verified';
+    openAddModal?: boolean;
+  };
+  FinalDepartureCheck: { tripId: number };
 };

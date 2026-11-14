@@ -4,6 +4,7 @@ import { APP_INFO } from '../constants';
 import { DATABASE_SCHEMA_SQL } from './migrations/schema';
 import { SEED_CATEGORIES, SEED_TEMPLATES } from './seed/seedData';
 import { getTodayISO } from '../utils/dateUtils';
+import { seedEssentialDataIfNeeded } from './queries/essentialQueries';
 
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 let initPromise: Promise<SQLite.SQLiteDatabase> | null = null;
@@ -24,6 +25,7 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
       }
       await db.execAsync(DATABASE_SCHEMA_SQL);
       await seedInitialDataIfNeeded(db);
+      await seedEssentialDataIfNeeded(db);
       await syncAutomaticTripStatuses(db);
       dbInstance = db;
       return db;
