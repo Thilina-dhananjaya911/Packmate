@@ -26,7 +26,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export const OnboardingScreen: React.FC<Props> = ({ navigation, route }) => {
   const { theme } = useAppTheme();
-  const { completeOnboarding } = useAppContext();
+  const { completeOnboarding, hasUserProfile } = useAppContext();
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef<FlatList<(typeof ONBOARDING_SLIDES)[number]>>(null);
 
@@ -37,6 +37,8 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation, route }) => {
     await completeOnboarding();
     if (isReplay && navigation.canGoBack()) {
       navigation.goBack();
+    } else if (!hasUserProfile) {
+      navigation.replace('ProfileSetup');
     } else {
       navigation.replace('MainTabs');
     }

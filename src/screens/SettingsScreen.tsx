@@ -17,6 +17,7 @@ import {
   Sparkles,
   Sun,
   Trash2,
+  User,
 } from 'lucide-react-native';
 import { APP_INFO } from '../constants';
 import { useAppContext } from '../context/AppContext';
@@ -26,6 +27,7 @@ import {
   getDatabaseInfo,
   loadSampleDemoJourneys,
 } from '../database/queries/settingsQueries';
+import { AvatarView } from '../components/AvatarView';
 import { BrandMark } from '../components/BrandMark';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -36,7 +38,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
 export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
   const { theme, mode, setThemeMode } = useAppTheme();
-  const { dataVersion, notifyDataChanged, resetOnboarding } = useAppContext();
+  const { dataVersion, notifyDataChanged, resetOnboarding, userProfile } = useAppContext();
 
   const [dbInfo, setDbInfo] = useState<DatabaseInfo | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -149,6 +151,60 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           </View>
         </View>
+
+        {/* User Travel Profile Summary */}
+        {userProfile ? (
+          <Pressable
+            onPress={() =>
+              navigation.navigate('MainTabs', { screen: 'Profile' })
+            }
+            style={[
+              styles.profileCard,
+              {
+                backgroundColor: theme.colors.card,
+                borderColor: theme.colors.border,
+              },
+              theme.shadows.xs,
+            ]}
+          >
+            <AvatarView
+              avatarId={userProfile.avatar}
+              name={userProfile.fullName}
+              size={52}
+            />
+            <View style={{ flex: 1, marginLeft: 14 }}>
+              <Text
+                numberOfLines={1}
+                style={[styles.profileCardName, { color: theme.colors.primaryText }]}
+              >
+                {userProfile.fullName}
+              </Text>
+              <Text
+                style={[
+                  styles.profileCardMeta,
+                  { color: theme.colors.secondaryText },
+                ]}
+              >
+                {userProfile.country} • {userProfile.travelStyle}
+              </Text>
+            </View>
+            <View
+              style={[
+                styles.profileActionPill,
+                { backgroundColor: theme.colors.infoSoft },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.profileActionText,
+                  { color: theme.colors.secondaryBlue },
+                ]}
+              >
+                Manage
+              </Text>
+            </View>
+          </Pressable>
+        ) : null}
 
         {/* Theme Preference */}
         <View
@@ -436,6 +492,30 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 24,
     alignItems: 'center',
+  },
+  profileCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 16,
+  },
+  profileCardName: {
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  profileCardMeta: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  profileActionPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  profileActionText: {
+    fontSize: 12,
+    fontWeight: '800',
   },
   appName: {
     fontSize: 18,

@@ -20,7 +20,7 @@ import { RootStackParamList } from '../types';
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
 export const SplashScreen: React.FC<Props> = ({ navigation }) => {
-  const { isDbReady, hasCompletedOnboarding } = useAppContext();
+  const { isDbReady, hasCompletedOnboarding, hasUserProfile } = useAppContext();
 
   const logoScale = useSharedValue(0.72);
   const logoOpacity = useSharedValue(0);
@@ -45,14 +45,16 @@ export const SplashScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (!isDbReady) return;
     const timer = setTimeout(() => {
-      if (hasCompletedOnboarding) {
-        navigation.replace('MainTabs');
-      } else {
+      if (!hasCompletedOnboarding) {
         navigation.replace('Onboarding');
+      } else if (!hasUserProfile) {
+        navigation.replace('ProfileSetup');
+      } else {
+        navigation.replace('MainTabs');
       }
     }, 1500);
     return () => clearTimeout(timer);
-  }, [isDbReady, hasCompletedOnboarding, navigation]);
+  }, [isDbReady, hasCompletedOnboarding, hasUserProfile, navigation]);
 
   const logoStyle = useAnimatedStyle(() => ({
     opacity: logoOpacity.value,
