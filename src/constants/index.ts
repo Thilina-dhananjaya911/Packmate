@@ -1,4 +1,10 @@
-import { CategoryName, DestinationType, TripStatus, TripType } from '../types';
+import {
+  CategoryName,
+  DestinationType,
+  EssentialCategoryName,
+  TripStatus,
+  TripType,
+} from '../types';
 
 export const APP_INFO = {
   NAME: 'PACKMATE',
@@ -114,6 +120,57 @@ export const ITEM_CATEGORIES_META: {
   { name: 'Accessories', icon_name: 'Watch', color_hex: '#EC4899', sort_order: 5 },
   { name: 'Travel Essentials', icon_name: 'Luggage', color_hex: '#172B4D', sort_order: 6 },
   { name: 'Health & Safety', icon_name: 'HeartPulse', color_hex: '#EF4444', sort_order: 7 },
+];
+
+export const ESSENTIAL_CATEGORIES_META: {
+  name: EssentialCategoryName;
+  icon_name: string;
+  color_hex: string;
+  description: string;
+  sort_order: number;
+}[] = [
+  {
+    name: 'Travel Documents',
+    icon_name: 'FileCheck',
+    color_hex: '#3B82F6',
+    description: 'Passports, identity cards, travel tickets, visas, and vouchers',
+    sort_order: 1,
+  },
+  {
+    name: 'Money and Payments',
+    icon_name: 'Wallet',
+    color_hex: '#10B981',
+    description: 'Wallets, local cash reserves, bank cards, and emergency funds',
+    sort_order: 2,
+  },
+  {
+    name: 'Electronics',
+    icon_name: 'Smartphone',
+    color_hex: '#6366F1',
+    description: 'Mobile phone, chargers, high-capacity power bank, and earphones',
+    sort_order: 3,
+  },
+  {
+    name: 'Personal Essentials',
+    icon_name: 'Key',
+    color_hex: '#F59E0B',
+    description: 'House keys, corrective eyewear, hygiene kit, and personal care',
+    sort_order: 4,
+  },
+  {
+    name: 'Health and Safety',
+    icon_name: 'HeartPulse',
+    color_hex: '#EF4444',
+    description: 'Personal prescription meds, first-aid kit, and emergency contacts',
+    sort_order: 5,
+  },
+  {
+    name: 'Trip-Specific Essentials',
+    icon_name: 'Compass',
+    color_hex: '#8B5CF6',
+    description: 'Specialized essentials for beach, alpine trekking, or business meetings',
+    sort_order: 6,
+  },
 ];
 
 export const DESTINATION_KEYWORDS: Record<DestinationType, string[]> = {

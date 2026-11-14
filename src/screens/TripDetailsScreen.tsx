@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
+  ArrowRight,
   Calendar,
   CheckCircle2,
   CheckSquare,
@@ -20,10 +21,13 @@ import {
   Globe,
   MapPin,
   RotateCcw,
+  ShieldAlert,
+  ShieldCheck,
   Sparkles,
   Trash2,
   Users,
 } from 'lucide-react-native';
+import { AnimatedPressableCard } from '../components/AnimatedPressableCard';
 import { useAppContext } from '../context/AppContext';
 import { useAppTheme } from '../context/ThemeContext';
 import {
@@ -198,6 +202,57 @@ export const TripDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
           variant="secondary"
           icon={<CheckSquare size={18} color="#FFFFFF" />}
         />
+
+        {/* Don't Forget Mode CTA */}
+        <AnimatedPressableCard
+          onPress={() =>
+            navigation.navigate('DontForgetDashboard', { tripId: trip.id })
+          }
+          style={[
+            styles.dontForgetDetailCard,
+            {
+              backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border,
+            },
+            theme.shadows.xs,
+          ]}
+        >
+          <View style={styles.dontForgetDetailRow}>
+            <View
+              style={[
+                styles.dontForgetDetailIcon,
+                { backgroundColor: theme.colors.dangerSoft },
+              ]}
+            >
+              <ShieldAlert size={22} color={theme.colors.danger} strokeWidth={2.4} />
+            </View>
+            <View style={{ flex: 1, paddingRight: 8 }}>
+              <View style={styles.dontForgetDetailPill}>
+                <Sparkles size={11} color={theme.colors.accentMint} />
+                <Text style={[styles.dontForgetDetailPillText, { color: theme.colors.accentMint }]}>
+                  TRAVEL SAFETY CHECKLIST
+                </Text>
+              </View>
+              <Text
+                style={[
+                  styles.dontForgetDetailTitle,
+                  { color: theme.colors.primaryText },
+                ]}
+              >
+                Don't Forget Mode
+              </Text>
+              <Text
+                style={[
+                  styles.dontForgetDetailSub,
+                  { color: theme.colors.secondaryText },
+                ]}
+              >
+                Verify passports, tickets, keys, wallet & medications before departure
+              </Text>
+            </View>
+            <ArrowRight size={17} color={theme.colors.secondaryBlue} />
+          </View>
+        </AnimatedPressableCard>
 
         {/* Trip Metadata Card */}
         <View
@@ -630,5 +685,43 @@ const styles = StyleSheet.create({
   },
   secondaryActions: {
     gap: 10,
+  },
+  dontForgetDetailCard: {
+    borderRadius: 20,
+    borderWidth: 1.2,
+    padding: 16,
+  },
+  dontForgetDetailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  dontForgetDetailIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dontForgetDetailPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 2,
+  },
+  dontForgetDetailPillText: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.6,
+  },
+  dontForgetDetailTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: -0.2,
+  },
+  dontForgetDetailSub: {
+    fontSize: 12,
+    lineHeight: 16,
+    marginTop: 2,
   },
 });

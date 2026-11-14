@@ -17,6 +17,9 @@ import { SettingsScreen } from '../screens/SettingsScreen';
 import { SplashScreen } from '../screens/SplashScreen';
 import { TemplateDetailsScreen } from '../screens/TemplateDetailsScreen';
 import { TripDetailsScreen } from '../screens/TripDetailsScreen';
+import { DontForgetDashboardScreen } from '../screens/DontForgetDashboardScreen';
+import { EssentialChecklistScreen } from '../screens/EssentialChecklistScreen';
+import { FinalDepartureCheckScreen } from '../screens/FinalDepartureCheckScreen';
 import { RootStackParamList } from '../types';
 import { MainTabNavigator } from './MainTabNavigator';
 
@@ -106,6 +109,18 @@ export const RootNavigator: React.FC = () => {
           component={TemplateDetailsScreen}
         />
         <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen
+          name="DontForgetDashboard"
+          component={DontForgetDashboardScreen}
+        />
+        <Stack.Screen
+          name="EssentialChecklist"
+          component={EssentialChecklistScreen}
+        />
+        <Stack.Screen
+          name="FinalDepartureCheck"
+          component={FinalDepartureCheckScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

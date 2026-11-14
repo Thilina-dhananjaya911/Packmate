@@ -35,6 +35,7 @@ import {
   getTripByIdWithProgress,
   updateTrip,
 } from '../database/queries/tripQueries';
+import { generateAndSyncTripEssentials } from '../database/queries/essentialQueries';
 import {
   generateIntelligentPackingList,
   inferDestinationType,
@@ -247,6 +248,17 @@ export const CreateTripScreen: React.FC<Props> = ({ navigation, route }) => {
       }
 
       const newTripId = await createTrip(payload);
+      try {
+        await generateAndSyncTripEssentials({
+          id: newTripId,
+          ...payload,
+          status: 'Upcoming',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+      } catch (essErr) {
+        console.warn("[PACKMATE] Couldn't auto-init essentials:", essErr);
+      }
 
       if (reuseFromTripId) {
         const clonedCount = await cloneTripItemsToNewTrip(
