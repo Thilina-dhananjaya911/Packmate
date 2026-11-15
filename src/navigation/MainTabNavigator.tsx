@@ -174,18 +174,6 @@ export const MainTabNavigator: React.FC = () => {
           ),
         }}
       />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          tabBarLabel: 'Profile',
-          tabBarIcon: ({ color, focused }) => (
-            <AnimatedTabIcon focused={focused} color={color}>
-              <User size={20} color={color} strokeWidth={focused ? 2.5 : 2} />
-            </AnimatedTabIcon>
-          ),
-        }}
-      />
     </Tab.Navigator>
   );
 };
