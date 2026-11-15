@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
   DarkTheme,
   DefaultTheme,
@@ -24,7 +24,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator: React.FC = () => {
   const { theme } = useAppTheme();
-  const { dbError } = useAppContext();
+  const { dbError, retryDbInit } = useAppContext();
 
   if (dbError) {
     return (
@@ -41,6 +41,13 @@ export const RootNavigator: React.FC = () => {
         <Text style={[styles.errorBody, { color: theme.colors.secondaryText }]}>
           {dbError}
         </Text>
+        <TouchableOpacity
+          style={[styles.retryButton, { backgroundColor: theme.colors.secondaryBlue }]}
+          onPress={() => retryDbInit()}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.retryButtonText}>Retry Connection</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -128,5 +135,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 20,
+    maxWidth: 380,
+  },
+  retryButton: {
+    marginTop: 22,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });

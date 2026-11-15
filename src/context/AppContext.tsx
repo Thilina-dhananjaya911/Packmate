@@ -36,6 +36,7 @@ interface AppContextValue {
   notifyDataChanged: () => Promise<void>;
   completeOnboarding: () => Promise<void>;
   resetOnboarding: () => Promise<void>;
+  retryDbInit: () => Promise<void>;
 }
 
 const DEFAULT_STATS: DashboardStats = {
@@ -91,6 +92,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setDashboardStats(stats);
   }, []);
 
+  const initDatabaseFlow = useCallback(async () => {
+    try {
+      await getDatabase();
+      const onboarded = await isOnboardingCompleted();
+      await loadCoreData();
+      setHasCompletedOnboarding(onboarded);
+      setIsDbReady(true);
+      setDbError(null);
+    } catch (err) {
+      setDbError(
+        err instanceof Error
+          ? err.message
+          : 'Unable to initialize offline SQLite storage.'
+      );
+      setIsDbReady(true);
+    }
+  }, [loadCoreData]);
+
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -118,6 +137,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       mounted = false;
     };
   }, [loadCoreData]);
+
+  const retryDbInit = useCallback(async () => {
+    setIsDbReady(false);
+    setDbError(null);
+    await initDatabaseFlow();
+  }, [initDatabaseFlow]);
 
   const refreshAll = useCallback(async () => {
     try {
@@ -159,6 +184,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       notifyDataChanged,
       completeOnboarding,
       resetOnboarding,
+      retryDbInit,
     }),
     [
       isDbReady,
@@ -176,6 +202,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       notifyDataChanged,
       completeOnboarding,
       resetOnboarding,
+      retryDbInit,
     ]
   );
 

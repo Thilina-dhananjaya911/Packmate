@@ -5,36 +5,143 @@ import { DATABASE_SCHEMA_SQL } from './migrations/schema';
 import { SEED_CATEGORIES, SEED_TEMPLATES } from './seed/seedData';
 import { getTodayISO } from '../utils/dateUtils';
 
-let dbInstance: SQLite.SQLiteDatabase | null = null;
-let initPromise: Promise<SQLite.SQLiteDatabase> | null = null;
+interface PackmateGlobalScope {
+  __PACKMATE_SQLITE_DB__?: SQLite.SQLiteDatabase;
+  __PACKMATE_SQLITE_INIT_PROMISE__?: Promise<SQLite.SQLiteDatabase>;
+  __PACKMATE_SQLITE_UNLOAD_REGISTERED__?: boolean;
+}
 
-export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
-  if (dbInstance) {
-    return dbInstance;
-  }
-  if (initPromise) {
-    return initPromise;
-  }
+function getGlobalScope(): PackmateGlobalScope {
+  return globalThis as unknown as PackmateGlobalScope;
+}
 
-  initPromise = (async () => {
+/**
+ * Checks whether an error is caused by exclusive OPFS FileSystemSyncAccessHandle locks.
+ * In Chrome / WebAssembly SQLite, opening OPFS files with createSyncAccessHandle throws
+ * if a previous worker or another tab has not yet released the exclusive handle lock.
+ */
+function isSyncAccessHandleLockError(error: unknown): boolean {
+  if (!error) return false;
+  const msg = error instanceof Error ? error.message : String(error);
+  const name =
+    typeof error === 'object' && error !== null && 'name' in error
+      ? String((error as { name?: string }).name)
+      : '';
+  return (
+    name === 'NoModificationAllowedError' ||
+    msg.includes('createSyncAccessHandle') ||
+    msg.includes('Access Handles cannot be created') ||
+    msg.includes('another open Access Handle') ||
+    msg.includes('NoModificationAllowedError')
+  );
+}
+
+function waitMs(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Opens the SQLite database with backoff retry on Web when transient OPFS
+ * access handle locks occur (e.g., during page reload, Fast Refresh, or Chrome DevTools
+ * mobile emulation toggling while the previous worker is terminating).
+ */
+async function openSQLiteDatabaseWithRetry(): Promise<SQLite.SQLiteDatabase> {
+  const isWeb = Platform.OS === 'web';
+  const maxAttempts = isWeb ? 8 : 1;
+  const initialDelayMs = 120;
+
+  let delay = initialDelayMs;
+  let lastError: unknown = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       const db = await SQLite.openDatabaseAsync(APP_INFO.DATABASE_NAME);
+      return db;
+    } catch (err) {
+      lastError = err;
+      if (isWeb && isSyncAccessHandleLockError(err) && attempt < maxAttempts) {
+        console.warn(
+          `[PACKMATE DB] OPFS access handle is locked (attempt ${attempt}/${maxAttempts}). Retrying in ${delay}ms...`
+        );
+        await waitMs(delay);
+        delay = Math.min(Math.round(delay * 1.5), 800);
+      } else {
+        break;
+      }
+    }
+  }
+
+  if (isWeb && isSyncAccessHandleLockError(lastError)) {
+    console.error(
+      '[PACKMATE DB] Multiple browser tabs, workers, or emulation contexts are holding the SQLite database lock.'
+    );
+    throw new Error(
+      'PACKMATE database is locked by another open browser tab, window, or worker session. ' +
+      'Please close other PACKMATE tabs or windows and reload.'
+    );
+  }
+
+  throw lastError;
+}
+
+function attachWebTeardown(db: SQLite.SQLiteDatabase): void {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') {
+    return;
+  }
+  const scope = getGlobalScope();
+  if (scope.__PACKMATE_SQLITE_UNLOAD_REGISTERED__) {
+    return;
+  }
+  scope.__PACKMATE_SQLITE_UNLOAD_REGISTERED__ = true;
+
+  const teardown = () => {
+    try {
+      const activeDb = scope.__PACKMATE_SQLITE_DB__;
+      if (activeDb) {
+        activeDb.closeAsync().catch(() => {});
+      }
+    } catch {
+      // Ignore errors on page unload
+    }
+  };
+
+  window.addEventListener('beforeunload', teardown);
+  window.addEventListener('pagehide', teardown);
+}
+
+export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
+  const scope = getGlobalScope();
+
+  // Return existing singleton connection if already initialized
+  if (scope.__PACKMATE_SQLITE_DB__) {
+    return scope.__PACKMATE_SQLITE_DB__;
+  }
+
+  // Return existing in-flight initialization promise if initialization is underway
+  if (scope.__PACKMATE_SQLITE_INIT_PROMISE__) {
+    return scope.__PACKMATE_SQLITE_INIT_PROMISE__;
+  }
+
+  scope.__PACKMATE_SQLITE_INIT_PROMISE__ = (async () => {
+    try {
+      const db = await openSQLiteDatabaseWithRetry();
       if (Platform.OS !== 'web') {
         await db.execAsync('PRAGMA journal_mode = WAL;');
       }
       await db.execAsync(DATABASE_SCHEMA_SQL);
       await seedInitialDataIfNeeded(db);
       await syncAutomaticTripStatuses(db);
-      dbInstance = db;
+      scope.__PACKMATE_SQLITE_DB__ = db;
+      attachWebTeardown(db);
       return db;
     } catch (error) {
-      initPromise = null;
+      scope.__PACKMATE_SQLITE_INIT_PROMISE__ = undefined;
       console.error('[PACKMATE DB] Initialization error:', error);
       throw error;
     }
   })();
 
-  return initPromise;
+  return scope.__PACKMATE_SQLITE_INIT_PROMISE__;
 }
 
 /**
