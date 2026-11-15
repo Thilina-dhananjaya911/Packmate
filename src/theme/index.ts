@@ -30,59 +30,59 @@ export interface ColorPalette {
 }
 
 export const LIGHT_COLORS: ColorPalette = {
-  primaryNavy: '#172B4D',
-  secondaryBlue: '#4C9AFF',
-  accentMint: '#36C9A5',
-  background: '#F7F9FC',
+  primaryNavy: '#0F1E36', // Rich, deep executive navy
+  secondaryBlue: '#2563EB', // Vibrant, modern royal blue
+  accentMint: '#10B981', // Crisp, refreshing mint emerald
+  background: '#F8FAFC', // Ultra-clean, modern canvas background
   card: '#FFFFFF',
   cardElevated: '#FFFFFF',
-  surfaceSubtle: '#EFF4FA',
-  primaryText: '#172B4D',
-  secondaryText: '#7A869A',
-  mutedText: '#97A0AF',
-  border: '#E8EDF3',
-  borderFocus: '#4C9AFF',
+  surfaceSubtle: '#F1F5F9', // Soft cool neutral surface
+  primaryText: '#0F172A', // High contrast slate-navy
+  secondaryText: '#64748B', // Balanced midtone slate
+  mutedText: '#94A3B8', // Soft neutral placeholder text
+  border: '#E2E8F0', // Delicate, crisp border
+  borderFocus: '#2563EB', // Royal blue focus ring
   white: '#FFFFFF',
-  danger: '#E5484D',
-  dangerSoft: '#FEECEE',
+  danger: '#EF4444',
+  dangerSoft: 'rgba(239, 68, 68, 0.08)',
   warning: '#F59E0B',
-  warningSoft: '#FEF3C7',
-  success: '#36C9A5',
-  successSoft: '#E6F9F4',
-  infoSoft: '#EBF4FF',
-  navySoft: '#E9EEF6',
-  overlay: 'rgba(23, 43, 77, 0.52)',
-  heroGradient: ['#172B4D', '#1E3A68', '#264B84'],
-  accentGradient: ['#4C9AFF', '#2575FC'],
-  mintGradient: ['#36C9A5', '#1FA885'],
+  warningSoft: 'rgba(245, 158, 11, 0.10)',
+  success: '#10B981',
+  successSoft: 'rgba(16, 185, 129, 0.10)',
+  infoSoft: 'rgba(37, 99, 235, 0.08)',
+  navySoft: 'rgba(15, 30, 54, 0.06)',
+  overlay: 'rgba(15, 23, 42, 0.65)',
+  heroGradient: ['#0B1528', '#122344', '#1E3A70'],
+  accentGradient: ['#2563EB', '#1D4ED8'],
+  mintGradient: ['#10B981', '#059669'],
 };
 
 export const DARK_COLORS: ColorPalette = {
-  primaryNavy: '#172B4D',
-  secondaryBlue: '#4C9AFF',
-  accentMint: '#36C9A5',
-  background: '#0B1528',
-  card: '#13223B',
-  cardElevated: '#1A2D4D',
-  surfaceSubtle: '#182A47',
-  primaryText: '#F1F5F9',
+  primaryNavy: '#0B1528',
+  secondaryBlue: '#3B82F6', // Luminous royal blue for dark contrast
+  accentMint: '#34D399', // Bright mint for dark backgrounds
+  background: '#090E1A', // Deep obsidian-navy canvas
+  card: '#111C30', // Refined slate-navy card
+  cardElevated: '#172642', // Elevated interactive surface
+  surfaceSubtle: '#14223A',
+  primaryText: '#F8FAFC',
   secondaryText: '#94A3B8',
   mutedText: '#64748B',
-  border: '#223659',
-  borderFocus: '#4C9AFF',
+  border: '#1E2F4C',
+  borderFocus: '#3B82F6',
   white: '#FFFFFF',
   danger: '#F87171',
   dangerSoft: 'rgba(239, 68, 68, 0.16)',
   warning: '#FBBF24',
   warningSoft: 'rgba(245, 158, 11, 0.16)',
-  success: '#36C9A5',
-  successSoft: 'rgba(54, 201, 165, 0.16)',
-  infoSoft: 'rgba(76, 154, 255, 0.16)',
-  navySoft: 'rgba(76, 154, 255, 0.12)',
-  overlay: 'rgba(5, 10, 22, 0.72)',
-  heroGradient: ['#132544', '#1B3560', '#23457A'],
-  accentGradient: ['#4C9AFF', '#2575FC'],
-  mintGradient: ['#36C9A5', '#1FA885'],
+  success: '#34D399',
+  successSoft: 'rgba(52, 211, 153, 0.16)',
+  infoSoft: 'rgba(59, 130, 246, 0.16)',
+  navySoft: 'rgba(59, 130, 246, 0.12)',
+  overlay: 'rgba(3, 7, 18, 0.78)',
+  heroGradient: ['#080E1C', '#0F1E3A', '#1B3566'],
+  accentGradient: ['#3B82F6', '#2563EB'],
+  mintGradient: ['#34D399', '#10B981'],
 };
 
 export const SPACING = {
@@ -166,46 +166,46 @@ export const TYPOGRAPHY = {
 
 export const SHADOWS = {
   xs: {
-    shadowColor: '#172B4D',
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowRadius: 4,
+    elevation: 1,
   },
   sm: {
-    shadowColor: '#172B4D',
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.06,
-    shadowRadius: 12,
+    shadowRadius: 10,
     elevation: 3,
   },
   md: {
-    shadowColor: '#172B4D',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.09,
-    shadowRadius: 18,
-    elevation: 6,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 5,
   },
   lg: {
-    shadowColor: '#172B4D',
-    shadowOffset: { width: 0, height: 14 },
-    shadowOpacity: 0.14,
-    shadowRadius: 26,
-    elevation: 10,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    elevation: 8,
   },
   blueGlow: {
-    shadowColor: '#4C9AFF',
-    shadowOffset: { width: 0, height: 8 },
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.28,
-    shadowRadius: 16,
-    elevation: 7,
+    shadowRadius: 14,
+    elevation: 6,
   },
   mintGlow: {
-    shadowColor: '#36C9A5',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 7,
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.26,
+    shadowRadius: 14,
+    elevation: 6,
   },
 } as const;
 

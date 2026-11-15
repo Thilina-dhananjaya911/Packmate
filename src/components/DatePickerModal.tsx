@@ -290,15 +290,18 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = ({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
   },
   sheet: {
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    borderRadius: 28,
     borderWidth: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 28,
+    paddingHorizontal: 22,
+    paddingTop: 22,
+    paddingBottom: 24,
+    maxWidth: 440,
+    width: '100%',
   },
   headerRow: {
     flexDirection: 'row',

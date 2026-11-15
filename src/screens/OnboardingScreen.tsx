@@ -189,6 +189,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     paddingTop: 10,
     paddingBottom: 6,
+    maxWidth: 520,
+    width: '100%',
+    alignSelf: 'center',
   },
   brandMini: {
     flexDirection: 'row',
@@ -255,8 +258,11 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingHorizontal: 24,
-    paddingBottom: 24,
+    paddingBottom: 28,
     paddingTop: 10,
+    maxWidth: 520,
+    width: '100%',
+    alignSelf: 'center',
   },
   dotsRow: {
     flexDirection: 'row',

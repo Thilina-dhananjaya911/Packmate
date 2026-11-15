@@ -28,53 +28,62 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
         },
       ]}
     >
-      <View style={styles.leftRow}>
-        {onBack ? (
-          <Pressable
-            onPress={onBack}
-            hitSlop={10}
-            style={[
-              styles.backBtn,
-              {
-                backgroundColor: theme.colors.card,
-                borderColor: theme.colors.border,
-              },
-            ]}
-          >
-            <ArrowLeft size={20} color={theme.colors.primaryText} strokeWidth={2.2} />
-          </Pressable>
-        ) : null}
-        <View style={styles.titleWrap}>
-          <Text
-            numberOfLines={1}
-            style={[styles.title, { color: theme.colors.primaryText }]}
-          >
-            {title}
-          </Text>
-          {subtitle ? (
+      <View style={styles.inner}>
+        <View style={styles.leftRow}>
+          {onBack ? (
+            <Pressable
+              onPress={onBack}
+              hitSlop={10}
+              style={[
+                styles.backBtn,
+                {
+                  backgroundColor: theme.colors.card,
+                  borderColor: theme.colors.border,
+                },
+                theme.shadows.xs,
+              ]}
+            >
+              <ArrowLeft size={19} color={theme.colors.primaryText} strokeWidth={2.4} />
+            </Pressable>
+          ) : null}
+          <View style={styles.titleWrap}>
             <Text
               numberOfLines={1}
-              style={[styles.subtitle, { color: theme.colors.secondaryText }]}
+              style={[styles.title, { color: theme.colors.primaryText }]}
             >
-              {subtitle}
+              {title}
             </Text>
-          ) : null}
+            {subtitle ? (
+              <Text
+                numberOfLines={1}
+                style={[styles.subtitle, { color: theme.colors.secondaryText }]}
+              >
+                {subtitle}
+              </Text>
+            ) : null}
+          </View>
         </View>
-      </View>
 
-      {rightElement ? <View style={styles.right}>{rightElement}</View> : null}
+        {rightElement ? <View style={styles.right}>{rightElement}</View> : null}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    borderBottomWidth: 1,
+    width: '100%',
+  },
+  inner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
+    paddingVertical: 13,
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
   },
   leftRow: {
     flexDirection: 'row',
@@ -85,7 +94,7 @@ const styles = StyleSheet.create({
   backBtn: {
     width: 40,
     height: 40,
-    borderRadius: 13,
+    borderRadius: 14,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -95,14 +104,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 19,
+    fontSize: 20,
     fontWeight: '800',
-    letterSpacing: -0.3,
+    letterSpacing: -0.4,
   },
   subtitle: {
     fontSize: 12,
     fontWeight: '500',
     marginTop: 2,
+    letterSpacing: 0.1,
   },
   right: {
     flexDirection: 'row',

@@ -271,12 +271,15 @@ export const RecommendationPreviewModal: React.FC<
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
   },
   sheet: {
-    height: '86%',
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    maxHeight: '88%',
+    width: '100%',
+    maxWidth: 540,
+    borderRadius: 28,
     borderWidth: 1,
     overflow: 'hidden',
   },

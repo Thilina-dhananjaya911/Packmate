@@ -1,22 +1,30 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
+  Check,
   Database,
+  Edit3,
   Info,
+  MapPin,
   Moon,
   RotateCcw,
   ShieldCheck,
   Sparkles,
   Sun,
   Trash2,
+  User,
+  UserCheck,
+  X,
 } from 'lucide-react-native';
 import { APP_INFO } from '../constants';
 import { useAppContext } from '../context/AppContext';
@@ -24,7 +32,9 @@ import { useAppTheme } from '../context/ThemeContext';
 import {
   clearUserApplicationData,
   getDatabaseInfo,
+  getSetting,
   loadSampleDemoJourneys,
+  setSetting,
 } from '../database/queries/settingsQueries';
 import { BrandMark } from '../components/BrandMark';
 import { ConfirmModal } from '../components/ConfirmModal';
@@ -46,6 +56,58 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
     title: string;
     message: string;
   } | null>(null);
+
+  // Traveler Profile State
+  const [travelerName, setTravelerName] = useState('Alex Traveler');
+  const [travelerStyle, setTravelerStyle] = useState('Smart Efficient Packer');
+  const [travelerHome, setTravelerHome] = useState('Colombo, Sri Lanka');
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [draftName, setDraftName] = useState('Alex Traveler');
+  const [draftStyle, setDraftStyle] = useState('Smart Efficient Packer');
+  const [draftHome, setDraftHome] = useState('Colombo, Sri Lanka');
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const name = await getSetting('traveler_name');
+      const style = await getSetting('traveler_style');
+      const home = await getSetting('traveler_home');
+      if (name) {
+        setTravelerName(name);
+        setDraftName(name);
+      }
+      if (style) {
+        setTravelerStyle(style);
+        setDraftStyle(style);
+      }
+      if (home) {
+        setTravelerHome(home);
+        setDraftHome(home);
+      }
+    })();
+  }, []);
+
+  const handleSaveProfile = async () => {
+    setSavingProfile(true);
+    try {
+      const finalName = draftName.trim() || 'Alex Traveler';
+      const finalStyle = draftStyle.trim() || 'Smart Efficient Packer';
+      const finalHome = draftHome.trim() || 'Local Hub';
+      await setSetting('traveler_name', finalName);
+      await setSetting('traveler_style', finalStyle);
+      await setSetting('traveler_home', finalHome);
+      setTravelerName(finalName);
+      setTravelerStyle(finalStyle);
+      setTravelerHome(finalHome);
+      setShowProfileModal(false);
+      setFeedbackModal({
+        title: 'Profile Updated',
+        message: 'Your traveler profile and packing preferences have been saved locally.',
+      });
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   const loadDbStats = useCallback(async () => {
     const stats = await getDatabaseInfo();
@@ -146,6 +208,116 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
               >
                 100% Offline • Version {APP_INFO.VERSION}
               </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Traveler Profile Card */}
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border,
+            },
+            theme.shadows.xs,
+          ]}
+        >
+          <View style={styles.cardHeaderRow}>
+            <UserCheck size={18} color={theme.colors.secondaryBlue} />
+            <Text
+              style={[
+                styles.sectionTitle,
+                { color: theme.colors.primaryText, marginBottom: 0, flex: 1 },
+              ]}
+            >
+              Traveler Profile
+            </Text>
+            <Pressable
+              onPress={() => {
+                setDraftName(travelerName);
+                setDraftStyle(travelerStyle);
+                setDraftHome(travelerHome);
+                setShowProfileModal(true);
+              }}
+              style={[
+                styles.editProfileBtn,
+                { backgroundColor: theme.colors.infoSoft },
+              ]}
+            >
+              <Edit3 size={13} color={theme.colors.secondaryBlue} />
+              <Text
+                style={[
+                  styles.editProfileBtnText,
+                  { color: theme.colors.secondaryBlue },
+                ]}
+              >
+                Edit Profile
+              </Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.profileContentRow}>
+            <View
+              style={[
+                styles.profileAvatarBox,
+                {
+                  backgroundColor: theme.colors.primaryNavy,
+                  borderColor: theme.colors.secondaryBlue,
+                },
+              ]}
+            >
+              <Text style={styles.profileAvatarInitials}>
+                {travelerName
+                  .split(' ')
+                  .map((p) => p[0])
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase() || 'TR'}
+              </Text>
+              <View
+                style={[
+                  styles.profileStatusDot,
+                  { backgroundColor: theme.colors.accentMint },
+                ]}
+              />
+            </View>
+
+            <View style={{ flex: 1, marginLeft: 14 }}>
+              <Text
+                style={[styles.profileNameText, { color: theme.colors.primaryText }]}
+              >
+                {travelerName}
+              </Text>
+              <View
+                style={[
+                  styles.styleBadge,
+                  {
+                    backgroundColor: theme.colors.infoSoft,
+                    borderColor: 'rgba(37, 99, 235, 0.20)',
+                    borderWidth: 1,
+                  },
+                ]}
+              >
+                <Sparkles size={11} color={theme.colors.secondaryBlue} />
+                <Text
+                  style={[
+                    styles.styleBadgeText,
+                    { color: theme.colors.secondaryBlue },
+                  ]}
+                >
+                  {travelerStyle}
+                </Text>
+              </View>
+              <View style={styles.homeBaseRow}>
+                <MapPin size={12} color={theme.colors.secondaryText} />
+                <Text
+                  style={[styles.homeBaseText, { color: theme.colors.secondaryText }]}
+                >
+                  Home: {travelerHome}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -399,6 +571,147 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
         </View>
       </ScrollView>
 
+      {/* Edit Profile & Profile Setup Modal */}
+      <Modal
+        visible={showProfileModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowProfileModal(false)}
+      >
+        <Pressable
+          style={[styles.modalBackdrop, { backgroundColor: theme.colors.overlay }]}
+          onPress={() => setShowProfileModal(false)}
+        >
+          <Pressable
+            style={[
+              styles.profileModalSheet,
+              {
+                backgroundColor: theme.colors.card,
+                borderColor: theme.colors.border,
+              },
+              theme.shadows.lg,
+            ]}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <View style={styles.profileModalHeader}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 9 }}>
+                <UserCheck size={20} color={theme.colors.secondaryBlue} />
+                <Text
+                  style={[styles.profileModalTitle, { color: theme.colors.primaryText }]}
+                >
+                  Edit Profile & Setup
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => setShowProfileModal(false)}
+                style={[
+                  styles.modalCloseBtn,
+                  { backgroundColor: theme.colors.surfaceSubtle },
+                ]}
+              >
+                <X size={17} color={theme.colors.secondaryText} />
+              </Pressable>
+            </View>
+
+            <Text style={[styles.inputLabel, { color: theme.colors.primaryText }]}>
+              Traveler Name
+            </Text>
+            <TextInput
+              value={draftName}
+              onChangeText={setDraftName}
+              placeholder="e.g. Alex Traveler"
+              placeholderTextColor={theme.colors.mutedText}
+              style={[
+                styles.profileInput,
+                {
+                  backgroundColor: theme.colors.background,
+                  borderColor: theme.colors.border,
+                  color: theme.colors.primaryText,
+                },
+              ]}
+            />
+
+            <Text style={[styles.inputLabel, { color: theme.colors.primaryText }]}>
+              Packing Style
+            </Text>
+            <View style={styles.stylePillsRow}>
+              {[
+                'Smart Efficient Packer',
+                'Minimalist Voyager',
+                'Prepared Explorer',
+                'Family Vacationer',
+              ].map((styleChoice) => {
+                const selected = draftStyle === styleChoice;
+                return (
+                  <Pressable
+                    key={styleChoice}
+                    onPress={() => setDraftStyle(styleChoice)}
+                    style={[
+                      styles.styleChoiceChip,
+                      {
+                        backgroundColor: selected
+                          ? theme.colors.infoSoft
+                          : theme.colors.surfaceSubtle,
+                        borderColor: selected
+                          ? theme.colors.secondaryBlue
+                          : 'transparent',
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.styleChoiceText,
+                        {
+                          color: selected
+                            ? theme.colors.secondaryBlue
+                            : theme.colors.secondaryText,
+                        },
+                      ]}
+                    >
+                      {styleChoice}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            <Text style={[styles.inputLabel, { color: theme.colors.primaryText }]}>
+              Home Base / Region
+            </Text>
+            <TextInput
+              value={draftHome}
+              onChangeText={setDraftHome}
+              placeholder="e.g. Colombo, Sri Lanka"
+              placeholderTextColor={theme.colors.mutedText}
+              style={[
+                styles.profileInput,
+                {
+                  backgroundColor: theme.colors.background,
+                  borderColor: theme.colors.border,
+                  color: theme.colors.primaryText,
+                },
+              ]}
+            />
+
+            <View style={styles.modalActionRow}>
+              <PrimaryButton
+                label="Cancel"
+                onPress={() => setShowProfileModal(false)}
+                variant="outline"
+                style={{ flex: 1 }}
+              />
+              <PrimaryButton
+                label="Save Profile"
+                onPress={handleSaveProfile}
+                variant="secondary"
+                loading={savingProfile}
+                style={{ flex: 1.4 }}
+              />
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
       <ConfirmModal
         visible={showClearConfirm}
         tone="danger"
@@ -430,9 +743,12 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 36,
     gap: 16,
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
   },
   brandCard: {
-    borderRadius: 24,
+    borderRadius: 26,
     borderWidth: 1,
     padding: 24,
     alignItems: 'center',
@@ -461,15 +777,149 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   card: {
-    borderRadius: 22,
+    borderRadius: 24,
     borderWidth: 1,
-    padding: 18,
+    padding: 20,
   },
   cardHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     marginBottom: 14,
+  },
+  profileContentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  profileAvatarBox: {
+    width: 54,
+    height: 54,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+  },
+  profileAvatarInitials: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+  },
+  profileStatusDot: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  profileNameText: {
+    fontSize: 17,
+    fontWeight: '800',
+    letterSpacing: -0.2,
+  },
+  styleBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 9,
+    paddingVertical: 3.5,
+    borderRadius: 999,
+    alignSelf: 'flex-start',
+    marginTop: 4,
+  },
+  styleBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  homeBaseRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 5,
+  },
+  homeBaseText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  editProfileBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 11,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  editProfileBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  modalBackdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  profileModalSheet: {
+    borderRadius: 28,
+    borderWidth: 1,
+    padding: 22,
+    maxWidth: 480,
+    width: '100%',
+  },
+  profileModalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  profileModalTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  modalCloseBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 7,
+  },
+  profileInput: {
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    height: 48,
+    fontSize: 14,
+    marginBottom: 14,
+  },
+  stylePillsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 16,
+  },
+  styleChoiceChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  styleChoiceText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  modalActionRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 18,
   },
   sectionTitle: {
     fontSize: 16,

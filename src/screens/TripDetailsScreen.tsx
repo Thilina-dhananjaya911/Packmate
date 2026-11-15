@@ -152,7 +152,7 @@ export const TripDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               <StatusBadge status={trip.status} />
               <Text style={styles.heroTripName}>{trip.trip_name}</Text>
               <View style={styles.heroMetaRow}>
-                <MapPin size={14} color="#36C9A5" />
+                <MapPin size={14} color="#10B981" />
                 <Text style={styles.heroDestText}>{trip.destination}</Text>
               </View>
             </View>
@@ -482,8 +482,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 36,
+    paddingBottom: 40,
     gap: 16,
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
   },
   heroCard: {
     borderRadius: 26,
@@ -495,7 +498,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   heroTripName: {
-    fontSize: 22,
+    fontSize: 23,
     fontWeight: '800',
     color: '#FFFFFF',
     marginTop: 10,
@@ -515,8 +518,8 @@ const styles = StyleSheet.create({
   heroStatsBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.10)',
-    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 18,
     paddingVertical: 12,
     marginTop: 18,
   },
@@ -530,27 +533,27 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.16)',
   },
   heroStatNum: {
-    fontSize: 19,
+    fontSize: 20,
     fontWeight: '800',
     color: '#FFFFFF',
   },
   heroStatLbl: {
     fontSize: 11,
     fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.72)',
+    color: 'rgba(255, 255, 255, 0.76)',
     marginTop: 2,
   },
   heroSummaryLine: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#36C9A5',
+    color: '#10B981',
     marginTop: 12,
     textAlign: 'center',
   },
   card: {
-    borderRadius: 22,
+    borderRadius: 24,
     borderWidth: 1,
-    padding: 18,
+    padding: 20,
   },
   cardTitle: {
     fontSize: 16,

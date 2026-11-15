@@ -482,12 +482,15 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 32,
+    paddingBottom: 36,
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
   },
   heroCard: {
-    borderRadius: 22,
+    borderRadius: 24,
     borderWidth: 1,
-    padding: 18,
+    padding: 20,
     marginBottom: 20,
   },
   heroTopRow: {
@@ -618,5 +621,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderTopWidth: 1,
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
   },
 });

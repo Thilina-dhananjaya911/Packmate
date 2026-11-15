@@ -15,12 +15,14 @@ export const StatusBadge: React.FC<{ status: TripStatus }> = ({ status }) => {
           bg: theme.colors.successSoft,
           fg: theme.colors.accentMint,
           dot: theme.colors.accentMint,
+          border: 'rgba(16, 185, 129, 0.22)',
         };
       case 'Completed':
         return {
-          bg: theme.colors.navySoft,
+          bg: theme.colors.infoSoft,
           fg: theme.colors.secondaryBlue,
           dot: theme.colors.secondaryBlue,
+          border: 'rgba(37, 99, 235, 0.22)',
         };
       case 'Upcoming':
       default:
@@ -28,6 +30,7 @@ export const StatusBadge: React.FC<{ status: TripStatus }> = ({ status }) => {
           bg: theme.colors.warningSoft,
           fg: '#D97706',
           dot: '#F59E0B',
+          border: 'rgba(245, 158, 11, 0.22)',
         };
     }
   };
@@ -35,7 +38,16 @@ export const StatusBadge: React.FC<{ status: TripStatus }> = ({ status }) => {
   const s = getStyle();
 
   return (
-    <View style={[styles.badge, { backgroundColor: s.bg }]}>
+    <View
+      style={[
+        styles.badge,
+        {
+          backgroundColor: s.bg,
+          borderColor: s.border,
+          borderWidth: 1,
+        },
+      ]}
+    >
       <View style={[styles.dot, { backgroundColor: s.dot }]} />
       <Text style={[styles.badgeText, { color: s.fg }]}>{status}</Text>
     </View>
@@ -53,7 +65,11 @@ export const CategoryBadge: React.FC<{
       style={[
         styles.catBadge,
         compact && styles.catBadgeCompact,
-        { backgroundColor: `${color}18` },
+        {
+          backgroundColor: `${color}14`,
+          borderColor: `${color}28`,
+          borderWidth: 1,
+        },
       ]}
     >
       {iconName ? (
@@ -76,11 +92,20 @@ export const CategoryBadge: React.FC<{
 
 export const TripTypeBadge: React.FC<{ tripType: TripType }> = ({ tripType }) => {
   const meta = TRIP_TYPES.find((t) => t.value === tripType);
-  const accent = meta?.accentColor ?? '#4C9AFF';
+  const accent = meta?.accentColor ?? '#2563EB';
   const icon = meta?.icon ?? 'Compass';
 
   return (
-    <View style={[styles.catBadge, { backgroundColor: `${accent}16` }]}>
+    <View
+      style={[
+        styles.catBadge,
+        {
+          backgroundColor: `${accent}14`,
+          borderColor: `${accent}28`,
+          borderWidth: 1,
+        },
+      ]}
+    >
       <View style={{ marginRight: 5 }}>
         <DynamicIcon name={icon} size={13} color={accent} />
       </View>

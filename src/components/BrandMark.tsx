@@ -25,16 +25,16 @@ export const BrandMark: React.FC<BrandMarkProps> = ({
           <LinearGradient id="pmBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <Stop
               offset="0%"
-              stopColor={isLightOnDark ? '#244375' : '#172B4D'}
+              stopColor={isLightOnDark ? '#1E3A70' : '#0B1528'}
             />
             <Stop
               offset="100%"
-              stopColor={isLightOnDark ? '#152849' : '#24477F'}
+              stopColor={isLightOnDark ? '#0F1E36' : '#1A335F'}
             />
           </LinearGradient>
           <LinearGradient id="pmBlueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor="#4C9AFF" />
-            <Stop offset="100%" stopColor="#36C9A5" />
+            <Stop offset="0%" stopColor="#2563EB" />
+            <Stop offset="100%" stopColor="#10B981" />
           </LinearGradient>
         </Defs>
 
@@ -46,7 +46,7 @@ export const BrandMark: React.FC<BrandMarkProps> = ({
           height="92"
           rx="26"
           fill="url(#pmBgGrad)"
-          stroke={isLightOnDark ? 'rgba(76, 154, 255, 0.4)' : '#4C9AFF'}
+          stroke={isLightOnDark ? 'rgba(59, 130, 246, 0.45)' : '#2563EB'}
           strokeWidth="2"
         />
 
@@ -55,19 +55,19 @@ export const BrandMark: React.FC<BrandMarkProps> = ({
           cx="76"
           cy="24"
           r="10"
-          fill="rgba(54, 201, 165, 0.16)"
+          fill="rgba(16, 185, 129, 0.18)"
         />
         <Circle
           cx="22"
           cy="78"
           r="12"
-          fill="rgba(76, 154, 255, 0.14)"
+          fill="rgba(37, 99, 235, 0.16)"
         />
 
         {/* Suitcase Handle */}
         <Path
           d="M39 31 V25 C39 21.5 41.8 19 45.2 19 H54.8 C58.2 19 61 21.5 61 25 V31"
-          stroke="#4C9AFF"
+          stroke="#2563EB"
           strokeWidth="4.2"
           strokeLinecap="round"
           fill="none"
@@ -84,8 +84,8 @@ export const BrandMark: React.FC<BrandMarkProps> = ({
         />
 
         {/* Side Geometric Ribbing */}
-        <Rect x="30" y="38" width="3" height="32" rx="1.5" fill="#E8EDF3" />
-        <Rect x="67" y="38" width="3" height="32" rx="1.5" fill="#E8EDF3" />
+        <Rect x="30" y="38" width="3" height="32" rx="1.5" fill="#E2E8F0" />
+        <Rect x="67" y="38" width="3" height="32" rx="1.5" fill="#E2E8F0" />
 
         {/* Central Mint/Blue Smart Check Emblem */}
         <Circle cx="50" cy="54" r="14" fill="url(#pmBlueGrad)" />

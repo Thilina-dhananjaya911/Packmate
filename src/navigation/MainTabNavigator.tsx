@@ -47,6 +47,8 @@ const AnimatedTabIcon: React.FC<AnimatedTabIconProps> = ({
         styles.iconPill,
         focused && {
           backgroundColor: theme.colors.infoSoft,
+          borderWidth: 1,
+          borderColor: 'rgba(37, 99, 235, 0.20)',
         },
         animStyle,
       ]}
@@ -70,20 +72,21 @@ export const MainTabNavigator: React.FC = () => {
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '700',
+          letterSpacing: 0.1,
           marginTop: 2,
         },
         tabBarStyle: {
           backgroundColor: theme.colors.card,
           borderTopColor: theme.colors.border,
           borderTopWidth: 1,
-          height: 60 + bottomPad,
-          paddingTop: 7,
+          height: 62 + bottomPad,
+          paddingTop: 8,
           paddingBottom: bottomPad,
-          elevation: 10,
-          shadowColor: '#172B4D',
+          elevation: 12,
+          shadowColor: '#0F172A',
           shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: 0.06,
-          shadowRadius: 12,
+          shadowOpacity: 0.07,
+          shadowRadius: 16,
         },
       }}
     >
@@ -141,9 +144,9 @@ export const MainTabNavigator: React.FC = () => {
 
 const styles = StyleSheet.create({
   iconPill: {
-    width: 44,
-    height: 30,
-    borderRadius: 12,
+    width: 46,
+    height: 32,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },

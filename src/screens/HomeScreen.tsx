@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -22,9 +22,11 @@ import {
   Plus,
   Settings,
   Sparkles,
+  User,
 } from 'lucide-react-native';
 import { useAppContext } from '../context/AppContext';
 import { useAppTheme } from '../context/ThemeContext';
+import { getSetting } from '../database/queries/settingsQueries';
 import { AnimatedPressableCard } from '../components/AnimatedPressableCard';
 import { AnimatedProgressBar } from '../components/AnimatedProgressBar';
 import { StatusBadge, TripTypeBadge } from '../components/Badges';
@@ -53,7 +55,17 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     upcomingHeroTrip,
     recentTrips,
     templates,
+    dataVersion,
   } = useAppContext();
+
+  const [travelerName, setTravelerName] = useState('');
+
+  useEffect(() => {
+    (async () => {
+      const name = await getSetting('traveler_name');
+      if (name) setTravelerName(name);
+    })();
+  }, [dataVersion]);
 
   const greeting = getTimeGreeting();
   const todayLabel = formatFullHeaderDate();
@@ -84,7 +96,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.heroCompletedRow}>
             <View style={{ flex: 1, paddingRight: 14 }}>
               <View style={styles.heroPill}>
-                <Sparkles size={12} color="#36C9A5" />
+                <Sparkles size={12} color="#10B981" />
                 <Text style={styles.heroPillText}>ALL TRIPS COMPLETED</Text>
               </View>
               <Text style={styles.heroTitle}>Ready for your next escape?</Text>
@@ -249,7 +261,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
               {todayLabel}
             </Text>
             <Text style={[styles.greetingTitle, { color: theme.colors.primaryText }]}>
-              {greeting}
+              {greeting}{travelerName ? `, ${travelerName.split(' ')[0]}` : ''}
             </Text>
             <Text
               style={[styles.greetingSubtitle, { color: theme.colors.secondaryText }]}
@@ -548,8 +560,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 32,
+    paddingTop: 14,
+    paddingBottom: 36,
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
   },
   headerRow: {
     flexDirection: 'row',
@@ -646,7 +661,7 @@ const styles = StyleSheet.create({
     width: 170,
     height: 170,
     borderRadius: 85,
-    backgroundColor: 'rgba(76, 154, 255, 0.14)',
+    backgroundColor: 'rgba(37, 99, 235, 0.18)',
   },
   heroTopRow: {
     flexDirection: 'row',
@@ -660,14 +675,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 999,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     gap: 6,
   },
   heroPulseDot: {
     width: 7,
     height: 7,
     borderRadius: 3.5,
-    backgroundColor: '#36C9A5',
+    backgroundColor: '#10B981',
   },
   heroPillText: {
     fontSize: 10,
@@ -678,8 +693,8 @@ const styles = StyleSheet.create({
   heroDurationBadge: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#36C9A5',
-    backgroundColor: 'rgba(54, 201, 165, 0.15)',
+    color: '#10B981',
+    backgroundColor: 'rgba(16, 185, 129, 0.20)',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 999,
@@ -740,7 +755,7 @@ const styles = StyleSheet.create({
   heroProgressCount: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#36C9A5',
+    color: '#10B981',
   },
   heroActionRow: {
     flexDirection: 'row',
@@ -760,7 +775,7 @@ const styles = StyleSheet.create({
   heroPrimaryBtnText: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#172B4D',
+    color: '#0F1E36',
   },
   heroSecondaryBtn: {
     flex: 1,

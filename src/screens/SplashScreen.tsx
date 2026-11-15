@@ -70,7 +70,7 @@ export const SplashScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['#132442', '#172B4D', '#23447A']}
+      colors={['#080E1C', '#0F1E3A', '#1B3566']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.container}
@@ -97,7 +97,7 @@ export const SplashScreen: React.FC<Props> = ({ navigation }) => {
       </View>
 
       <Animated.View style={[styles.footer, footerStyle]}>
-        <ShieldCheck size={15} color="#36C9A5" strokeWidth={2.3} />
+        <ShieldCheck size={15} color="#10B981" strokeWidth={2.3} />
         <Text style={styles.footerText}>100% Offline SQLite Travel Workspace</Text>
       </Animated.View>
     </LinearGradient>
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     width: 250,
     height: 250,
     borderRadius: 125,
-    backgroundColor: 'rgba(76, 154, 255, 0.12)',
+    backgroundColor: 'rgba(37, 99, 235, 0.16)',
   },
   orbBottomLeft: {
     position: 'absolute',
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     width: 260,
     height: 260,
     borderRadius: 130,
-    backgroundColor: 'rgba(54, 201, 165, 0.10)',
+    backgroundColor: 'rgba(16, 185, 129, 0.14)',
   },
   centerContent: {
     flex: 1,

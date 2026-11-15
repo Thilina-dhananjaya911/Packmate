@@ -98,6 +98,7 @@ export function FilterChips<T extends string = string>({
                   ? theme.colors.primaryNavy
                   : theme.colors.border,
               },
+              active ? theme.shadows.xs : undefined,
             ]}
           >
             <Text
@@ -109,8 +110,30 @@ export function FilterChips<T extends string = string>({
               ]}
             >
               {opt.label}
-              {opt.count !== undefined ? ` (${opt.count})` : ''}
             </Text>
+            {opt.count !== undefined ? (
+              <View
+                style={[
+                  styles.countBadge,
+                  {
+                    backgroundColor: active
+                      ? 'rgba(255, 255, 255, 0.22)'
+                      : theme.colors.surfaceSubtle,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.countText,
+                    {
+                      color: active ? '#FFFFFF' : theme.colors.secondaryText,
+                    },
+                  ]}
+                >
+                  {opt.count}
+                </Text>
+              </View>
+            ) : null}
           </Pressable>
         );
       })}
@@ -123,9 +146,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderRadius: 15,
+    borderRadius: 16,
     paddingHorizontal: 14,
-    height: 48,
+    height: 50,
   },
   input: {
     flex: 1,
@@ -134,9 +157,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   clearBtn: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -145,6 +168,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 999,
@@ -153,6 +178,17 @@ const styles = StyleSheet.create({
   },
   chipLabel: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.1,
+  },
+  countBadge: {
+    marginLeft: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 999,
+  },
+  countText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
 });

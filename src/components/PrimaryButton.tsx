@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   StyleProp,
   StyleSheet,
@@ -87,12 +88,32 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 
   const palette = getPalette();
 
+  const getShadow = () => {
+    switch (variant) {
+      case 'secondary':
+        return theme.shadows.blueGlow;
+      case 'mint':
+        return theme.shadows.mintGlow;
+      case 'outline':
+      case 'danger':
+        return theme.shadows.xs;
+      case 'primary':
+      default:
+        return theme.shadows.sm;
+    }
+  };
+
+  const webPointerStyle =
+    Platform.OS === 'web' && !disabled && !loading
+      ? ({ cursor: 'pointer' } as unknown as ViewStyle)
+      : null;
+
   return (
     <AnimatedPressable
       disabled={disabled || loading}
       onPress={onPress}
       onPressIn={() => {
-        scale.value = withSpring(0.97, { damping: 18, stiffness: 320 });
+        scale.value = withSpring(0.975, { damping: 18, stiffness: 340 });
       }}
       onPressOut={() => {
         scale.value = withSpring(1, { damping: 16, stiffness: 280 });
@@ -102,11 +123,15 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
         compact ? styles.buttonCompact : styles.buttonRegular,
         {
           backgroundColor: palette.bg,
-          borderColor: palette.border,
-          borderWidth: variant === 'outline' ? 1.2 : 0,
+          borderColor:
+            variant === 'outline'
+              ? palette.border
+              : 'rgba(255, 255, 255, 0.12)',
+          borderWidth: 1,
           opacity: disabled ? 0.55 : 1,
         },
-        variant === 'secondary' ? theme.shadows.blueGlow : theme.shadows.xs,
+        getShadow(),
+        webPointerStyle,
         style,
         animStyle,
       ]}
