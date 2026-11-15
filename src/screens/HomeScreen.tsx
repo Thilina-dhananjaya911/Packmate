@@ -53,9 +53,17 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     upcomingHeroTrip,
     recentTrips,
     templates,
+    userProfile,
   } = useAppContext();
 
   const greeting = getTimeGreeting();
+  const cleanGreeting = greeting.replace(/[!.,]/g, '');
+  const firstName = userProfile?.fullName
+    ? userProfile.fullName.trim().split(' ')[0]
+    : '';
+  const personalizedGreeting = firstName
+    ? `${cleanGreeting}, ${firstName}`
+    : greeting;
   const todayLabel = formatFullHeaderDate();
 
   const renderHeroSection = () => {
@@ -249,7 +257,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
               {todayLabel}
             </Text>
             <Text style={[styles.greetingTitle, { color: theme.colors.primaryText }]}>
-              {greeting}
+              {personalizedGreeting}
             </Text>
             <Text
               style={[styles.greetingSubtitle, { color: theme.colors.secondaryText }]}

@@ -3,7 +3,10 @@ import {
   DashboardStats,
   ItemCategory,
   PackingTemplate,
+  ProfileStats,
+  SaveProfileInput,
   TripWithProgress,
+  UserProfile,
 } from '../types';
 import { getDatabase } from '../database';
 import {
@@ -19,11 +22,21 @@ import {
 } from '../database/queries/tripQueries';
 import { getAllCategories } from '../database/queries/itemQueries';
 import { getAllTemplates } from '../database/queries/templateQueries';
+import {
+  getProfileStats,
+  getUserProfile,
+  resetUserProfile,
+  saveUserProfile,
+  updateUserProfile,
+} from '../database/queries/profileQueries';
 
 interface AppContextValue {
   isDbReady: boolean;
   dbError: string | null;
   hasCompletedOnboarding: boolean;
+  userProfile: UserProfile | null;
+  hasUserProfile: boolean;
+  profileStats: ProfileStats;
   dataVersion: number;
   categories: ItemCategory[];
   templates: PackingTemplate[];
@@ -37,6 +50,9 @@ interface AppContextValue {
   completeOnboarding: () => Promise<void>;
   resetOnboarding: () => Promise<void>;
   retryDbInit: () => Promise<void>;
+  saveProfile: (input: SaveProfileInput) => Promise<UserProfile>;
+  updateProfile: (input: Partial<SaveProfileInput>) => Promise<UserProfile>;
+  resetProfile: () => Promise<void>;
 }
 
 const DEFAULT_STATS: DashboardStats = {
@@ -48,12 +64,21 @@ const DEFAULT_STATS: DashboardStats = {
   totalPackedItems: 0,
 };
 
+const DEFAULT_PROFILE_STATS: ProfileStats = {
+  totalTrips: 0,
+  completedTrips: 0,
+  totalPackedItems: 0,
+  completionRate: 0,
+};
+
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isDbReady, setIsDbReady] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [profileStats, setProfileStats] = useState<ProfileStats>(DEFAULT_PROFILE_STATS);
   const [dataVersion, setDataVersion] = useState(0);
 
   const [categories, setCategories] = useState<ItemCategory[]>([]);
@@ -73,6 +98,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       hero,
       recent,
       stats,
+      profile,
+      pStats,
     ] = await Promise.all([
       getAllCategories(),
       getAllTemplates(),
@@ -81,6 +108,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       getUpcomingHeroTrip(),
       getRecentTrips(4),
       getDashboardStats(),
+      getUserProfile(),
+      getProfileStats(),
     ]);
 
     setCategories(cats);
@@ -90,6 +119,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setUpcomingHeroTrip(hero);
     setRecentTrips(recent);
     setDashboardStats(stats);
+    setUserProfile(profile);
+    setProfileStats(pStats);
   }, []);
 
   const initDatabaseFlow = useCallback(async () => {
@@ -167,11 +198,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setHasCompletedOnboarding(false);
   }, []);
 
+  const saveProfile = useCallback(
+    async (input: SaveProfileInput): Promise<UserProfile> => {
+      const saved = await saveUserProfile(input);
+      setUserProfile(saved);
+      await refreshAll();
+      return saved;
+    },
+    [refreshAll]
+  );
+
+  const updateProfile = useCallback(
+    async (input: Partial<SaveProfileInput>): Promise<UserProfile> => {
+      const updated = await updateUserProfile(input);
+      setUserProfile(updated);
+      await refreshAll();
+      return updated;
+    },
+    [refreshAll]
+  );
+
+  const resetProfile = useCallback(async (): Promise<void> => {
+    await resetUserProfile();
+    setUserProfile(null);
+    await refreshAll();
+  }, [refreshAll]);
+
+  const hasUserProfile = Boolean(userProfile);
+
   const value = useMemo<AppContextValue>(
     () => ({
       isDbReady,
       dbError,
       hasCompletedOnboarding,
+      userProfile,
+      hasUserProfile,
+      profileStats,
       dataVersion,
       categories,
       templates,
@@ -185,11 +247,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       completeOnboarding,
       resetOnboarding,
       retryDbInit,
+      saveProfile,
+      updateProfile,
+      resetProfile,
     }),
     [
       isDbReady,
       dbError,
       hasCompletedOnboarding,
+      userProfile,
+      hasUserProfile,
+      profileStats,
       dataVersion,
       categories,
       templates,
@@ -203,6 +271,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       completeOnboarding,
       resetOnboarding,
       retryDbInit,
+      saveProfile,
+      updateProfile,
+      resetProfile,
     ]
   );
 

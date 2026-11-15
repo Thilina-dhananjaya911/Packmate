@@ -196,16 +196,67 @@ export interface DatabaseInfo {
   categoryCount: number;
 }
 
+export type TravelStyle =
+  | 'Adventure'
+  | 'Relaxation'
+  | 'Business'
+  | 'Family Travel'
+  | 'General Travel';
+
+export type LuggageType = 'Backpack' | 'Suitcase' | 'Travel Bag';
+
+export interface UserProfile {
+  id: number;
+  fullName: string;
+  country: string;
+  email?: string | null;
+  phone?: string | null;
+  avatar: string;
+  travelStyle: TravelStyle;
+  luggageType: LuggageType;
+  weightLimit: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SaveProfileInput {
+  fullName: string;
+  country: string;
+  email?: string | null;
+  phone?: string | null;
+  avatar: string;
+  travelStyle: TravelStyle;
+  luggageType: LuggageType;
+  weightLimit: number;
+}
+
+export interface ProfileAvatarOption {
+  id: string;
+  label: string;
+  iconName: string;
+  accentColor: string;
+}
+
+export interface ProfileStats {
+  totalTrips: number;
+  completedTrips: number;
+  totalPackedItems: number;
+  completionRate: number;
+}
+
 export type MainTabParamList = {
   Home: undefined;
   MyTrips: { initialStatus?: TripStatus | 'All' } | undefined;
   Templates: { targetTripId?: number } | undefined;
   History: undefined;
+  Profile: undefined;
 };
 
 export type RootStackParamList = {
   Splash: undefined;
   Onboarding: { isReplay?: boolean } | undefined;
+  ProfileSetup: undefined;
+  EditProfile: undefined;
   MainTabs:
     | {
         screen?: keyof MainTabParamList;

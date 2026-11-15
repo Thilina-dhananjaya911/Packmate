@@ -7,11 +7,12 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Compass, History, Home, Layers } from 'lucide-react-native';
+import { Compass, History, Home, Layers, User } from 'lucide-react-native';
 import { useAppTheme } from '../context/ThemeContext';
 import { HistoryScreen } from '../screens/HistoryScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { MyTripsScreen } from '../screens/MyTripsScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
 import { TemplatesScreen } from '../screens/TemplatesScreen';
 import { MainTabParamList } from '../types';
 
@@ -131,6 +132,18 @@ export const MainTabNavigator: React.FC = () => {
           tabBarIcon: ({ color, focused }) => (
             <AnimatedTabIcon focused={focused} color={color}>
               <History size={20} color={color} strokeWidth={focused ? 2.5 : 2} />
+            </AnimatedTabIcon>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, focused }) => (
+            <AnimatedTabIcon focused={focused} color={color}>
+              <User size={20} color={color} strokeWidth={focused ? 2.5 : 2} />
             </AnimatedTabIcon>
           ),
         }}
