@@ -12,25 +12,25 @@ export const StatusBadge: React.FC<{ status: TripStatus }> = ({ status }) => {
     switch (status) {
       case 'Ongoing':
         return {
-          bg: theme.colors.successSoft,
-          fg: theme.colors.accentMint,
-          dot: theme.colors.accentMint,
-          border: 'rgba(16, 185, 129, 0.22)',
+          bg: theme.colors.limeSoft,
+          fg: theme.colors.accentLime,
+          dot: theme.colors.accentLime,
+          border: 'rgba(212, 255, 0, 0.35)',
         };
       case 'Completed':
         return {
           bg: theme.colors.infoSoft,
           fg: theme.colors.secondaryBlue,
           dot: theme.colors.secondaryBlue,
-          border: 'rgba(37, 99, 235, 0.22)',
+          border: 'rgba(139, 92, 246, 0.30)',
         };
       case 'Upcoming':
       default:
         return {
           bg: theme.colors.warningSoft,
-          fg: '#D97706',
+          fg: '#FBBF24',
           dot: '#F59E0B',
-          border: 'rgba(245, 158, 11, 0.22)',
+          border: 'rgba(245, 158, 11, 0.30)',
         };
     }
   };
@@ -66,8 +66,8 @@ export const CategoryBadge: React.FC<{
         styles.catBadge,
         compact && styles.catBadgeCompact,
         {
-          backgroundColor: `${color}14`,
-          borderColor: `${color}28`,
+          backgroundColor: `${color}18`,
+          borderColor: `${color}35`,
           borderWidth: 1,
         },
       ]}
@@ -92,7 +92,7 @@ export const CategoryBadge: React.FC<{
 
 export const TripTypeBadge: React.FC<{ tripType: TripType }> = ({ tripType }) => {
   const meta = TRIP_TYPES.find((t) => t.value === tripType);
-  const accent = meta?.accentColor ?? '#2563EB';
+  const accent = meta?.accentColor ?? '#8B5CF6';
   const icon = meta?.icon ?? 'Compass';
 
   return (
@@ -100,8 +100,8 @@ export const TripTypeBadge: React.FC<{ tripType: TripType }> = ({ tripType }) =>
       style={[
         styles.catBadge,
         {
-          backgroundColor: `${accent}14`,
-          borderColor: `${accent}28`,
+          backgroundColor: `${accent}18`,
+          borderColor: `${accent}35`,
           borderWidth: 1,
         },
       ]}
@@ -114,13 +114,67 @@ export const TripTypeBadge: React.FC<{ tripType: TripType }> = ({ tripType }) =>
   );
 };
 
+export const GlassPillBadge: React.FC<{
+  label: string;
+  icon?: string;
+  variant?: 'frosted' | 'lime' | 'violet';
+}> = ({ label, icon, variant = 'frosted' }) => {
+  const { theme } = useAppTheme();
+
+  const getColors = () => {
+    switch (variant) {
+      case 'lime':
+        return {
+          bg: theme.colors.accentLime,
+          text: theme.colors.limeText,
+          border: 'transparent',
+        };
+      case 'violet':
+        return {
+          bg: theme.colors.infoSoft,
+          text: theme.colors.secondaryBlue,
+          border: 'rgba(139, 92, 246, 0.35)',
+        };
+      case 'frosted':
+      default:
+        return {
+          bg: 'rgba(15, 11, 30, 0.65)',
+          text: '#FFFFFF',
+          border: 'rgba(255, 255, 255, 0.16)',
+        };
+    }
+  };
+
+  const c = getColors();
+
+  return (
+    <View
+      style={[
+        styles.glassPill,
+        {
+          backgroundColor: c.bg,
+          borderColor: c.border,
+          borderWidth: c.border !== 'transparent' ? 1 : 0,
+        },
+      ]}
+    >
+      {icon ? (
+        <View style={{ marginRight: 4 }}>
+          <DynamicIcon name={icon} size={11} color={c.text} />
+        </View>
+      ) : null}
+      <Text style={[styles.glassPillText, { color: c.text }]}>{label}</Text>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 11,
     paddingVertical: 5,
-    borderRadius: 999,
+    borderRadius: 9999,
   },
   dot: {
     width: 6,
@@ -136,9 +190,9 @@ const styles = StyleSheet.create({
   catBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 11,
     paddingVertical: 5,
-    borderRadius: 999,
+    borderRadius: 9999,
     alignSelf: 'flex-start',
   },
   catBadgeCompact: {
@@ -148,5 +202,17 @@ const styles = StyleSheet.create({
   catText: {
     fontSize: 12,
     fontWeight: '700',
+  },
+  glassPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 9999,
+  },
+  glassPillText: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
 });

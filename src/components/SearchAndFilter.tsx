@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -8,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { Search, X } from 'lucide-react-native';
-import { useAppTheme } from '../context/ThemeContext';
+import { RADIUS, useAppTheme } from '../context/ThemeContext';
 
 interface SearchBarProps {
   value: string;
@@ -28,8 +29,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       style={[
         styles.searchContainer,
         {
-          backgroundColor: theme.colors.card,
-          borderColor: theme.colors.border,
+          backgroundColor: theme.isDark ? 'rgba(25, 17, 48, 0.75)' : theme.colors.card,
+          borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
         },
         theme.shadows.xs,
       ]}
@@ -92,32 +93,42 @@ export function FilterChips<T extends string = string>({
               styles.chip,
               {
                 backgroundColor: active
-                  ? theme.colors.primaryNavy
+                  ? theme.colors.accentLime
+                  : theme.isDark
+                  ? 'rgba(255, 255, 255, 0.08)'
                   : theme.colors.card,
                 borderColor: active
-                  ? theme.colors.primaryNavy
+                  ? 'transparent'
+                  : theme.isDark
+                  ? 'rgba(255, 255, 255, 0.12)'
                   : theme.colors.border,
               },
-              active ? theme.shadows.xs : undefined,
+              active ? theme.shadows.limeGlow : theme.shadows.xs,
+              Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
             ]}
           >
             <Text
               style={[
                 styles.chipLabel,
                 {
-                  color: active ? '#FFFFFF' : theme.colors.secondaryText,
+                  color: active
+                    ? theme.colors.limeText
+                    : theme.colors.secondaryText,
+                  fontWeight: active ? '800' : '600',
                 },
               ]}
             >
               {opt.label}
             </Text>
-            {opt.count !== undefined ? (
+            {typeof opt.count === 'number' ? (
               <View
                 style={[
                   styles.countBadge,
                   {
                     backgroundColor: active
-                      ? 'rgba(255, 255, 255, 0.22)'
+                      ? 'rgba(0, 0, 0, 0.16)'
+                      : theme.isDark
+                      ? 'rgba(255, 255, 255, 0.12)'
                       : theme.colors.surfaceSubtle,
                   },
                 ]}
@@ -126,7 +137,10 @@ export function FilterChips<T extends string = string>({
                   style={[
                     styles.countText,
                     {
-                      color: active ? '#FFFFFF' : theme.colors.secondaryText,
+                      color: active
+                        ? theme.colors.limeText
+                        : theme.colors.secondaryText,
+                      fontWeight: active ? '800' : '600',
                     },
                   ]}
                 >
@@ -145,50 +159,50 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: RADIUS.full,
     borderWidth: 1,
-    borderRadius: 16,
-    paddingHorizontal: 14,
-    height: 50,
+    paddingHorizontal: 16,
+    paddingVertical: Platform.OS === 'ios' ? 12 : 8,
+    marginVertical: 6,
   },
   input: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 14,
     marginLeft: 10,
-    paddingVertical: 8,
-  },
+    paddingVertical: 0,
+    outlineWidth: 0,
+  } as any,
   clearBtn: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
   },
   chipScroll: {
-    paddingVertical: 4,
+    paddingVertical: 8,
+    paddingRight: 16,
     gap: 8,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 999,
+    paddingHorizontal: 16,
+    borderRadius: 9999,
     borderWidth: 1,
-    marginRight: 8,
   },
   chipLabel: {
     fontSize: 13,
-    fontWeight: '700',
     letterSpacing: 0.1,
   },
   countBadge: {
     marginLeft: 6,
-    paddingHorizontal: 7,
+    paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 999,
+    borderRadius: 9999,
   },
   countText: {
     fontSize: 11,
-    fontWeight: '700',
   },
 });

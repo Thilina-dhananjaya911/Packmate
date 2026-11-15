@@ -507,12 +507,17 @@ export const CreateTripScreen: React.FC<Props> = ({ navigation, route }) => {
                       styles.envChip,
                       {
                         backgroundColor: selected
-                          ? theme.colors.infoSoft
+                          ? theme.colors.accentLime
+                          : theme.isDark
+                          ? 'rgba(255, 255, 255, 0.08)'
                           : theme.colors.surfaceSubtle,
                         borderColor: selected
-                          ? theme.colors.secondaryBlue
+                          ? 'transparent'
+                          : theme.isDark
+                          ? 'rgba(255, 255, 255, 0.12)'
                           : 'transparent',
                       },
+                      selected ? theme.shadows.limeGlow : null,
                     ]}
                   >
                     <DynamicIcon
@@ -520,7 +525,7 @@ export const CreateTripScreen: React.FC<Props> = ({ navigation, route }) => {
                       size={13}
                       color={
                         selected
-                          ? theme.colors.secondaryBlue
+                          ? theme.colors.limeText
                           : theme.colors.secondaryText
                       }
                     />
@@ -529,8 +534,9 @@ export const CreateTripScreen: React.FC<Props> = ({ navigation, route }) => {
                         styles.envChipText,
                         {
                           color: selected
-                            ? theme.colors.secondaryBlue
+                            ? theme.colors.limeText
                             : theme.colors.secondaryText,
+                          fontWeight: selected ? '800' : '600',
                         },
                       ]}
                     >
@@ -927,7 +933,7 @@ export const CreateTripScreen: React.FC<Props> = ({ navigation, route }) => {
                   : 'Save Trip'
               }
               onPress={handleSaveTrip}
-              variant="secondary"
+              variant="lime"
               loading={saving}
             />
           </View>

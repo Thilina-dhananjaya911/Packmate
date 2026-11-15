@@ -1,4 +1,12 @@
-import { CategoryName, DestinationType, TripStatus, TripType } from '../types';
+import {
+  CategoryName,
+  DestinationType,
+  LuggageType,
+  ProfileAvatarOption,
+  TravelStyle,
+  TripStatus,
+  TripType,
+} from '../types';
 
 export const APP_INFO = {
   NAME: 'PACKMATE',
@@ -270,3 +278,152 @@ export const ONBOARDING_SLIDES = [
     variant: 'track' as const,
   },
 ];
+
+export const PROFILE_AVATARS: ProfileAvatarOption[] = [
+  {
+    id: 'avatar-explorer',
+    label: 'Explorer',
+    iconName: 'Compass',
+    accentColor: '#4C9AFF',
+  },
+  {
+    id: 'avatar-globe',
+    label: 'Global Nomad',
+    iconName: 'Globe',
+    accentColor: '#36C9A5',
+  },
+  {
+    id: 'avatar-mountain',
+    label: 'Highlander',
+    iconName: 'Mountain',
+    accentColor: '#10B981',
+  },
+  {
+    id: 'avatar-sun',
+    label: 'Sunseeker',
+    iconName: 'Sun',
+    accentColor: '#F59E0B',
+  },
+  {
+    id: 'avatar-business',
+    label: 'Executive',
+    iconName: 'Briefcase',
+    accentColor: '#172B4D',
+  },
+  {
+    id: 'avatar-camper',
+    label: 'Camper',
+    iconName: 'Tent',
+    accentColor: '#059669',
+  },
+  {
+    id: 'avatar-city',
+    label: 'Urbanite',
+    iconName: 'Building2',
+    accentColor: '#EC4899',
+  },
+  {
+    id: 'avatar-jet',
+    label: 'Jetsetter',
+    iconName: 'Luggage',
+    accentColor: '#6366F1',
+  },
+];
+
+export const TRAVEL_STYLES: {
+  value: TravelStyle;
+  label: string;
+  icon: string;
+  accentColor: string;
+  shortDesc: string;
+}[] = [
+  {
+    value: 'Adventure',
+    label: 'Adventure',
+    icon: 'Mountain',
+    accentColor: '#10B981',
+    shortDesc: 'Highland treks, active exploration & outdoor discovery',
+  },
+  {
+    value: 'Relaxation',
+    label: 'Relaxation',
+    icon: 'Sun',
+    accentColor: '#0EA5E9',
+    shortDesc: 'Coastal retreats, beach calm & tranquil getaways',
+  },
+  {
+    value: 'Business',
+    label: 'Business',
+    icon: 'Briefcase',
+    accentColor: '#172B4D',
+    shortDesc: 'Conferences, business meetings & executive travel',
+  },
+  {
+    value: 'Family Travel',
+    label: 'Family Travel',
+    icon: 'Users',
+    accentColor: '#8B5CF6',
+    shortDesc: 'Shared family journeys, group comfort & care',
+  },
+  {
+    value: 'General Travel',
+    label: 'General Travel',
+    icon: 'Compass',
+    accentColor: '#4C9AFF',
+    shortDesc: 'Flexible leisure, culture, sightseeing & road trips',
+  },
+];
+
+export const LUGGAGE_TYPES: {
+  value: LuggageType;
+  label: string;
+  icon: string;
+  defaultWeight: number;
+  shortDesc: string;
+}[] = [
+  {
+    value: 'Backpack',
+    label: 'Backpack',
+    icon: 'Luggage',
+    defaultWeight: 10,
+    shortDesc: 'Versatile carry-on, daypack or trekking rucksack',
+  },
+  {
+    value: 'Suitcase',
+    label: 'Suitcase',
+    icon: 'Briefcase',
+    defaultWeight: 20,
+    shortDesc: 'Standard hard-shell or spinner rolling luggage',
+  },
+  {
+    value: 'Travel Bag',
+    label: 'Travel Bag',
+    icon: 'FolderOpen',
+    defaultWeight: 15,
+    shortDesc: 'Duffel, weekender bag or soft travel holdall',
+  },
+];
+
+export const WEIGHT_LIMIT_PRESETS: number[] = [7, 10, 15, 20, 23, 25, 30];
+
+export const POPULAR_COUNTRIES: string[] = [
+  'Sri Lanka',
+  'United States',
+  'United Kingdom',
+  'Australia',
+  'Japan',
+  'France',
+  'Germany',
+  'Singapore',
+  'Canada',
+  'India',
+  'Thailand',
+  'Italy',
+  'Switzerland',
+  'United Arab Emirates',
+  'Spain',
+  'New Zealand',
+  'Netherlands',
+];
+
+

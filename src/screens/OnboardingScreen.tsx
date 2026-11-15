@@ -4,6 +4,7 @@ import {
   FlatList,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -11,13 +12,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ArrowRight, Sparkles } from 'lucide-react-native';
+import { ArrowRight, ChevronRight, Sparkles } from 'lucide-react-native';
 import { APP_INFO, ONBOARDING_SLIDES } from '../constants';
 import { useAppContext } from '../context/AppContext';
 import { useAppTheme } from '../context/ThemeContext';
-import { BrandMark } from '../components/BrandMark';
+import { BrandMark, HologramOrb } from '../components/BrandMark';
 import { GeometricIllustration } from '../components/GeometricIllustration';
-import { PrimaryButton } from '../components/PrimaryButton';
 import { RootStackParamList } from '../types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
@@ -26,7 +26,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export const OnboardingScreen: React.FC<Props> = ({ navigation, route }) => {
   const { theme } = useAppTheme();
-  const { completeOnboarding } = useAppContext();
+  const { completeOnboarding, hasUserProfile } = useAppContext();
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef<FlatList<(typeof ONBOARDING_SLIDES)[number]>>(null);
 
@@ -37,6 +37,8 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation, route }) => {
     await completeOnboarding();
     if (isReplay && navigation.canGoBack()) {
       navigation.goBack();
+    } else if (!hasUserProfile) {
+      navigation.replace('ProfileSetup');
     } else {
       navigation.replace('MainTabs');
     }
@@ -66,7 +68,7 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation, route }) => {
       {/* Top Bar */}
       <View style={styles.topBar}>
         <View style={styles.brandMini}>
-          <BrandMark size={34} variant="navy" />
+          <BrandMark size={36} variant="navy" />
           <Text style={[styles.brandMiniText, { color: theme.colors.primaryText }]}>
             {APP_INFO.NAME}
           </Text>
@@ -74,14 +76,8 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation, route }) => {
 
         <Pressable
           onPress={finishOnboarding}
-          hitSlop={10}
-          style={[
-            styles.skipPill,
-            {
-              backgroundColor: theme.colors.card,
-              borderColor: theme.colors.border,
-            },
-          ]}
+          hitSlop={12}
+          style={styles.skipBtn}
         >
           <Text style={[styles.skipText, { color: theme.colors.secondaryText }]}>
             Skip
@@ -109,24 +105,34 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation, route }) => {
               style={[
                 styles.illustrationCard,
                 {
-                  backgroundColor: theme.colors.card,
-                  borderColor: theme.colors.border,
+                  backgroundColor: theme.isDark ? 'rgba(25, 17, 48, 0.72)' : theme.colors.card,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
                 },
                 theme.shadows.md,
               ]}
             >
-              <GeometricIllustration variant={item.variant} size={220} />
+              <GeometricIllustration variant={item.variant} size={210} />
+
+              {/* Floating Hologram Smart Badge (Reference Image Feature) */}
+              <View style={styles.holoBadge}>
+                <HologramOrb size={20} />
+                <Text style={styles.holoBadgeText}>Explore Higher. Travel AI</Text>
+              </View>
             </View>
 
             <View
               style={[
                 styles.stepBadge,
-                { backgroundColor: theme.colors.infoSoft },
+                {
+                  backgroundColor: theme.colors.limeSoft,
+                  borderColor: 'rgba(212, 255, 0, 0.25)',
+                  borderWidth: 1,
+                },
               ]}
             >
-              <Sparkles size={13} color={theme.colors.secondaryBlue} />
+              <Sparkles size={12} color={theme.colors.accentLime} />
               <Text
-                style={[styles.stepBadgeText, { color: theme.colors.secondaryBlue }]}
+                style={[styles.stepBadgeText, { color: theme.colors.accentLime }]}
               >
                 {item.step} • {item.badge}
               </Text>
@@ -144,9 +150,19 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation, route }) => {
         )}
       />
 
-      {/* Bottom Controls */}
-      <View style={styles.footer}>
-        {/* Progress Dots */}
+      {/* Bottom Controls Row matching Reference Screen 1 */}
+      <View style={styles.bottomControlRow}>
+        <Pressable
+          onPress={finishOnboarding}
+          hitSlop={12}
+          style={Platform.OS === 'web' ? ({ cursor: 'pointer' } as any) : null}
+        >
+          <Text style={[styles.skipBottomText, { color: theme.colors.secondaryText }]}>
+            Skip
+          </Text>
+        </Pressable>
+
+        {/* Progress Pill Dots */}
         <View style={styles.dotsRow}>
           {ONBOARDING_SLIDES.map((s, idx) => {
             const active = idx === activeIndex;
@@ -156,23 +172,36 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation, route }) => {
                 style={[
                   styles.dot,
                   {
-                    width: active ? 28 : 8,
+                    width: active ? 26 : 8,
                     backgroundColor: active
-                      ? theme.colors.secondaryBlue
+                      ? theme.colors.accentLime
+                      : theme.isDark
+                      ? 'rgba(255, 255, 255, 0.22)'
                       : theme.colors.border,
                   },
+                  active ? theme.shadows.limeGlow : null,
                 ]}
               />
             );
           })}
         </View>
 
-        <PrimaryButton
-          label={isLastSlide ? 'Get Started' : 'Next'}
+        {/* Neon Lime Action Circle (Reference Image Screen 1) */}
+        <Pressable
           onPress={handleNext}
-          variant={isLastSlide ? 'mint' : 'primary'}
-          rightIcon={<ArrowRight size={18} color="#FFFFFF" strokeWidth={2.3} />}
-        />
+          style={[
+            styles.circleNextBtn,
+            { backgroundColor: theme.colors.accentLime },
+            theme.shadows.limeGlow,
+            Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+          ]}
+        >
+          {isLastSlide ? (
+            <ArrowRight size={22} color={theme.colors.limeText} strokeWidth={2.6} />
+          ) : (
+            <ChevronRight size={24} color={theme.colors.limeText} strokeWidth={2.8} />
+          )}
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -186,7 +215,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 22,
+    paddingHorizontal: 24,
     paddingTop: 10,
     paddingBottom: 6,
     maxWidth: 520,
@@ -199,19 +228,17 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   brandMiniText: {
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: 1,
+    fontSize: 17,
+    fontWeight: '900',
+    letterSpacing: 1.2,
   },
-  skipPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 999,
-    borderWidth: 1,
+  skipBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
   },
   skipText: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '600',
   },
   slide: {
     flex: 1,
@@ -220,22 +247,47 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
   },
   illustrationCard: {
-    width: 268,
-    height: 268,
+    width: 270,
+    height: 270,
     borderRadius: 36,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 28,
+    marginBottom: 26,
+    position: 'relative',
+  },
+  holoBadge: {
+    position: 'absolute',
+    bottom: -14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(28, 18, 54, 0.88)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.16)',
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 9999,
+    gap: 8,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  holoBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.3,
   },
   stepBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    marginBottom: 14,
+    paddingVertical: 5,
+    borderRadius: 9999,
+    marginBottom: 12,
   },
   stepBadgeText: {
     fontSize: 11,
@@ -243,8 +295,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.7,
   },
   title: {
-    fontSize: 26,
-    lineHeight: 34,
+    fontSize: 27,
+    lineHeight: 35,
     fontWeight: '800',
     textAlign: 'center',
     letterSpacing: -0.5,
@@ -253,26 +305,39 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 23,
     textAlign: 'center',
-    marginTop: 12,
+    marginTop: 10,
     maxWidth: 330,
   },
-  footer: {
-    paddingHorizontal: 24,
+  bottomControlRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 28,
     paddingBottom: 28,
-    paddingTop: 10,
+    paddingTop: 12,
     maxWidth: 520,
     width: '100%',
     alignSelf: 'center',
   },
+  skipBottomText: {
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+  },
   dotsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     gap: 7,
-    marginBottom: 22,
   },
   dot: {
     height: 8,
     borderRadius: 4,
+  },
+  circleNextBtn: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

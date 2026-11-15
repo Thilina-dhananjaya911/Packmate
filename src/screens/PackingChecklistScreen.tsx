@@ -110,15 +110,20 @@ const ChecklistItemRow: React.FC<ChecklistItemRowProps> = ({
           style={[
             styles.checkbox,
             {
-              backgroundColor: packed ? theme.colors.accentMint : 'transparent',
+              backgroundColor: packed ? theme.colors.accentLime : 'transparent',
               borderColor: packed
-                ? theme.colors.accentMint
-                : theme.colors.secondaryBlue,
+                ? theme.colors.accentLime
+                : theme.isDark
+                ? 'rgba(255, 255, 255, 0.25)'
+                : theme.colors.border,
             },
+            packed && theme.shadows.limeGlow,
             checkAnimStyle,
           ]}
         >
-          {packed ? <Check size={14} color="#FFFFFF" strokeWidth={3} /> : null}
+          {packed ? (
+            <Check size={14} color={theme.colors.limeText} strokeWidth={3} />
+          ) : null}
         </Animated.View>
       </Pressable>
 
@@ -154,13 +159,15 @@ const ChecklistItemRow: React.FC<ChecklistItemRowProps> = ({
               style={[
                 styles.essentialBadge,
                 {
-                  backgroundColor: theme.colors.warningSoft,
-                  borderColor: 'rgba(245, 158, 11, 0.28)',
+                  backgroundColor: theme.colors.limeSoft,
+                  borderColor: 'rgba(212, 255, 0, 0.35)',
                 },
               ]}
             >
-              <Sparkles size={10} color="#D97706" />
-              <Text style={styles.essentialBadgeText}>Don't Forget</Text>
+              <Sparkles size={10} color={theme.colors.accentLime} />
+              <Text style={[styles.essentialBadgeText, { color: theme.colors.accentLime }]}>
+                Don't Forget
+              </Text>
             </View>
           ) : null}
           {item.is_custom === 1 ? (
@@ -556,12 +563,13 @@ export const PackingChecklistScreen: React.FC<Props> = ({
             style={[
               styles.dontForgetBanner,
               {
-                backgroundColor: theme.colors.warningSoft,
-                borderColor: 'rgba(245, 158, 11, 0.28)',
+                backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.90)' : theme.colors.warningSoft,
+                borderColor: theme.isDark ? 'rgba(212, 255, 0, 0.35)' : 'rgba(245, 158, 11, 0.28)',
               },
+              theme.shadows.sm,
             ]}
           >
-            <Sparkles size={18} color="#D97706" />
+            <Sparkles size={18} color={theme.colors.accentLime} />
             <View style={{ flex: 1 }}>
               <Text
                 style={[
@@ -569,7 +577,7 @@ export const PackingChecklistScreen: React.FC<Props> = ({
                   { color: theme.colors.primaryText },
                 ]}
               >
-                Don't Forget Mode
+                Don't Forget Mode Active
               </Text>
               <Text
                 style={[
@@ -729,8 +737,8 @@ export const PackingChecklistScreen: React.FC<Props> = ({
             setAddError(null);
             setShowAddModal(true);
           }}
-          variant="secondary"
-          icon={<Plus size={18} color="#FFFFFF" strokeWidth={2.6} />}
+          variant="lime"
+          icon={<Plus size={18} color={theme.colors.limeText} strokeWidth={2.6} />}
         />
       </View>
 
@@ -960,7 +968,7 @@ export const PackingChecklistScreen: React.FC<Props> = ({
                   <PrimaryButton
                     label="Save Item"
                     onPress={handleAddCustomItem}
-                    variant="secondary"
+                    variant="lime"
                     loading={addingItem}
                     style={{ flex: 1.3 }}
                   />

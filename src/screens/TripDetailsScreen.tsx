@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {
+  Image,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -13,8 +15,8 @@ import {
   Calendar,
   CheckCircle2,
   CheckSquare,
+  ChevronRight,
   Clock,
-  Copy,
   Edit3,
   FileText,
   Globe,
@@ -38,6 +40,7 @@ import { ConfirmModal } from '../components/ConfirmModal';
 import { DynamicIcon } from '../components/DynamicIcon';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { getDestinationImage } from '../constants/travelImages';
 import { RootStackParamList } from '../types';
 import { deriveTripStatus, formatDateRange } from '../utils/dateUtils';
 import {
@@ -101,366 +104,357 @@ export const TripDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
     );
   }
 
+  const destImg = getDestinationImage(trip.destination_type).uri;
+
   return (
     <SafeAreaView
       edges={['top', 'bottom']}
       style={[styles.safe, { backgroundColor: theme.colors.background }]}
     >
-      <ScreenHeader
-        title="Trip Overview"
-        subtitle={trip.destination}
-        onBack={() => navigation.goBack()}
-        rightElement={
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <Pressable
-              onPress={() =>
-                navigation.navigate('CreateTrip', { editTripId: trip.id })
-              }
-              style={[
-                styles.topIconBtn,
-                { backgroundColor: theme.colors.surfaceSubtle },
-              ]}
-            >
-              <Edit3 size={17} color={theme.colors.primaryText} />
-            </Pressable>
-            <Pressable
-              onPress={() => setShowDeleteConfirm(true)}
-              style={[
-                styles.topIconBtn,
-                { backgroundColor: theme.colors.dangerSoft },
-              ]}
-            >
-              <Trash2 size={17} color={theme.colors.danger} />
-            </Pressable>
-          </View>
-        }
-      />
-
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {/* Prominent Hero Progress Visualization Card */}
-        <LinearGradient
-          colors={theme.colors.heroGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.heroCard, theme.shadows.md]}
-        >
-          <View style={styles.heroTop}>
-            <View style={{ flex: 1, paddingRight: 12 }}>
-              <StatusBadge status={trip.status} />
-              <Text style={styles.heroTripName}>{trip.trip_name}</Text>
-              <View style={styles.heroMetaRow}>
-                <MapPin size={14} color="#10B981" />
-                <Text style={styles.heroDestText}>{trip.destination}</Text>
-              </View>
+      <View style={styles.containerConstrained}>
+        <ScreenHeader
+          title="Trip Details"
+          subtitle={trip.destination}
+          onBack={() => navigation.goBack()}
+          rightElement={
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <Pressable
+                onPress={() =>
+                  navigation.navigate('CreateTrip', { editTripId: trip.id })
+                }
+                style={[
+                  styles.topIconBtn,
+                  {
+                    backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.surfaceSubtle,
+                    borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+                  },
+                ]}
+              >
+                <Edit3 size={16} color={theme.colors.primaryText} />
+              </Pressable>
+              <Pressable
+                onPress={() => setShowDeleteConfirm(true)}
+                style={[
+                  styles.topIconBtn,
+                  { backgroundColor: theme.colors.dangerSoft },
+                ]}
+              >
+                <Trash2 size={16} color={theme.colors.danger} />
+              </Pressable>
             </View>
-
-            <CircularProgressRing
-              percentage={progress.percentage}
-              size={112}
-              strokeWidth={10}
-              subtitle="Completed"
-              lightText
-            />
-          </View>
-
-          <View style={styles.heroStatsBanner}>
-            <View style={styles.heroStatItem}>
-              <Text style={styles.heroStatNum}>{progress.packedItems}</Text>
-              <Text style={styles.heroStatLbl}>Packed Items</Text>
-            </View>
-            <View style={styles.heroDivider} />
-            <View style={styles.heroStatItem}>
-              <Text style={styles.heroStatNum}>{progress.remainingItems}</Text>
-              <Text style={styles.heroStatLbl}>Remaining</Text>
-            </View>
-            <View style={styles.heroDivider} />
-            <View style={styles.heroStatItem}>
-              <Text style={styles.heroStatNum}>{progress.totalItems}</Text>
-              <Text style={styles.heroStatLbl}>Total Items</Text>
-            </View>
-          </View>
-
-          <Text style={styles.heroSummaryLine}>
-            Packing Progress: {progress.percentage}% • {progress.packedItems} of{' '}
-            {progress.totalItems} items packed.
-          </Text>
-        </LinearGradient>
-
-        {/* Primary CTA to Packing Checklist */}
-        <PrimaryButton
-          label="Open Interactive Packing Checklist"
-          onPress={() =>
-            navigation.navigate('PackingChecklist', { tripId: trip.id })
           }
-          variant="secondary"
-          icon={<CheckSquare size={18} color="#FFFFFF" />}
         />
 
-        {/* Trip Metadata Card */}
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: theme.colors.card,
-              borderColor: theme.colors.border,
-            },
-            theme.shadows.xs,
-          ]}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
         >
-          <Text style={[styles.cardTitle, { color: theme.colors.primaryText }]}>
-            Journey Details
-          </Text>
+          {/* Hero Photographic Banner with Overlay (Reference Screen 3) */}
+          <View style={styles.heroPhotoWrapper}>
+            <Image
+              source={{ uri: destImg }}
+              style={styles.heroPhotoImage}
+              resizeMode="cover"
+            />
+            <LinearGradient
+              colors={['rgba(11, 7, 24, 0.20)', 'rgba(11, 7, 24, 0.92)']}
+              style={StyleSheet.absoluteFill}
+            />
 
-          <View style={styles.detailGrid}>
-            <View
-              style={[
-                styles.detailCell,
-                { backgroundColor: theme.colors.background },
-              ]}
-            >
-              <Calendar size={16} color={theme.colors.secondaryBlue} />
-              <Text
-                style={[styles.cellLabel, { color: theme.colors.secondaryText }]}
-              >
-                Travel Dates
-              </Text>
-              <Text
-                style={[styles.cellValue, { color: theme.colors.primaryText }]}
-              >
-                {formatDateRange(trip.departure_date, trip.return_date)}
-              </Text>
-            </View>
-
-            <View
-              style={[
-                styles.detailCell,
-                { backgroundColor: theme.colors.background },
-              ]}
-            >
-              <Clock size={16} color={theme.colors.accentMint} />
-              <Text
-                style={[styles.cellLabel, { color: theme.colors.secondaryText }]}
-              >
-                Duration
-              </Text>
-              <Text
-                style={[styles.cellValue, { color: theme.colors.primaryText }]}
-              >
-                {trip.trip_duration}{' '}
-                {trip.trip_duration === 1 ? 'Day' : 'Days'}
-              </Text>
-            </View>
-
-            <View
-              style={[
-                styles.detailCell,
-                { backgroundColor: theme.colors.background },
-              ]}
-            >
-              <Users size={16} color="#8B5CF6" />
-              <Text
-                style={[styles.cellLabel, { color: theme.colors.secondaryText }]}
-              >
-                Travellers
-              </Text>
-              <Text
-                style={[styles.cellValue, { color: theme.colors.primaryText }]}
-              >
-                {trip.traveller_count}{' '}
-                {trip.traveller_count === 1 ? 'Person' : 'People'}
-              </Text>
-            </View>
-
-            <View
-              style={[
-                styles.detailCell,
-                { backgroundColor: theme.colors.background },
-              ]}
-            >
-              <Globe size={16} color="#F59E0B" />
-              <Text
-                style={[styles.cellLabel, { color: theme.colors.secondaryText }]}
-              >
-                Environment
-              </Text>
-              <Text
-                style={[styles.cellValue, { color: theme.colors.primaryText }]}
-              >
-                {trip.destination_type}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.typeRow}>
-            <Text style={[styles.cellLabel, { color: theme.colors.secondaryText }]}>
-              Trip Style:
-            </Text>
-            <TripTypeBadge tripType={trip.trip_type} />
-          </View>
-
-          {trip.notes ? (
-            <View
-              style={[
-                styles.notesBox,
-                {
-                  backgroundColor: theme.colors.background,
-                  borderColor: theme.colors.border,
-                },
-              ]}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <FileText size={14} color={theme.colors.secondaryText} />
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: '700',
-                    color: theme.colors.secondaryText,
-                  }}
-                >
-                  Trip Notes
-                </Text>
+            {/* Overlaid Badges */}
+            <View style={styles.heroOverlayContent}>
+              <View style={styles.heroBadgesTop}>
+                <StatusBadge status={trip.status} />
+                <TripTypeBadge tripType={trip.trip_type} />
               </View>
-              <Text
-                style={[styles.notesBody, { color: theme.colors.primaryText }]}
-              >
-                {trip.notes}
-              </Text>
-            </View>
-          ) : null}
-        </View>
 
-        {/* Category Progress Breakdown */}
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: theme.colors.card,
-              borderColor: theme.colors.border,
-            },
-            theme.shadows.xs,
-          ]}
-        >
-          <View style={styles.catHeaderRow}>
-            <Text style={[styles.cardTitle, { color: theme.colors.primaryText }]}>
-              Category Breakdown
-            </Text>
-            <Pressable
-              onPress={() =>
-                navigation.navigate('MainTabs', {
-                  screen: 'Templates',
-                  params: { targetTripId: trip.id },
-                })
-              }
-              style={styles.applyTplLink}
-            >
-              <Sparkles size={13} color={theme.colors.secondaryBlue} />
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: '700',
-                  color: theme.colors.secondaryBlue,
-                }}
-              >
-                Apply Template
-              </Text>
-            </Pressable>
-          </View>
-
-          {categoryBreakdown.length === 0 ? (
-            <Text style={{ fontSize: 13, color: theme.colors.secondaryText }}>
-              No items in this trip yet. Open the checklist or apply a packing
-              template to track category progress.
-            </Text>
-          ) : (
-            categoryBreakdown.map((cat) => (
-              <View key={cat.category_id} style={styles.catRow}>
-                <View style={styles.catLabelLine}>
-                  <View style={styles.catNameGroup}>
-                    <DynamicIcon
-                      name={cat.icon_name}
-                      size={15}
-                      color={cat.color_hex}
-                    />
-                    <Text
-                      style={[
-                        styles.catNameText,
-                        { color: theme.colors.primaryText },
-                      ]}
-                    >
-                      {cat.category_name}
+              <View style={styles.heroOverlayBottom}>
+                <View style={{ flex: 1, paddingRight: 10 }}>
+                  <Text style={styles.heroOverlayTitle} numberOfLines={1}>
+                    {trip.trip_name}
+                  </Text>
+                  <View style={styles.heroLocationRow}>
+                    <MapPin size={13} color="#D4FF00" />
+                    <Text style={styles.heroLocationText} numberOfLines={1}>
+                      {trip.destination}
                     </Text>
                   </View>
-                  <Text
-                    style={[
-                      styles.catStatsText,
-                      { color: theme.colors.secondaryText },
-                    ]}
-                  >
-                    {cat.packed}/{cat.total} ({cat.percentage}%)
-                  </Text>
                 </View>
-                <AnimatedProgressBar
-                  percentage={cat.percentage}
-                  height={6}
-                  fillColor={
-                    cat.percentage >= 100
-                      ? theme.colors.accentMint
-                      : cat.color_hex
-                  }
+
+                <CircularProgressRing
+                  percentage={progress.percentage}
+                  size={76}
+                  strokeWidth={7}
+                  strokeColor={theme.colors.accentLime}
+                  textColor="#FFFFFF"
+                  sublabel="Done"
                 />
               </View>
-            ))
-          )}
-        </View>
+            </View>
+          </View>
 
-        {/* Secondary Management Actions */}
-        <View style={styles.secondaryActions}>
-          <PrimaryButton
-            label={
-              trip.status === 'Completed'
-                ? 'Reopen Trip as Active'
-                : 'Mark Trip as Completed'
-            }
+          {/* 3-Metric Progress Strip */}
+          <View
+            style={[
+              styles.metricsBar,
+              {
+                backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.85)' : theme.colors.card,
+                borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+              },
+              theme.shadows.xs,
+            ]}
+          >
+            <View style={styles.metricItem}>
+              <Text style={[styles.metricNum, { color: theme.colors.accentLime }]}>
+                {progress.packedItems}
+              </Text>
+              <Text style={[styles.metricLbl, { color: theme.colors.secondaryText }]}>
+                Packed
+              </Text>
+            </View>
+            <View style={[styles.metricDivider, { backgroundColor: theme.colors.border }]} />
+            <View style={styles.metricItem}>
+              <Text style={[styles.metricNum, { color: '#FBBF24' }]}>
+                {progress.remainingItems}
+              </Text>
+              <Text style={[styles.metricLbl, { color: theme.colors.secondaryText }]}>
+                Remaining
+              </Text>
+            </View>
+            <View style={[styles.metricDivider, { backgroundColor: theme.colors.border }]} />
+            <View style={styles.metricItem}>
+              <Text style={[styles.metricNum, { color: theme.colors.primaryText }]}>
+                {progress.totalItems}
+              </Text>
+              <Text style={[styles.metricLbl, { color: theme.colors.secondaryText }]}>
+                Total Items
+              </Text>
+            </View>
+          </View>
+
+          {/* Journey Metadata Card */}
+          <View
+            style={[
+              styles.card,
+              {
+                backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.76)' : theme.colors.card,
+                borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+              },
+              theme.shadows.xs,
+            ]}
+          >
+            <Text style={[styles.cardTitle, { color: theme.colors.primaryText }]}>
+              Journey Information
+            </Text>
+
+            <View style={styles.detailGrid}>
+              <View
+                style={[
+                  styles.detailCell,
+                  { backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.05)' : theme.colors.surfaceSubtle },
+                ]}
+              >
+                <Calendar size={15} color={theme.colors.secondaryBlue} />
+                <Text style={[styles.cellLabel, { color: theme.colors.secondaryText }]}>
+                  Travel Dates
+                </Text>
+                <Text style={[styles.cellValue, { color: theme.colors.primaryText }]}>
+                  {formatDateRange(trip.departure_date, trip.return_date)}
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  styles.detailCell,
+                  { backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.05)' : theme.colors.surfaceSubtle },
+                ]}
+              >
+                <Clock size={15} color={theme.colors.accentLime} />
+                <Text style={[styles.cellLabel, { color: theme.colors.secondaryText }]}>
+                  Duration
+                </Text>
+                <Text style={[styles.cellValue, { color: theme.colors.primaryText }]}>
+                  {trip.trip_duration} {trip.trip_duration === 1 ? 'Day' : 'Days'}
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  styles.detailCell,
+                  { backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.05)' : theme.colors.surfaceSubtle },
+                ]}
+              >
+                <Users size={15} color="#A855F7" />
+                <Text style={[styles.cellLabel, { color: theme.colors.secondaryText }]}>
+                  Travellers
+                </Text>
+                <Text style={[styles.cellValue, { color: theme.colors.primaryText }]}>
+                  {trip.traveller_count} {trip.traveller_count === 1 ? 'Person' : 'People'}
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  styles.detailCell,
+                  { backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.05)' : theme.colors.surfaceSubtle },
+                ]}
+              >
+                <Globe size={15} color="#38BDF8" />
+                <Text style={[styles.cellLabel, { color: theme.colors.secondaryText }]}>
+                  Environment
+                </Text>
+                <Text style={[styles.cellValue, { color: theme.colors.primaryText }]}>
+                  {trip.destination_type}
+                </Text>
+              </View>
+            </View>
+
+            {trip.notes ? (
+              <View
+                style={[
+                  styles.notesBox,
+                  {
+                    backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.05)' : theme.colors.surfaceSubtle,
+                    borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.border,
+                  },
+                ]}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <FileText size={14} color={theme.colors.secondaryText} />
+                  <Text style={{ fontSize: 12, fontWeight: '700', color: theme.colors.secondaryText }}>
+                    Trip Notes
+                  </Text>
+                </View>
+                <Text style={[styles.notesBody, { color: theme.colors.primaryText }]}>
+                  {trip.notes}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+
+          {/* Category Progress Breakdown */}
+          <View
+            style={[
+              styles.card,
+              {
+                backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.76)' : theme.colors.card,
+                borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+              },
+              theme.shadows.xs,
+            ]}
+          >
+            <View style={styles.catHeaderRow}>
+              <Text style={[styles.cardTitle, { color: theme.colors.primaryText }]}>
+                Category Breakdown
+              </Text>
+              <Pressable
+                onPress={() =>
+                  navigation.navigate('MainTabs', {
+                    screen: 'Templates',
+                    params: { targetTripId: trip.id },
+                  })
+                }
+                style={styles.applyTplLink}
+              >
+                <Sparkles size={13} color={theme.colors.accentLime} />
+                <Text style={[styles.applyTplText, { color: theme.colors.accentLime }]}>
+                  Apply Template
+                </Text>
+              </Pressable>
+            </View>
+
+            {categoryBreakdown.length === 0 ? (
+              <Text style={{ fontSize: 13, color: theme.colors.secondaryText }}>
+                No items in this trip yet. Open the checklist or apply a packing template to track category progress.
+              </Text>
+            ) : (
+              categoryBreakdown.map((cat) => (
+                <View key={cat.category_id} style={styles.catRow}>
+                  <View style={styles.catLabelLine}>
+                    <View style={styles.catNameGroup}>
+                      <DynamicIcon
+                        name={cat.icon_name}
+                        size={15}
+                        color={cat.color_hex}
+                      />
+                      <Text style={[styles.catNameText, { color: theme.colors.primaryText }]}>
+                        {cat.category_name}
+                      </Text>
+                    </View>
+                    <Text style={[styles.catStatsText, { color: theme.colors.secondaryText }]}>
+                      {cat.packed} / {cat.total} ({cat.percentage}%)
+                    </Text>
+                  </View>
+                  <AnimatedProgressBar
+                    percentage={cat.percentage}
+                    height={6}
+                    fillColor={cat.percentage >= 100 ? theme.colors.accentMint : theme.colors.accentLime}
+                  />
+                </View>
+              ))
+            )}
+          </View>
+
+          {/* Completion Status Toggle Action */}
+          <Pressable
             onPress={handleToggleCompleted}
-            variant={trip.status === 'Completed' ? 'outline' : 'mint'}
-            icon={
-              trip.status === 'Completed' ? (
-                <RotateCcw size={16} color={theme.colors.primaryText} />
+            style={[
+              styles.statusToggleCard,
+              {
+                backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.76)' : theme.colors.card,
+                borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+              },
+            ]}
+          >
+            <View style={styles.statusToggleIconWrap}>
+              {trip.status === 'Completed' ? (
+                <RotateCcw size={18} color="#FBBF24" />
               ) : (
-                <CheckCircle2 size={16} color="#FFFFFF" />
-              )
-            }
-          />
+                <CheckCircle2 size={18} color={theme.colors.accentLime} />
+              )}
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.statusToggleTitle, { color: theme.colors.primaryText }]}>
+                {trip.status === 'Completed' ? 'Reopen Journey' : 'Mark as Completed'}
+              </Text>
+              <Text style={[styles.statusToggleSubtitle, { color: theme.colors.secondaryText }]}>
+                {trip.status === 'Completed'
+                  ? 'Move this trip back to active status'
+                  : 'Archive this trip and record in trip history'}
+              </Text>
+            </View>
+          </Pressable>
+        </ScrollView>
 
+        {/* Sticky Bottom Action Bar (Reference Screen 3) */}
+        <View
+          style={[
+            styles.bottomStickyBar,
+            {
+              backgroundColor: theme.isDark ? 'rgba(18, 12, 38, 0.95)' : theme.colors.card,
+              borderTopColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+            },
+          ]}
+        >
           <PrimaryButton
-            label="Reuse Checklist for a New Trip"
+            label="Open Packing Checklist"
             onPress={() =>
-              navigation.navigate('CreateTrip', { reuseFromTripId: trip.id })
+              navigation.navigate('PackingChecklist', { tripId: trip.id })
             }
-            variant="outline"
-            icon={<Copy size={16} color={theme.colors.primaryText} />}
-          />
-
-          <PrimaryButton
-            label="Edit Trip Information"
-            onPress={() =>
-              navigation.navigate('CreateTrip', { editTripId: trip.id })
-            }
-            variant="outline"
-            icon={<Edit3 size={16} color={theme.colors.primaryText} />}
+            variant="lime"
+            rightIcon={<ChevronRight size={18} color={theme.colors.limeText} strokeWidth={2.8} />}
+            style={{ flex: 1 }}
           />
         </View>
-      </ScrollView>
+      </View>
 
       <ConfirmModal
         visible={showDeleteConfirm}
-        tone="danger"
         title="Delete Trip?"
-        message={`Delete "${trip.trip_name}" and all ${progress.totalItems} packing items permanently?`}
+        message={`Are you sure you want to remove "${trip.trip_name}"? All associated checklist items will be permanently erased.`}
         confirmLabel="Delete Trip"
+        cancelLabel="Keep Trip"
+        isDestructive
         loading={deleting}
         onConfirm={handleDeleteTrip}
         onCancel={() => setShowDeleteConfirm(false)}
@@ -473,92 +467,105 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
   },
+  containerConstrained: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 760,
+    alignSelf: 'center',
+  },
   topIconBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
-    gap: 16,
-    maxWidth: 760,
-    width: '100%',
-    alignSelf: 'center',
+    paddingHorizontal: 18,
+    paddingTop: 10,
+    paddingBottom: 85,
   },
-  heroCard: {
-    borderRadius: 26,
-    padding: 22,
+  heroPhotoWrapper: {
+    height: 220,
+    borderRadius: 24,
+    overflow: 'hidden',
+    position: 'relative',
+    marginBottom: 16,
   },
-  heroTop: {
+  heroPhotoImage: {
+    ...StyleSheet.absoluteFill,
+  },
+  heroOverlayContent: {
+    ...StyleSheet.absoluteFill,
+    padding: 16,
+    justifyContent: 'space-between',
+  },
+  heroBadgesTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  heroOverlayBottom: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  heroTripName: {
-    fontSize: 23,
-    fontWeight: '800',
+  heroOverlayTitle: {
+    fontSize: 20,
+    fontWeight: '900',
     color: '#FFFFFF',
-    marginTop: 10,
-    letterSpacing: -0.4,
+    letterSpacing: -0.3,
   },
-  heroMetaRow: {
+  heroLocationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginTop: 6,
+    gap: 4,
+    marginTop: 4,
   },
-  heroDestText: {
-    fontSize: 14,
-    fontWeight: '700',
+  heroLocationText: {
+    fontSize: 13,
     color: '#E2E8F0',
+    fontWeight: '500',
   },
-  heroStatsBanner: {
+  metricsBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    borderRadius: 18,
-    paddingVertical: 12,
-    marginTop: 18,
+    borderRadius: 20,
+    borderWidth: 1,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginBottom: 16,
   },
-  heroStatItem: {
+  metricItem: {
     flex: 1,
     alignItems: 'center',
   },
-  heroDivider: {
-    width: 1,
-    height: 26,
-    backgroundColor: 'rgba(255, 255, 255, 0.16)',
-  },
-  heroStatNum: {
+  metricNum: {
     fontSize: 20,
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontWeight: '900',
+    letterSpacing: -0.3,
   },
-  heroStatLbl: {
+  metricLbl: {
     fontSize: 11,
     fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.76)',
     marginTop: 2,
   },
-  heroSummaryLine: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#10B981',
-    marginTop: 12,
-    textAlign: 'center',
+  metricDivider: {
+    width: 1,
+    height: 28,
   },
   card: {
-    borderRadius: 24,
+    borderRadius: 22,
     borderWidth: 1,
-    padding: 20,
+    padding: 18,
+    marginBottom: 16,
   },
   cardTitle: {
     fontSize: 16,
     fontWeight: '800',
     marginBottom: 14,
+    letterSpacing: -0.2,
   },
   detailGrid: {
     flexDirection: 'row',
@@ -567,8 +574,8 @@ const styles = StyleSheet.create({
   },
   detailCell: {
     width: '48%',
-    borderRadius: 15,
-    padding: 13,
+    borderRadius: 16,
+    padding: 12,
   },
   cellLabel: {
     fontSize: 11,
@@ -580,37 +587,34 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     marginTop: 2,
   },
-  typeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 14,
-  },
   notesBox: {
     marginTop: 14,
-    padding: 13,
+    padding: 12,
     borderRadius: 14,
     borderWidth: 1,
   },
   notesBody: {
     fontSize: 13,
     lineHeight: 19,
-    marginTop: 6,
+    marginTop: 4,
   },
   catHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   applyTplLink: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    marginBottom: 14,
+    gap: 4,
+  },
+  applyTplText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
   catRow: {
-    marginBottom: 13,
+    marginBottom: 14,
   },
   catLabelLine: {
     flexDirection: 'row',
@@ -629,9 +633,40 @@ const styles = StyleSheet.create({
   },
   catStatsText: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '600',
   },
-  secondaryActions: {
-    gap: 10,
+  statusToggleCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 16,
+    gap: 14,
+    marginBottom: 10,
+  },
+  statusToggleIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statusToggleTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  statusToggleSubtitle: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  bottomStickyBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    borderTopWidth: 1,
   },
 });

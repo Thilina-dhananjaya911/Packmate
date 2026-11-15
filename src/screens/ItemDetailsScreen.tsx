@@ -379,7 +379,7 @@ export const ItemDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
             <PrimaryButton
               label="Save Item Changes"
               onPress={handleSave}
-              variant="secondary"
+              variant="lime"
               loading={saving}
             />
             <PrimaryButton

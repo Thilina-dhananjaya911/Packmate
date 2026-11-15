@@ -64,3 +64,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 export function useAppTheme(): ThemeContextValue {
   return useContext(ThemeContext);
 }
+
+// Re-export common theme tokens for backwards compatibility
+export { RADIUS, SHADOWS, SPACING } from '../theme';
+

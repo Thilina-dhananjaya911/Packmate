@@ -70,6 +70,20 @@ CREATE TABLE IF NOT EXISTS packing_items (
   FOREIGN KEY (category_id) REFERENCES item_categories(id) ON DELETE RESTRICT
 );
 
+CREATE TABLE IF NOT EXISTS user_profile (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  full_name TEXT NOT NULL,
+  country TEXT NOT NULL,
+  email TEXT,
+  phone TEXT,
+  avatar TEXT NOT NULL DEFAULT 'avatar-explorer',
+  travel_style TEXT NOT NULL DEFAULT 'General Travel',
+  luggage_type TEXT NOT NULL DEFAULT 'Backpack',
+  weight_limit REAL NOT NULL DEFAULT 20.0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_trips_status ON trips(status);
 CREATE INDEX IF NOT EXISTS idx_trips_departure ON trips(departure_date);
 CREATE INDEX IF NOT EXISTS idx_packing_items_trip ON packing_items(trip_id);

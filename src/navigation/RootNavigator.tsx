@@ -10,9 +10,11 @@ import { AlertTriangle } from 'lucide-react-native';
 import { useAppContext } from '../context/AppContext';
 import { useAppTheme } from '../context/ThemeContext';
 import { CreateTripScreen } from '../screens/CreateTripScreen';
+import { EditProfileScreen } from '../screens/EditProfileScreen';
 import { ItemDetailsScreen } from '../screens/ItemDetailsScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { PackingChecklistScreen } from '../screens/PackingChecklistScreen';
+import { ProfileSetupScreen } from '../screens/ProfileSetupScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { SplashScreen } from '../screens/SplashScreen';
 import { TemplateDetailsScreen } from '../screens/TemplateDetailsScreen';
@@ -90,10 +92,16 @@ export const RootNavigator: React.FC = () => {
           options={{ animation: 'fade' }}
         />
         <Stack.Screen
+          name="ProfileSetup"
+          component={ProfileSetupScreen}
+          options={{ animation: 'fade' }}
+        />
+        <Stack.Screen
           name="MainTabs"
           component={MainTabNavigator}
           options={{ animation: 'fade' }}
         />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         <Stack.Screen name="CreateTrip" component={CreateTripScreen} />
         <Stack.Screen name="TripDetails" component={TripDetailsScreen} />
         <Stack.Screen

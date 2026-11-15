@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Image,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,30 +14,34 @@ import { CompositeScreenProps } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
+  AlertTriangle,
   ArrowRight,
   Calendar,
   CheckCircle2,
   Compass,
   FolderCheck,
+  Heart,
   Luggage,
   MapPin,
   Plus,
   Settings,
   Sparkles,
+  Star,
   User,
 } from 'lucide-react-native';
 import { useAppContext } from '../context/AppContext';
-import { useAppTheme } from '../context/ThemeContext';
+import { RADIUS, useAppTheme } from '../context/ThemeContext';
 import { getSetting } from '../database/queries/settingsQueries';
 import { AnimatedPressableCard } from '../components/AnimatedPressableCard';
 import { AnimatedProgressBar } from '../components/AnimatedProgressBar';
-import { StatusBadge, TripTypeBadge } from '../components/Badges';
-import { BrandMark } from '../components/BrandMark';
+import { GlassPillBadge, StatusBadge, TripTypeBadge } from '../components/Badges';
+import { BrandMark, HologramOrb } from '../components/BrandMark';
 import { CircularProgressRing } from '../components/CircularProgressRing';
 import { DynamicIcon } from '../components/DynamicIcon';
 import { EmptyState } from '../components/EmptyState';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { MainTabParamList, RootStackParamList } from '../types';
+import { DESTINATION_IMAGES, getDestinationImage, getTemplateImage } from '../constants/travelImages';
+import { MainTabParamList, RootStackParamList, TripType } from '../types';
 import {
   formatDateRange,
   formatFullHeaderDate,
@@ -48,6 +54,8 @@ type Props = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>
 >;
 
+type FilterCategory = 'All' | 'Beach' | 'Mountain' | 'Camping' | 'City';
+
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const { theme } = useAppTheme();
   const {
@@ -56,32 +64,93 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     recentTrips,
     templates,
     dataVersion,
+    userProfile,
   } = useAppContext();
 
-  const [travelerName, setTravelerName] = useState('');
-
-  useEffect(() => {
-    (async () => {
-      const name = await getSetting('traveler_name');
-      if (name) setTravelerName(name);
-    })();
-  }, [dataVersion]);
+  const [selectedFilter, setSelectedFilter] = useState<FilterCategory>('All');
+  const travelerName = userProfile?.fullName || 'Alex Traveler';
 
   const greeting = getTimeGreeting();
   const todayLabel = formatFullHeaderDate();
 
+  // Filter templates based on category pills from reference image
+  const filteredTemplates = templates.filter((tpl) => {
+    if (selectedFilter === 'All') return true;
+    if (selectedFilter === 'Beach') return tpl.destination_type === 'Beach';
+    if (selectedFilter === 'Mountain') return tpl.destination_type === 'Mountain';
+    if (selectedFilter === 'Camping') return tpl.destination_type === 'Nature';
+    if (selectedFilter === 'City') return tpl.destination_type === 'City';
+    return true;
+  });
+
   const renderHeroSection = () => {
     if (dashboardStats.totalTrips === 0) {
+      // Inspired by Reference Image Middle Screen featured card
+      const fallbackImg = DESTINATION_IMAGES.Beach.uri;
       return (
-        <EmptyState
-          variant="empty-trips"
-          title="No Trips Planned Yet"
-          description="Create your first trip and let PACKMATE automatically build a tailored packing checklist for your destination and travel dates."
-          actionLabel="Create Your First Trip"
-          onAction={() => navigation.navigate('CreateTrip')}
-          secondaryActionLabel="Explore 8 Packing Templates"
-          onSecondaryAction={() => navigation.navigate('Templates')}
-        />
+        <AnimatedPressableCard
+          onPress={() => navigation.navigate('CreateTrip')}
+          style={[styles.heroCardContainer, theme.shadows.lg]}
+        >
+          <View style={styles.heroImageWrapper}>
+            <Image
+              source={{ uri: fallbackImg }}
+              style={styles.heroBackgroundImage}
+              resizeMode="cover"
+            />
+            <LinearGradient
+              colors={['rgba(15, 10, 30, 0.25)', 'rgba(15, 10, 30, 0.88)']}
+              style={StyleSheet.absoluteFill}
+            />
+
+            {/* Top Overlay Badges (Reference Image Style) */}
+            <View style={styles.heroTopBadges}>
+              <View style={styles.glassPill}>
+                <Text style={styles.glassPillText}>All</Text>
+              </View>
+              <View style={styles.glassPill}>
+                <Text style={styles.glassPillText}>3–7 Days</Text>
+              </View>
+              <View style={[styles.glassPill, styles.limePill]}>
+                <Text style={styles.limePillText}>Smart Planner</Text>
+              </View>
+              <View style={styles.heartBtn}>
+                <Sparkles size={14} color="#FFFFFF" />
+              </View>
+            </View>
+
+            {/* Frosted Bottom Banner inside Card */}
+            <View style={styles.heroGlassBanner}>
+              <View style={{ flex: 1, paddingRight: 12 }}>
+                <Text style={styles.heroDestTitle} numberOfLines={1}>
+                  Welcome to PACKMATE
+                </Text>
+                <View style={styles.heroMetaRow}>
+                  <MapPin size={12} color="#D4FF00" />
+                  <Text style={styles.heroMetaText} numberOfLines={1}>
+                    Auto-generate smart offline packing lists
+                  </Text>
+                </View>
+                <View style={styles.heroReviewsRow}>
+                  <Star size={11} color="#FBBF24" fill="#FBBF24" />
+                  <Text style={styles.heroReviewsText}>
+                    100% Offline • 8 Destination Templates
+                  </Text>
+                </View>
+              </View>
+
+              <View
+                style={[
+                  styles.heroArrowCircle,
+                  { backgroundColor: theme.colors.accentLime },
+                  theme.shadows.limeGlow,
+                ]}
+              >
+                <ArrowRight size={18} color={theme.colors.limeText} strokeWidth={2.8} />
+              </View>
+            </View>
+          </View>
+        </AnimatedPressableCard>
       );
     }
 
@@ -91,156 +160,125 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
           colors={theme.colors.heroGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={[styles.heroCard, theme.shadows.md]}
+          style={[styles.heroCard, styles.heroCardCompleted, theme.shadows.md]}
         >
           <View style={styles.heroCompletedRow}>
             <View style={{ flex: 1, paddingRight: 14 }}>
               <View style={styles.heroPill}>
-                <Sparkles size={12} color="#10B981" />
+                <Sparkles size={12} color="#D4FF00" />
                 <Text style={styles.heroPillText}>ALL TRIPS COMPLETED</Text>
               </View>
-              <Text style={styles.heroTitle}>Ready for your next escape?</Text>
-              <Text style={styles.heroMetaText}>
-                You have completed {dashboardStats.completedTrips}{' '}
-                {dashboardStats.completedTrips === 1 ? 'journey' : 'journeys'}. Start
-                a new trip or reuse a proven list from History.
+              <Text style={styles.heroCompletedTitle}>
+                You are all caught up!
               </Text>
+              <Text style={styles.heroCompletedSub}>
+                Ready for the next journey? Create a trip to unlock tailored packing suggestions.
+              </Text>
+              <PrimaryButton
+                label="Plan Next Journey"
+                onPress={() => navigation.navigate('CreateTrip')}
+                variant="lime"
+                compact
+                style={{ alignSelf: 'flex-start', marginTop: 14 }}
+              />
             </View>
-          </View>
-          <View style={styles.heroActionRow}>
-            <PrimaryButton
-              label="Create New Trip"
-              onPress={() => navigation.navigate('CreateTrip')}
-              variant="mint"
-              compact
-              icon={<Plus size={16} color="#FFF" />}
-              style={{ flex: 1 }}
-            />
-            <PrimaryButton
-              label="View History"
-              onPress={() => navigation.navigate('History')}
-              variant="secondary"
-              compact
-              style={{ flex: 1 }}
+            <CircularProgressRing
+              percentage={100}
+              size={82}
+              strokeWidth={7}
+              strokeColor={theme.colors.accentLime}
+              textColor="#FFFFFF"
+              sublabel="Done"
             />
           </View>
         </LinearGradient>
       );
     }
 
-    const daysAway = getDaysUntilDeparture(upcomingHeroTrip.departure_date);
-    const countdownLabel =
-      upcomingHeroTrip.status === 'Ongoing'
-        ? 'Currently Travelling'
-        : daysAway === 0
-        ? 'Departing Today'
-        : daysAway === 1
-        ? 'Departs Tomorrow'
-        : `In ${daysAway} Days`;
+    // Active Upcoming Trip Hero Card with Destination Photography
+    const tripImage = getDestinationImage(upcomingHeroTrip.destination_type).uri;
+    const daysUntil = getDaysUntilDeparture(upcomingHeroTrip.departure_date);
 
     return (
       <AnimatedPressableCard
         onPress={() =>
           navigation.navigate('TripDetails', { tripId: upcomingHeroTrip.id })
         }
+        style={[styles.heroCardContainer, theme.shadows.lg]}
       >
-        <LinearGradient
-          colors={theme.colors.heroGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.heroCard, theme.shadows.lg]}
-        >
-          <View style={styles.heroDecorCircle} />
+        <View style={styles.heroImageWrapper}>
+          <Image
+            source={{ uri: tripImage }}
+            style={styles.heroBackgroundImage}
+            resizeMode="cover"
+          />
+          <LinearGradient
+            colors={['rgba(15, 10, 30, 0.28)', 'rgba(15, 10, 30, 0.90)']}
+            style={StyleSheet.absoluteFill}
+          />
 
-          <View style={styles.heroTopRow}>
-            <View style={styles.heroPill}>
-              <View style={styles.heroPulseDot} />
-              <Text style={styles.heroPillText}>
-                {upcomingHeroTrip.status === 'Ongoing'
-                  ? 'ONGOING TRIP'
-                  : 'UPCOMING TRIP'}{' '}
-                • {countdownLabel.toUpperCase()}
+          {/* Top Overlay Badges */}
+          <View style={styles.heroTopBadges}>
+            <View style={styles.glassPill}>
+              <Text style={styles.glassPillText}>
+                {daysUntil === 0
+                  ? 'Departing Today'
+                  : daysUntil > 0
+                  ? `In ${daysUntil} Days`
+                  : 'Ongoing'}
               </Text>
             </View>
-            <Text style={styles.heroDurationBadge}>
-              {upcomingHeroTrip.trip_duration}{' '}
-              {upcomingHeroTrip.trip_duration === 1 ? 'Day' : 'Days'}
-            </Text>
+            <View style={styles.glassPill}>
+              <Text style={styles.glassPillText}>
+                {upcomingHeroTrip.trip_duration} Days
+              </Text>
+            </View>
+            <View style={[styles.glassPill, styles.limePill]}>
+              <Text style={styles.limePillText}>
+                {upcomingHeroTrip.trip_type}
+              </Text>
+            </View>
+            <View style={styles.heartBtn}>
+              <Heart size={14} color="#FFFFFF" fill="rgba(255, 255, 255, 0.2)" />
+            </View>
           </View>
 
-          <View style={styles.heroMainRow}>
-            <View style={{ flex: 1, paddingRight: 14 }}>
-              <Text numberOfLines={1} style={styles.heroTitle}>
+          {/* Frosted Bottom Banner inside Card */}
+          <View style={styles.heroGlassBanner}>
+            <View style={{ flex: 1, paddingRight: 12 }}>
+              <Text style={styles.heroDestTitle} numberOfLines={1}>
                 {upcomingHeroTrip.trip_name}
               </Text>
-              <View style={styles.heroLocRow}>
-                <MapPin size={14} color="#4C9AFF" />
-                <Text numberOfLines={1} style={styles.heroDestination}>
-                  {upcomingHeroTrip.destination}
+              <View style={styles.heroMetaRow}>
+                <MapPin size={12} color="#D4FF00" />
+                <Text style={styles.heroMetaText} numberOfLines={1}>
+                  {upcomingHeroTrip.destination} • {formatDateRange(upcomingHeroTrip.departure_date, upcomingHeroTrip.return_date)}
                 </Text>
               </View>
-              <View style={styles.heroLocRow}>
-                <Calendar size={13} color="rgba(255,255,255,0.7)" />
-                <Text style={styles.heroDateText}>
-                  {formatDateRange(
-                    upcomingHeroTrip.departure_date,
-                    upcomingHeroTrip.return_date
-                  )}
+              <View style={styles.heroReviewsRow}>
+                <Star size={11} color="#FBBF24" fill="#FBBF24" />
+                <Text style={styles.heroReviewsText}>
+                  {upcomingHeroTrip.packed_items} / {upcomingHeroTrip.total_items} Packed ({upcomingHeroTrip.progress_percentage}%)
                 </Text>
               </View>
             </View>
 
-            <CircularProgressRing
-              percentage={upcomingHeroTrip.progress_percentage}
-              size={84}
-              strokeWidth={8}
-              subtitle="Packed"
-              lightText
-            />
-          </View>
-
-          {/* Progress Bar Block */}
-          <View style={styles.heroProgressSection}>
-            <View style={styles.heroProgressLabels}>
-              <Text style={styles.heroProgressTitle}>Packing Progress</Text>
-              <Text style={styles.heroProgressCount}>
-                {upcomingHeroTrip.packed_items} / {upcomingHeroTrip.total_items} Items •{' '}
-                {upcomingHeroTrip.progress_percentage}% Completed
-              </Text>
-            </View>
-            <AnimatedProgressBar
-              percentage={upcomingHeroTrip.progress_percentage}
-              height={8}
-              trackColor="rgba(255, 255, 255, 0.16)"
-            />
-          </View>
-
-          <View style={styles.heroActionRow}>
             <Pressable
               onPress={() =>
                 navigation.navigate('PackingChecklist', {
                   tripId: upcomingHeroTrip.id,
                 })
               }
-              style={styles.heroPrimaryBtn}
+              style={[
+                styles.heroArrowCircle,
+                { backgroundColor: theme.colors.accentLime },
+                theme.shadows.limeGlow,
+              ]}
             >
-              <CheckCircle2 size={16} color="#172B4D" strokeWidth={2.4} />
-              <Text style={styles.heroPrimaryBtnText}>Open Checklist</Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() =>
-                navigation.navigate('TripDetails', {
-                  tripId: upcomingHeroTrip.id,
-                })
-              }
-              style={styles.heroSecondaryBtn}
-            >
-              <Text style={styles.heroSecondaryBtnText}>Trip Overview</Text>
-              <ArrowRight size={15} color="#FFFFFF" />
+              <ArrowRight size={18} color={theme.colors.limeText} strokeWidth={2.8} />
             </Pressable>
           </View>
-        </LinearGradient>
+        </View>
       </AnimatedPressableCard>
     );
   };
@@ -254,301 +292,440 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Top Brand & Greeting Header */}
-        <View style={styles.headerRow}>
-          <View style={styles.greetingLeft}>
-            <Text style={[styles.dateText, { color: theme.colors.secondaryText }]}>
-              {todayLabel}
-            </Text>
-            <Text style={[styles.greetingTitle, { color: theme.colors.primaryText }]}>
-              {greeting}{travelerName ? `, ${travelerName.split(' ')[0]}` : ''}
-            </Text>
-            <Text
-              style={[styles.greetingSubtitle, { color: theme.colors.secondaryText }]}
-            >
-              Ready for your next adventure?
-            </Text>
-          </View>
-
-          <View style={styles.headerRight}>
-            <Pressable
-              onPress={() => navigation.navigate('Settings')}
-              style={[
-                styles.iconButton,
-                {
-                  backgroundColor: theme.colors.card,
-                  borderColor: theme.colors.border,
-                },
-                theme.shadows.xs,
-              ]}
-            >
-              <Settings size={20} color={theme.colors.primaryText} strokeWidth={2.1} />
-            </Pressable>
-            <BrandMark size={42} variant="navy" />
-          </View>
-        </View>
-
-        {/* Create New Trip Action Banner */}
-        <AnimatedPressableCard
-          onPress={() => navigation.navigate('CreateTrip')}
-          style={[
-            styles.createBanner,
-            {
-              backgroundColor: theme.colors.card,
-              borderColor: theme.colors.border,
-            },
-            theme.shadows.sm,
-          ]}
-        >
-          <View
-            style={[
-              styles.createIconWrap,
-              { backgroundColor: theme.colors.secondaryBlue },
-            ]}
-          >
-            <Plus size={22} color="#FFFFFF" strokeWidth={2.6} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.createTitle, { color: theme.colors.primaryText }]}>
-              Create New Trip
-            </Text>
-            <Text style={[styles.createSub, { color: theme.colors.secondaryText }]}>
-              Auto-generate smart offline packing suggestions
-            </Text>
-          </View>
-          <ArrowRight size={18} color={theme.colors.secondaryBlue} />
-        </AnimatedPressableCard>
-
-        {/* Upcoming Trip Hero or Empty State */}
-        <View style={styles.sectionBlock}>{renderHeroSection()}</View>
-
-        {/* Dynamic SQLite Statistics Grid */}
-        <View style={styles.sectionBlock}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.primaryText }]}>
-            Travel & Packing Snapshot
-          </Text>
-          <View style={styles.statsRow}>
-            <AnimatedPressableCard
-              onPress={() => navigation.navigate('MyTrips')}
-              style={[
-                styles.statCard,
-                {
-                  backgroundColor: theme.colors.card,
-                  borderColor: theme.colors.border,
-                },
-                theme.shadows.xs,
-              ]}
-            >
-              <View
+        <View style={styles.containerConstrained}>
+          {/* Top Header Row matching Reference Screen 2 */}
+          <View style={styles.headerRow}>
+            <View style={styles.headerProfileRow}>
+              {/* Profile Avatar */}
+              <Pressable
+                onPress={() => navigation.navigate('MainTabs', { screen: 'Profile' })}
                 style={[
-                  styles.statIconBox,
-                  { backgroundColor: theme.colors.infoSoft },
+                  styles.avatarCircle,
+                  { borderColor: theme.colors.accentLime },
+                  theme.shadows.xs,
                 ]}
               >
-                <Compass size={18} color={theme.colors.secondaryBlue} />
-              </View>
-              <Text style={[styles.statNumber, { color: theme.colors.primaryText }]}>
-                {dashboardStats.totalTrips}
-              </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.secondaryText }]}>
-                Total Trips
-              </Text>
-            </AnimatedPressableCard>
+                <Text style={styles.avatarInitials}>
+                  {travelerName
+                    ? travelerName
+                        .split(' ')
+                        .map((n) => n[0])
+                        .slice(0, 2)
+                        .join('')
+                        .toUpperCase()
+                    : 'AT'}
+                </Text>
+              </Pressable>
 
-            <AnimatedPressableCard
-              onPress={() => navigation.navigate('History')}
-              style={[
-                styles.statCard,
-                {
-                  backgroundColor: theme.colors.card,
-                  borderColor: theme.colors.border,
-                },
-                theme.shadows.xs,
-              ]}
-            >
-              <View
+              <View style={styles.greetingTextBlock}>
+                <Text style={[styles.greetingCaption, { color: theme.colors.secondaryText }]}>
+                  {greeting}
+                </Text>
+                <Text style={[styles.travelerNameText, { color: theme.colors.primaryText }]}>
+                  {travelerName || 'Alex Traveler'}
+                </Text>
+              </View>
+            </View>
+
+            {/* Right Action Icons */}
+            <View style={styles.headerRightActions}>
+              <Pressable
+                onPress={() => navigation.navigate('Settings')}
                 style={[
-                  styles.statIconBox,
-                  { backgroundColor: theme.colors.successSoft },
+                  styles.iconButtonFrosted,
+                  {
+                    backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.card,
+                    borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+                  },
                 ]}
               >
-                <FolderCheck size={18} color={theme.colors.accentMint} />
-              </View>
-              <Text style={[styles.statNumber, { color: theme.colors.primaryText }]}>
-                {dashboardStats.completedTrips}
-              </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.secondaryText }]}>
-                Completed
-              </Text>
-            </AnimatedPressableCard>
-
-            <View
-              style={[
-                styles.statCard,
-                {
-                  backgroundColor: theme.colors.card,
-                  borderColor: theme.colors.border,
-                },
-                theme.shadows.xs,
-              ]}
-            >
-              <View
-                style={[
-                  styles.statIconBox,
-                  { backgroundColor: theme.colors.warningSoft },
-                ]}
-              >
-                <Luggage size={18} color="#D97706" />
-              </View>
-              <Text style={[styles.statNumber, { color: theme.colors.primaryText }]}>
-                {dashboardStats.totalPackedItems}
-              </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.secondaryText }]}>
-                Items Packed
-              </Text>
+                <Settings size={18} color={theme.colors.primaryText} strokeWidth={2.2} />
+              </Pressable>
+              <BrandMark size={38} variant="navy" />
             </View>
           </View>
-        </View>
 
-        {/* Quick Destination Templates Strip */}
-        <View style={styles.sectionBlock}>
+          {/* Prominent Header Title (Inspired by 'Seamless Travel Experience') */}
+          <View style={styles.titleSection}>
+            <Text style={[styles.mainHeroTitle, { color: theme.colors.primaryText }]}>
+              Smart Travel
+            </Text>
+            <Text style={[styles.mainHeroTitleItalic, { color: theme.colors.secondaryBlue }]}>
+              Experience
+            </Text>
+          </View>
+
+          {/* Category Filter Pills (Reference Screen 2) */}
+          <View style={styles.filterPillRow}>
+            {(['All', 'Beach', 'Mountain', 'Camping', 'City'] as FilterCategory[]).map((cat) => {
+              const active = selectedFilter === cat;
+              return (
+                <Pressable
+                  key={cat}
+                  onPress={() => setSelectedFilter(cat)}
+                  style={[
+                    styles.catPill,
+                    {
+                      backgroundColor: active
+                        ? theme.colors.accentLime
+                        : theme.isDark
+                        ? 'rgba(255, 255, 255, 0.08)'
+                        : theme.colors.card,
+                      borderColor: active
+                        ? 'transparent'
+                        : theme.isDark
+                        ? 'rgba(255, 255, 255, 0.12)'
+                        : theme.colors.border,
+                    },
+                    active ? theme.shadows.limeGlow : null,
+                    Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.catPillLabel,
+                      {
+                        color: active
+                          ? theme.colors.limeText
+                          : theme.colors.secondaryText,
+                        fontWeight: active ? '800' : '600',
+                      },
+                    ]}
+                  >
+                    {cat}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          {/* Section Header */}
           <View style={styles.sectionHeaderRow}>
             <Text style={[styles.sectionTitle, { color: theme.colors.primaryText }]}>
-              Smart Packing Templates
+              Popular Destination
             </Text>
             <Pressable onPress={() => navigation.navigate('Templates')}>
-              <Text
-                style={[styles.seeAllText, { color: theme.colors.secondaryBlue }]}
-              >
-                See All ({templates.length})
+              <Text style={[styles.seeAllText, { color: theme.colors.secondaryText }]}>
+                View All
               </Text>
             </Pressable>
           </View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.templateStrip}
-          >
-            {templates.slice(0, 5).map((tpl) => (
-              <AnimatedPressableCard
-                key={tpl.id}
-                onPress={() =>
-                  navigation.navigate('TemplateDetails', { templateId: tpl.id })
-                }
+          {/* Featured Hero Card */}
+          <View style={styles.heroSectionWrap}>{renderHeroSection()}</View>
+
+          {/* Quick Action Shortcut Cards */}
+          <View style={styles.quickActionsGrid}>
+            <AnimatedPressableCard
+              onPress={() => navigation.navigate('CreateTrip')}
+              style={[
+                styles.quickActionCard,
+                {
+                  backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.76)' : theme.colors.card,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+                },
+                theme.shadows.sm,
+              ]}
+            >
+              <View
                 style={[
-                  styles.miniTplCard,
+                  styles.quickActionIconWrap,
+                  { backgroundColor: theme.colors.accentLime },
+                  theme.shadows.limeGlow,
+                ]}
+              >
+                <Plus size={20} color={theme.colors.limeText} strokeWidth={3} />
+              </View>
+              <Text style={[styles.quickActionTitle, { color: theme.colors.primaryText }]}>
+                Create New Trip
+              </Text>
+              <Text style={[styles.quickActionSubtitle, { color: theme.colors.secondaryText }]}>
+                Auto-generate checklist
+              </Text>
+            </AnimatedPressableCard>
+
+            <AnimatedPressableCard
+              onPress={() => {
+                if (upcomingHeroTrip) {
+                  navigation.navigate('PackingChecklist', {
+                    tripId: upcomingHeroTrip.id,
+                  });
+                } else {
+                  navigation.navigate('Templates');
+                }
+              }}
+              style={[
+                styles.quickActionCard,
+                {
+                  backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.76)' : theme.colors.card,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+                },
+                theme.shadows.sm,
+              ]}
+            >
+              <View
+                style={[
+                  styles.quickActionIconWrap,
+                  { backgroundColor: 'rgba(168, 85, 247, 0.20)' },
+                ]}
+              >
+                <HologramOrb size={24} />
+              </View>
+              <Text style={[styles.quickActionTitle, { color: theme.colors.primaryText }]}>
+                Don't Forget Mode
+              </Text>
+              <Text style={[styles.quickActionSubtitle, { color: theme.colors.secondaryText }]}>
+                Essential trip checklist
+              </Text>
+            </AnimatedPressableCard>
+          </View>
+
+          {/* Travel & Packing Snapshot */}
+          <View style={styles.sectionBlock}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.primaryText }]}>
+              Travel & Packing Snapshot
+            </Text>
+            <View style={styles.statsRow}>
+              <AnimatedPressableCard
+                onPress={() => navigation.navigate('MyTrips')}
+                style={[
+                  styles.statCard,
                   {
-                    backgroundColor: theme.colors.card,
-                    borderColor: theme.colors.border,
+                    backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.76)' : theme.colors.card,
+                    borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
                   },
                   theme.shadows.xs,
                 ]}
               >
                 <View
                   style={[
-                    styles.miniTplIcon,
-                    { backgroundColor: `${tpl.accent_color}18` },
+                    styles.statIconBox,
+                    { backgroundColor: theme.colors.infoSoft },
                   ]}
                 >
-                  <DynamicIcon
-                    name={tpl.icon_name}
-                    size={20}
-                    color={tpl.accent_color}
-                  />
+                  <Compass size={18} color={theme.colors.secondaryBlue} />
                 </View>
-                <Text
-                  numberOfLines={1}
-                  style={[styles.miniTplName, { color: theme.colors.primaryText }]}
-                >
-                  {tpl.template_name}
+                <Text style={[styles.statNumber, { color: theme.colors.primaryText }]}>
+                  {dashboardStats.totalTrips}
                 </Text>
-                <Text
-                  style={[styles.miniTplCount, { color: theme.colors.secondaryText }]}
-                >
-                  {tpl.item_count} curated items
+                <Text style={[styles.statLabel, { color: theme.colors.secondaryText }]}>
+                  Total Trips
                 </Text>
               </AnimatedPressableCard>
-            ))}
-          </ScrollView>
-        </View>
 
-        {/* Recent Trip Activity */}
-        {recentTrips.length > 0 ? (
-          <View style={styles.sectionBlock}>
-            <View style={styles.sectionHeaderRow}>
-              <Text style={[styles.sectionTitle, { color: theme.colors.primaryText }]}>
-                Recent Trip Activity
-              </Text>
-              <Pressable onPress={() => navigation.navigate('MyTrips')}>
-                <Text
-                  style={[styles.seeAllText, { color: theme.colors.secondaryBlue }]}
-                >
-                  Manage Trips
-                </Text>
-              </Pressable>
-            </View>
-
-            {recentTrips.map((trip) => (
               <AnimatedPressableCard
-                key={trip.id}
-                onPress={() =>
-                  navigation.navigate('PackingChecklist', { tripId: trip.id })
-                }
+                onPress={() => navigation.navigate('History')}
                 style={[
-                  styles.activityCard,
+                  styles.statCard,
                   {
-                    backgroundColor: theme.colors.card,
-                    borderColor: theme.colors.border,
+                    backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.76)' : theme.colors.card,
+                    borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
                   },
                   theme.shadows.xs,
                 ]}
               >
-                <View style={styles.activityTop}>
-                  <View style={{ flex: 1, paddingRight: 10 }}>
+                <View
+                  style={[
+                    styles.statIconBox,
+                    { backgroundColor: theme.colors.successSoft },
+                  ]}
+                >
+                  <FolderCheck size={18} color={theme.colors.accentMint} />
+                </View>
+                <Text style={[styles.statNumber, { color: theme.colors.primaryText }]}>
+                  {dashboardStats.completedTrips}
+                </Text>
+                <Text style={[styles.statLabel, { color: theme.colors.secondaryText }]}>
+                  Completed
+                </Text>
+              </AnimatedPressableCard>
+
+              <View
+                style={[
+                  styles.statCard,
+                  {
+                    backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.76)' : theme.colors.card,
+                    borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+                  },
+                  theme.shadows.xs,
+                ]}
+              >
+                <View
+                  style={[
+                    styles.statIconBox,
+                    { backgroundColor: theme.colors.limeSoft },
+                  ]}
+                >
+                  <Luggage size={18} color={theme.colors.accentLime} />
+                </View>
+                <Text style={[styles.statNumber, { color: theme.colors.primaryText }]}>
+                  {dashboardStats.totalPackedItems}
+                </Text>
+                <Text style={[styles.statLabel, { color: theme.colors.secondaryText }]}>
+                  Items Packed
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Smart Packing Templates Strip */}
+          <View style={styles.sectionBlock}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={[styles.sectionTitle, { color: theme.colors.primaryText }]}>
+                Smart Packing Templates
+              </Text>
+              <Pressable onPress={() => navigation.navigate('Templates')}>
+                <Text
+                  style={[styles.seeAllText, { color: theme.colors.secondaryBlue }]}
+                >
+                  See All ({templates.length})
+                </Text>
+              </Pressable>
+            </View>
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.templateStrip}
+            >
+              {filteredTemplates.slice(0, 6).map((tpl) => {
+                const img = getTemplateImage(tpl.trip_type).thumbnail;
+                return (
+                  <AnimatedPressableCard
+                    key={tpl.id}
+                    onPress={() =>
+                      navigation.navigate('TemplateDetails', { templateId: tpl.id })
+                    }
+                    style={[
+                      styles.templatePhotoCard,
+                      {
+                        backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.85)' : theme.colors.card,
+                        borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+                      },
+                      theme.shadows.sm,
+                    ]}
+                  >
+                    <Image
+                      source={{ uri: img }}
+                      style={styles.templateThumbnail}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.templateCardContent}>
+                      <View style={styles.templateIconSmall}>
+                        <DynamicIcon
+                          name={tpl.icon_name}
+                          size={15}
+                          color={theme.colors.accentLime}
+                        />
+                      </View>
+                      <Text
+                        numberOfLines={1}
+                        style={[styles.templateCardTitle, { color: theme.colors.primaryText }]}
+                      >
+                        {tpl.template_name}
+                      </Text>
+                      <Text
+                        style={[styles.templateCardSub, { color: theme.colors.secondaryText }]}
+                      >
+                        {tpl.item_count} curated items
+                      </Text>
+                    </View>
+                  </AnimatedPressableCard>
+                );
+              })}
+            </ScrollView>
+          </View>
+
+          {/* Recent Trip Activity */}
+          {recentTrips.length > 0 ? (
+            <View style={styles.sectionBlock}>
+              <View style={styles.sectionHeaderRow}>
+                <Text style={[styles.sectionTitle, { color: theme.colors.primaryText }]}>
+                  Recent Trip Activity
+                </Text>
+                <Pressable onPress={() => navigation.navigate('MyTrips')}>
+                  <Text
+                    style={[styles.seeAllText, { color: theme.colors.secondaryBlue }]}
+                  >
+                    Manage Trips
+                  </Text>
+                </Pressable>
+              </View>
+
+              {recentTrips.map((trip) => (
+                <AnimatedPressableCard
+                  key={trip.id}
+                  onPress={() =>
+                    navigation.navigate('PackingChecklist', { tripId: trip.id })
+                  }
+                  style={[
+                    styles.activityCard,
+                    {
+                      backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.76)' : theme.colors.card,
+                      borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+                    },
+                    theme.shadows.xs,
+                  ]}
+                >
+                  <View style={styles.activityTop}>
+                    <View style={{ flex: 1, paddingRight: 10 }}>
+                      <Text
+                        numberOfLines={1}
+                        style={[
+                          styles.activityName,
+                          { color: theme.colors.primaryText },
+                        ]}
+                      >
+                        {trip.trip_name}
+                      </Text>
+                      <Text
+                        numberOfLines={1}
+                        style={[
+                          styles.activityDest,
+                          { color: theme.colors.secondaryText },
+                        ]}
+                      >
+                        {trip.destination}
+                      </Text>
+                    </View>
+                    <StatusBadge status={trip.status} />
+                  </View>
+
+                  <View style={styles.activityMetaRow}>
+                    <View style={styles.activityMetaItem}>
+                      <Calendar size={13} color={theme.colors.secondaryText} />
+                      <Text
+                        style={[
+                          styles.activityMetaText,
+                          { color: theme.colors.secondaryText },
+                        ]}
+                      >
+                        {formatDateRange(trip.departure_date, trip.return_date)}
+                      </Text>
+                    </View>
+
                     <Text
-                      numberOfLines={1}
                       style={[
-                        styles.activityName,
+                        styles.activityProgressText,
                         { color: theme.colors.primaryText },
                       ]}
                     >
-                      {trip.trip_name}
-                    </Text>
-                    <Text
-                      numberOfLines={1}
-                      style={[
-                        styles.activitySub,
-                        { color: theme.colors.secondaryText },
-                      ]}
-                    >
-                      {trip.destination} •{' '}
-                      {formatDateRange(trip.departure_date, trip.return_date)}
+                      {trip.packed_items}/{trip.total_items} packed (
+                      {trip.progress_percentage}%)
                     </Text>
                   </View>
-                  <StatusBadge status={trip.status} />
-                </View>
 
-                <View style={styles.activityBottom}>
-                  <TripTypeBadge tripType={trip.trip_type} />
-                  <Text
-                    style={[
-                      styles.activityProgressLabel,
-                      { color: theme.colors.primaryText },
-                    ]}
-                  >
-                    {trip.packed_items}/{trip.total_items} packed (
-                    {trip.progress_percentage}%)
-                  </Text>
-                </View>
-
-                <View style={{ marginTop: 10 }}>
-                  <AnimatedProgressBar percentage={trip.progress_percentage} height={6} />
-                </View>
-              </AnimatedPressableCard>
-            ))}
-          </View>
-        ) : null}
+                  <AnimatedProgressBar
+                    percentage={trip.progress_percentage}
+                    height={5}
+                    trackColor={theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.surfaceSubtle}
+                    fillColor={theme.colors.accentLime}
+                  />
+                </AnimatedPressableCard>
+              ))}
+            </View>
+          ) : null}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -559,78 +736,98 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 14,
-    paddingBottom: 36,
-    maxWidth: 760,
+    paddingBottom: 40,
+  },
+  containerConstrained: {
     width: '100%',
+    maxWidth: 760,
     alignSelf: 'center',
+    paddingHorizontal: 18,
   },
   headerRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 18,
+    paddingTop: 12,
+    paddingBottom: 10,
   },
-  greetingLeft: {
-    flex: 1,
-    paddingRight: 12,
+  headerProfileRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
-  dateText: {
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: 0.2,
-    marginBottom: 4,
+  avatarCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#1E143E',
+    borderWidth: 1.8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  greetingTitle: {
-    fontSize: 27,
+  avatarInitials: {
+    color: '#D4FF00',
+    fontSize: 15,
     fontWeight: '800',
-    letterSpacing: -0.5,
+    letterSpacing: 0.5,
   },
-  greetingSubtitle: {
-    fontSize: 14,
+  greetingTextBlock: {
+    justifyContent: 'center',
+  },
+  greetingCaption: {
+    fontSize: 12,
     fontWeight: '500',
-    marginTop: 2,
   },
-  headerRight: {
+  travelerNameText: {
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: 0.2,
+  },
+  headerRightActions: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
   },
-  iconButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  createBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15,
+  iconButtonFrosted: {
+    width: 40,
+    height: 40,
     borderRadius: 20,
     borderWidth: 1,
-    gap: 13,
-  },
-  createIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  createTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: -0.2,
+  titleSection: {
+    marginTop: 14,
+    marginBottom: 16,
   },
-  createSub: {
-    fontSize: 12,
-    marginTop: 2,
+  mainHeroTitle: {
+    fontSize: 32,
+    fontWeight: '900',
+    lineHeight: 38,
+    letterSpacing: -0.6,
   },
-  sectionBlock: {
-    marginTop: 22,
+  mainHeroTitleItalic: {
+    fontSize: 32,
+    fontStyle: 'italic',
+    fontWeight: '300',
+    lineHeight: 38,
+    letterSpacing: -0.4,
+  },
+  filterPillRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 20,
+    overflow: 'hidden',
+  },
+  catPill: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 9999,
+    borderWidth: 1,
+  },
+  catPillLabel: {
+    fontSize: 13,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
@@ -639,158 +836,184 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '800',
-    letterSpacing: -0.3,
-    marginBottom: 10,
+    letterSpacing: -0.2,
   },
   seeAllText: {
     fontSize: 13,
     fontWeight: '700',
-    marginBottom: 10,
   },
-  heroCard: {
+  heroSectionWrap: {
+    marginBottom: 20,
+  },
+  heroCardContainer: {
     borderRadius: 26,
-    padding: 22,
     overflow: 'hidden',
   },
-  heroDecorCircle: {
-    position: 'absolute',
-    top: -50,
-    right: -40,
-    width: 170,
-    height: 170,
-    borderRadius: 85,
-    backgroundColor: 'rgba(37, 99, 235, 0.18)',
+  heroImageWrapper: {
+    height: 240,
+    width: '100%',
+    position: 'relative',
+    justifyContent: 'space-between',
+    padding: 16,
   },
-  heroTopRow: {
+  heroBackgroundImage: {
+    ...StyleSheet.absoluteFill,
+  },
+  heroTopBadges: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  glassPill: {
+    backgroundColor: 'rgba(20, 14, 40, 0.70)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.16)',
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    borderRadius: 9999,
+  },
+  glassPillText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  limePill: {
+    backgroundColor: '#D4FF00',
+    borderColor: 'transparent',
+  },
+  limePillText: {
+    color: '#0A0618',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  heartBtn: {
+    marginLeft: 'auto',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(20, 14, 40, 0.70)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.16)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroGlassBanner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 14,
+    backgroundColor: 'rgba(22, 15, 46, 0.88)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.14)',
+    borderRadius: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  heroDestTitle: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.2,
+  },
+  heroMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 3,
+  },
+  heroMetaText: {
+    fontSize: 12,
+    color: '#CBD5E1',
+    fontWeight: '500',
+  },
+  heroReviewsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+  },
+  heroReviewsText: {
+    fontSize: 11,
+    color: '#94A3B8',
+    fontWeight: '600',
+  },
+  heroArrowCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroCard: {
+    borderRadius: 26,
+    padding: 20,
+  },
+  heroCardCompleted: {
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.14)',
+  },
+  heroCompletedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   heroPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     gap: 6,
-  },
-  heroPulseDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: '#10B981',
-  },
-  heroPillText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: 0.6,
-  },
-  heroDurationBadge: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#10B981',
-    backgroundColor: 'rgba(16, 185, 129, 0.20)',
+    backgroundColor: 'rgba(212, 255, 0, 0.15)',
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 999,
-  },
-  heroMainRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  heroCompletedRow: {
-    marginBottom: 16,
-  },
-  heroTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: -0.3,
-  },
-  heroMetaText: {
-    fontSize: 13,
-    lineHeight: 20,
-    color: 'rgba(255, 255, 255, 0.78)',
-    marginTop: 6,
-  },
-  heroLocRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginTop: 7,
-  },
-  heroDestination: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#E2E8F0',
-  },
-  heroDateText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: 'rgba(255, 255, 255, 0.75)',
-  },
-  heroProgressSection: {
-    marginTop: 18,
-    paddingTop: 14,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.12)',
-  },
-  heroProgressLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    borderRadius: 9999,
+    alignSelf: 'flex-start',
     marginBottom: 8,
   },
-  heroProgressTitle: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: 'rgba(255, 255, 255, 0.85)',
-  },
-  heroProgressCount: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#10B981',
-  },
-  heroActionRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginTop: 16,
-  },
-  heroPrimaryBtn: {
-    flex: 1.2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 7,
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 12,
-    borderRadius: 14,
-  },
-  heroPrimaryBtnText: {
-    fontSize: 13,
+  heroPillText: {
+    color: '#D4FF00',
+    fontSize: 10,
     fontWeight: '800',
-    color: '#0F1E36',
+    letterSpacing: 0.8,
   },
-  heroSecondaryBtn: {
-    flex: 1,
+  heroCompletedTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  heroCompletedSub: {
+    fontSize: 13,
+    color: '#CBD5E1',
+    marginTop: 4,
+    lineHeight: 18,
+  },
+  quickActionsGrid: {
     flexDirection: 'row',
+    gap: 12,
+    marginBottom: 22,
+  },
+  quickActionCard: {
+    flex: 1,
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 16,
+  },
+  quickActionIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.14)',
-    paddingVertical: 12,
-    borderRadius: 14,
+    marginBottom: 10,
   },
-  heroSecondaryBtnText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#FFFFFF',
+  quickActionTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  quickActionSubtitle: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  sectionBlock: {
+    marginBottom: 24,
   },
   statsRow: {
     flexDirection: 'row',
@@ -801,77 +1024,95 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1,
     padding: 14,
+    alignItems: 'center',
   },
   statIconBox: {
-    width: 34,
-    height: 34,
-    borderRadius: 11,
+    width: 36,
+    height: 36,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   statNumber: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '800',
     letterSpacing: -0.4,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     marginTop: 2,
   },
   templateStrip: {
     gap: 12,
-    paddingRight: 8,
+    paddingRight: 16,
   },
-  miniTplCard: {
-    width: 148,
-    borderRadius: 18,
+  templatePhotoCard: {
+    width: 170,
+    borderRadius: 20,
     borderWidth: 1,
-    padding: 14,
+    overflow: 'hidden',
   },
-  miniTplIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 13,
+  templateThumbnail: {
+    width: '100%',
+    height: 95,
+  },
+  templateCardContent: {
+    padding: 12,
+  },
+  templateIconSmall: {
+    width: 26,
+    height: 26,
+    borderRadius: 8,
+    backgroundColor: 'rgba(212, 255, 0, 0.16)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
+    marginBottom: 6,
   },
-  miniTplName: {
+  templateCardTitle: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
   },
-  miniTplCount: {
-    fontSize: 12,
-    marginTop: 3,
+  templateCardSub: {
+    fontSize: 11,
+    marginTop: 2,
   },
   activityCard: {
-    borderRadius: 18,
+    borderRadius: 20,
     borderWidth: 1,
-    padding: 15,
+    padding: 16,
     marginBottom: 10,
   },
   activityTop: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 8,
   },
   activityName: {
     fontSize: 15,
     fontWeight: '800',
   },
-  activitySub: {
+  activityDest: {
     fontSize: 12,
-    marginTop: 3,
+    marginTop: 2,
   },
-  activityBottom: {
+  activityMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 10,
+    marginBottom: 10,
   },
-  activityProgressLabel: {
+  activityMetaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  activityMetaText: {
+    fontSize: 12,
+  },
+  activityProgressText: {
     fontSize: 12,
     fontWeight: '700',
   },

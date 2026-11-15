@@ -46,7 +46,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
 export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
   const { theme, mode, setThemeMode } = useAppTheme();
-  const { dataVersion, notifyDataChanged, resetOnboarding } = useAppContext();
+  const { dataVersion, notifyDataChanged, resetOnboarding, userProfile } = useAppContext();
 
   const [dbInfo, setDbInfo] = useState<DatabaseInfo | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -66,6 +66,17 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
   const [draftStyle, setDraftStyle] = useState('Smart Efficient Packer');
   const [draftHome, setDraftHome] = useState('Colombo, Sri Lanka');
   const [savingProfile, setSavingProfile] = useState(false);
+
+  useEffect(() => {
+    if (userProfile) {
+      setTravelerName(userProfile.fullName);
+      setTravelerStyle(userProfile.travelStyle);
+      setTravelerHome(userProfile.country);
+      setDraftName(userProfile.fullName);
+      setDraftStyle(userProfile.travelStyle);
+      setDraftHome(userProfile.country);
+    }
+  }, [userProfile]);
 
   useEffect(() => {
     (async () => {
@@ -234,22 +245,17 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
               Traveler Profile
             </Text>
             <Pressable
-              onPress={() => {
-                setDraftName(travelerName);
-                setDraftStyle(travelerStyle);
-                setDraftHome(travelerHome);
-                setShowProfileModal(true);
-              }}
+              onPress={() => navigation.navigate('EditProfile')}
               style={[
                 styles.editProfileBtn,
-                { backgroundColor: theme.colors.infoSoft },
+                { backgroundColor: theme.colors.limeSoft },
               ]}
             >
-              <Edit3 size={13} color={theme.colors.secondaryBlue} />
+              <Edit3 size={13} color={theme.colors.accentLime} />
               <Text
                 style={[
                   styles.editProfileBtnText,
-                  { color: theme.colors.secondaryBlue },
+                  { color: theme.colors.accentLime },
                 ]}
               >
                 Edit Profile
@@ -262,12 +268,12 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
               style={[
                 styles.profileAvatarBox,
                 {
-                  backgroundColor: theme.colors.primaryNavy,
-                  borderColor: theme.colors.secondaryBlue,
+                  backgroundColor: theme.isDark ? '#1C1338' : theme.colors.card,
+                  borderColor: theme.colors.accentLime,
                 },
               ]}
             >
-              <Text style={styles.profileAvatarInitials}>
+              <Text style={[styles.profileAvatarInitials, { color: theme.colors.accentLime }]}>
                 {travelerName
                   .split(' ')
                   .map((p) => p[0])
@@ -279,7 +285,7 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
               <View
                 style={[
                   styles.profileStatusDot,
-                  { backgroundColor: theme.colors.accentMint },
+                  { backgroundColor: theme.colors.accentLime },
                 ]}
               />
             </View>
@@ -294,17 +300,17 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
                 style={[
                   styles.styleBadge,
                   {
-                    backgroundColor: theme.colors.infoSoft,
-                    borderColor: 'rgba(37, 99, 235, 0.20)',
+                    backgroundColor: theme.colors.limeSoft,
+                    borderColor: 'rgba(212, 255, 0, 0.35)',
                     borderWidth: 1,
                   },
                 ]}
               >
-                <Sparkles size={11} color={theme.colors.secondaryBlue} />
+                <Sparkles size={11} color={theme.colors.accentLime} />
                 <Text
                   style={[
                     styles.styleBadgeText,
-                    { color: theme.colors.secondaryBlue },
+                    { color: theme.colors.accentLime },
                   ]}
                 >
                   {travelerStyle}
@@ -650,12 +656,17 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
                       styles.styleChoiceChip,
                       {
                         backgroundColor: selected
-                          ? theme.colors.infoSoft
+                          ? theme.colors.accentLime
+                          : theme.isDark
+                          ? 'rgba(255, 255, 255, 0.08)'
                           : theme.colors.surfaceSubtle,
                         borderColor: selected
-                          ? theme.colors.secondaryBlue
+                          ? 'transparent'
+                          : theme.isDark
+                          ? 'rgba(255, 255, 255, 0.12)'
                           : 'transparent',
                       },
+                      selected ? theme.shadows.limeGlow : null,
                     ]}
                   >
                     <Text
@@ -663,8 +674,9 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
                         styles.styleChoiceText,
                         {
                           color: selected
-                            ? theme.colors.secondaryBlue
+                            ? theme.colors.limeText
                             : theme.colors.secondaryText,
+                          fontWeight: selected ? '800' : '600',
                         },
                       ]}
                     >
@@ -703,7 +715,7 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
               <PrimaryButton
                 label="Save Profile"
                 onPress={handleSaveProfile}
-                variant="secondary"
+                variant="lime"
                 loading={savingProfile}
                 style={{ flex: 1.4 }}
               />

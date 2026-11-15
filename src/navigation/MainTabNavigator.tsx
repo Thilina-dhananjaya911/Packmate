@@ -7,11 +7,12 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Compass, History, Home, Layers } from 'lucide-react-native';
+import { Compass, History, Home, Layers, User } from 'lucide-react-native';
 import { useAppTheme } from '../context/ThemeContext';
 import { HistoryScreen } from '../screens/HistoryScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { MyTripsScreen } from '../screens/MyTripsScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
 import { TemplatesScreen } from '../screens/TemplatesScreen';
 import { MainTabParamList } from '../types';
 
@@ -20,20 +21,20 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 interface AnimatedTabIconProps {
   focused: boolean;
   color: string;
-  children: React.ReactNode;
+  icon: (iconColor: string, isFocused: boolean) => React.ReactNode;
 }
 
 const AnimatedTabIcon: React.FC<AnimatedTabIconProps> = ({
   focused,
-  children,
+  icon,
 }) => {
   const { theme } = useAppTheme();
-  const scale = useSharedValue(focused ? 1.08 : 1);
+  const scale = useSharedValue(focused ? 1.05 : 1);
 
   useEffect(() => {
-    scale.value = withSpring(focused ? 1.08 : 1, {
-      damping: 15,
-      stiffness: 260,
+    scale.value = withSpring(focused ? 1.05 : 1, {
+      damping: 16,
+      stiffness: 280,
     });
   }, [focused, scale]);
 
@@ -41,19 +42,22 @@ const AnimatedTabIcon: React.FC<AnimatedTabIconProps> = ({
     transform: [{ scale: scale.value }],
   }));
 
+  const activeIconColor = theme.colors.limeText;
+  const inactiveIconColor = theme.colors.secondaryText;
+
   return (
     <Animated.View
       style={[
         styles.iconPill,
         focused && {
-          backgroundColor: theme.colors.infoSoft,
-          borderWidth: 1,
-          borderColor: 'rgba(37, 99, 235, 0.20)',
+          backgroundColor: theme.colors.accentLime,
+          borderColor: 'transparent',
+          ...theme.shadows.limeGlow,
         },
         animStyle,
       ]}
     >
-      {children}
+      {icon(focused ? activeIconColor : inactiveIconColor, focused)}
     </Animated.View>
   );
 };
@@ -67,7 +71,7 @@ export const MainTabNavigator: React.FC = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: theme.colors.secondaryBlue,
+        tabBarActiveTintColor: theme.isDark ? theme.colors.accentLime : theme.colors.secondaryBlue,
         tabBarInactiveTintColor: theme.colors.secondaryText,
         tabBarLabelStyle: {
           fontSize: 11,
@@ -76,17 +80,17 @@ export const MainTabNavigator: React.FC = () => {
           marginTop: 2,
         },
         tabBarStyle: {
-          backgroundColor: theme.colors.card,
-          borderTopColor: theme.colors.border,
+          backgroundColor: theme.isDark ? 'rgba(21, 14, 44, 0.96)' : theme.colors.card,
+          borderTopColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
           borderTopWidth: 1,
-          height: 62 + bottomPad,
+          height: 64 + bottomPad,
           paddingTop: 8,
           paddingBottom: bottomPad,
-          elevation: 12,
-          shadowColor: '#0F172A',
-          shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: 0.07,
-          shadowRadius: 16,
+          elevation: 16,
+          shadowColor: '#000000',
+          shadowOffset: { width: 0, height: -6 },
+          shadowOpacity: 0.35,
+          shadowRadius: 20,
         },
       }}
     >
@@ -96,9 +100,13 @@ export const MainTabNavigator: React.FC = () => {
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <AnimatedTabIcon focused={focused} color={color}>
-              <Home size={20} color={color} strokeWidth={focused ? 2.5 : 2} />
-            </AnimatedTabIcon>
+            <AnimatedTabIcon
+              focused={focused}
+              color={color}
+              icon={(ic, isF) => (
+                <Home size={20} color={ic} strokeWidth={isF ? 2.6 : 2} />
+              )}
+            />
           ),
         }}
       />
@@ -108,9 +116,13 @@ export const MainTabNavigator: React.FC = () => {
         options={{
           tabBarLabel: 'My Trips',
           tabBarIcon: ({ color, focused }) => (
-            <AnimatedTabIcon focused={focused} color={color}>
-              <Compass size={20} color={color} strokeWidth={focused ? 2.5 : 2} />
-            </AnimatedTabIcon>
+            <AnimatedTabIcon
+              focused={focused}
+              color={color}
+              icon={(ic, isF) => (
+                <Compass size={20} color={ic} strokeWidth={isF ? 2.6 : 2} />
+              )}
+            />
           ),
         }}
       />
@@ -120,9 +132,13 @@ export const MainTabNavigator: React.FC = () => {
         options={{
           tabBarLabel: 'Templates',
           tabBarIcon: ({ color, focused }) => (
-            <AnimatedTabIcon focused={focused} color={color}>
-              <Layers size={20} color={color} strokeWidth={focused ? 2.5 : 2} />
-            </AnimatedTabIcon>
+            <AnimatedTabIcon
+              focused={focused}
+              color={color}
+              icon={(ic, isF) => (
+                <Layers size={20} color={ic} strokeWidth={isF ? 2.6 : 2} />
+              )}
+            />
           ),
         }}
       />
@@ -132,9 +148,29 @@ export const MainTabNavigator: React.FC = () => {
         options={{
           tabBarLabel: 'History',
           tabBarIcon: ({ color, focused }) => (
-            <AnimatedTabIcon focused={focused} color={color}>
-              <History size={20} color={color} strokeWidth={focused ? 2.5 : 2} />
-            </AnimatedTabIcon>
+            <AnimatedTabIcon
+              focused={focused}
+              color={color}
+              icon={(ic, isF) => (
+                <History size={20} color={ic} strokeWidth={isF ? 2.6 : 2} />
+              )}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, focused }) => (
+            <AnimatedTabIcon
+              focused={focused}
+              color={color}
+              icon={(ic, isF) => (
+                <User size={20} color={ic} strokeWidth={isF ? 2.6 : 2} />
+              )}
+            />
           ),
         }}
       />
@@ -144,9 +180,9 @@ export const MainTabNavigator: React.FC = () => {
 
 const styles = StyleSheet.create({
   iconPill: {
-    width: 46,
+    width: 48,
     height: 32,
-    borderRadius: 14,
+    borderRadius: 9999,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -14,9 +14,16 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { useAppTheme } from '../context/ThemeContext';
+import { RADIUS, useAppTheme } from '../context/ThemeContext';
 
-type ButtonVariant = 'primary' | 'secondary' | 'mint' | 'outline' | 'danger';
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'lime'
+  | 'mint'
+  | 'outline'
+  | 'danger'
+  | 'glass';
 
 interface PrimaryButtonProps {
   label: string;
@@ -27,6 +34,7 @@ interface PrimaryButtonProps {
   loading?: boolean;
   disabled?: boolean;
   compact?: boolean;
+  pill?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -41,6 +49,7 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   loading = false,
   disabled = false,
   compact = false,
+  pill = true,
   style,
 }) => {
   const { theme } = useAppTheme();
@@ -52,104 +61,106 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 
   const getPalette = () => {
     switch (variant) {
+      case 'lime':
+        return {
+          bg: theme.colors.accentLime,
+          text: theme.colors.limeText,
+          border: 'transparent',
+          shadow: theme.shadows.limeGlow,
+        };
       case 'secondary':
         return {
           bg: theme.colors.secondaryBlue,
           text: '#FFFFFF',
           border: 'transparent',
+          shadow: theme.shadows.blueGlow,
         };
       case 'mint':
         return {
           bg: theme.colors.accentMint,
           text: '#FFFFFF',
           border: 'transparent',
+          shadow: theme.shadows.mintGlow,
+        };
+      case 'glass':
+        return {
+          bg: theme.colors.glassSurface,
+          text: theme.colors.primaryText,
+          border: theme.colors.glassBorder,
+          shadow: theme.shadows.sm,
         };
       case 'outline':
         return {
           bg: theme.colors.card,
           text: theme.colors.primaryText,
           border: theme.colors.border,
+          shadow: theme.shadows.xs,
         };
       case 'danger':
         return {
           bg: theme.colors.dangerSoft,
           text: theme.colors.danger,
           border: 'transparent',
+          shadow: theme.shadows.xs,
         };
       case 'primary':
       default:
         return {
-          bg: theme.colors.primaryNavy,
+          bg: theme.colors.secondaryBlue,
           text: '#FFFFFF',
           border: 'transparent',
+          shadow: theme.shadows.blueGlow,
         };
     }
   };
 
   const palette = getPalette();
 
-  const getShadow = () => {
-    switch (variant) {
-      case 'secondary':
-        return theme.shadows.blueGlow;
-      case 'mint':
-        return theme.shadows.mintGlow;
-      case 'outline':
-      case 'danger':
-        return theme.shadows.xs;
-      case 'primary':
-      default:
-        return theme.shadows.sm;
-    }
-  };
-
-  const webPointerStyle =
-    Platform.OS === 'web' && !disabled && !loading
-      ? ({ cursor: 'pointer' } as unknown as ViewStyle)
-      : null;
-
   return (
     <AnimatedPressable
-      disabled={disabled || loading}
       onPress={onPress}
+      disabled={disabled || loading}
       onPressIn={() => {
-        scale.value = withSpring(0.975, { damping: 18, stiffness: 340 });
+        scale.value = withSpring(0.97, { damping: 15, stiffness: 350 });
       }}
       onPressOut={() => {
-        scale.value = withSpring(1, { damping: 16, stiffness: 280 });
+        scale.value = withSpring(1, { damping: 15, stiffness: 350 });
       }}
       style={[
-        styles.button,
-        compact ? styles.buttonCompact : styles.buttonRegular,
+        styles.base,
+        compact ? styles.compact : styles.regular,
+        pill ? styles.pill : styles.rounded,
         {
           backgroundColor: palette.bg,
-          borderColor:
-            variant === 'outline'
-              ? palette.border
-              : 'rgba(255, 255, 255, 0.12)',
-          borderWidth: 1,
-          opacity: disabled ? 0.55 : 1,
+          borderColor: palette.border,
+          borderWidth: palette.border !== 'transparent' ? 1 : 0,
         },
-        getShadow(),
-        webPointerStyle,
-        style,
+        palette.shadow,
+        disabled && styles.disabled,
+        Platform.OS === 'web' && ({ cursor: disabled ? 'not-allowed' : 'pointer' } as any),
         animStyle,
+        style,
       ]}
     >
       {loading ? (
-        <ActivityIndicator size="small" color={palette.text} />
+        <ActivityIndicator
+          size="small"
+          color={palette.text}
+          style={styles.spinner}
+        />
       ) : (
-        <View style={styles.row}>
-          {icon ? <View style={styles.leftIcon}>{icon}</View> : null}
+        <View style={styles.contentRow}>
+          {icon ? <View style={styles.iconSlot}>{icon}</View> : null}
           <Text
             style={[
-              compact ? styles.labelCompact : styles.label,
+              styles.label,
+              compact ? styles.labelCompact : styles.labelRegular,
               { color: palette.text },
             ]}
           >
             {label}
           </Text>
-          {rightIcon ? <View style={styles.rightIcon}>{rightIcon}</View> : null}
+          {rightIcon ? <View style={styles.rightIconSlot}>{rightIcon}</View> : null}
         </View>
       )}
     </AnimatedPressable>
@@ -157,38 +168,51 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 };
 
 const styles = StyleSheet.create({
-  button: {
-    borderRadius: 16,
+  base: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonRegular: {
-    paddingVertical: 15,
-    paddingHorizontal: 20,
+  pill: {
+    borderRadius: 9999,
   },
-  buttonCompact: {
+  rounded: {
+    borderRadius: RADIUS.lg,
+  },
+  regular: {
+    paddingVertical: 14,
+    paddingHorizontal: 22,
+    minHeight: 52,
+  },
+  compact: {
     paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 12,
+    paddingHorizontal: 16,
+    minHeight: 40,
   },
-  row: {
+  contentRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  leftIcon: {
+  iconSlot: {
     marginRight: 8,
   },
-  rightIcon: {
+  rightIconSlot: {
     marginLeft: 8,
   },
   label: {
-    fontSize: 15,
     fontWeight: '700',
-    letterSpacing: 0.1,
+    letterSpacing: 0.2,
+  },
+  labelRegular: {
+    fontSize: 15,
   },
   labelCompact: {
     fontSize: 13,
-    fontWeight: '700',
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  spinner: {
+    paddingVertical: 2,
   },
 });
