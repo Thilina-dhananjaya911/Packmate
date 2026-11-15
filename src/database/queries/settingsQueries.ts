@@ -2,6 +2,7 @@ import { APP_INFO } from '../../constants';
 import { DatabaseInfo, ThemeMode } from '../../types';
 import { getDatabase, seedInitialDataIfNeeded, syncAutomaticTripStatuses } from '../index';
 import { buildDemoJourneys } from '../seed/demoJourneys';
+import { generateAndSyncTripEssentials, seedEssentialDataIfNeeded } from './essentialQueries';
 
 export async function getSetting(key: string): Promise<string | null> {
   const db = await getDatabase();
@@ -85,10 +86,12 @@ export async function getDatabaseInfo(): Promise<DatabaseInfo> {
 export async function clearUserApplicationData(): Promise<void> {
   const db = await getDatabase();
   await db.withTransactionAsync(async () => {
+    await db.runAsync('DELETE FROM trip_essential_items');
     await db.runAsync('DELETE FROM packing_items');
     await db.runAsync('DELETE FROM trips');
   });
   await seedInitialDataIfNeeded(db);
+  await seedEssentialDataIfNeeded(db);
 }
 
 /**
@@ -99,6 +102,7 @@ export async function loadSampleDemoJourneys(): Promise<number> {
   const db = await getDatabase();
   const demos = buildDemoJourneys();
   let insertedCount = 0;
+  const createdTrips: any[] = [];
 
   const categories = await db.getAllAsync<{ id: number; name: string }>(
     'SELECT id, name FROM item_categories'
@@ -142,6 +146,19 @@ export async function loadSampleDemoJourneys(): Promise<number> {
 
       const tripId = res.lastInsertRowId;
       insertedCount += 1;
+      createdTrips.push({
+        id: tripId,
+        trip_name: demo.trip_name,
+        destination: demo.destination,
+        destination_type: demo.destination_type,
+        departure_date: demo.departure_date,
+        return_date: demo.return_date,
+        trip_duration: demo.trip_duration,
+        trip_type: demo.trip_type,
+        traveller_count: demo.traveller_count,
+        notes: demo.notes,
+        status: demo.status,
+      });
 
       for (const item of demo.items) {
         const catId = catMap.get(item.category) ?? 1;
@@ -163,6 +180,11 @@ export async function loadSampleDemoJourneys(): Promise<number> {
       }
     }
   });
+
+  // Populate essentials for created demo trips
+  for (const trip of createdTrips) {
+    await generateAndSyncTripEssentials(trip);
+  }
 
   await syncAutomaticTripStatuses(db);
   return insertedCount;

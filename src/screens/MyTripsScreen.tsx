@@ -17,6 +17,7 @@ import {
   Edit3,
   MapPin,
   Plus,
+  ShieldAlert,
   Trash2,
   Users,
 } from 'lucide-react-native';
@@ -223,25 +224,47 @@ export const MyTripsScreen: React.FC<Props> = ({ navigation }) => {
               { borderTopColor: theme.colors.border },
             ]}
           >
-            <Pressable
-              onPress={() =>
-                navigation.navigate('PackingChecklist', { tripId: item.id })
-              }
-              style={[
-                styles.checklistBtn,
-                { backgroundColor: theme.colors.infoSoft },
-              ]}
-            >
-              <CheckSquare size={15} color={theme.colors.secondaryBlue} />
-              <Text
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1, flexWrap: 'wrap' }}>
+              <Pressable
+                onPress={() =>
+                  navigation.navigate('PackingChecklist', { tripId: item.id })
+                }
                 style={[
-                  styles.checklistBtnText,
-                  { color: theme.colors.secondaryBlue },
+                  styles.checklistBtn,
+                  { backgroundColor: theme.colors.infoSoft },
                 ]}
               >
-                Packing List
-              </Text>
-            </Pressable>
+                <CheckSquare size={14} color={theme.colors.secondaryBlue} />
+                <Text
+                  style={[
+                    styles.checklistBtnText,
+                    { color: theme.colors.secondaryBlue },
+                  ]}
+                >
+                  List
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() =>
+                  navigation.navigate('DontForgetDashboard', { tripId: item.id })
+                }
+                style={[
+                  styles.checklistBtn,
+                  { backgroundColor: theme.colors.dangerSoft },
+                ]}
+              >
+                <ShieldAlert size={14} color={theme.colors.danger} />
+                <Text
+                  style={[
+                    styles.checklistBtnText,
+                    { color: theme.colors.danger },
+                  ]}
+                >
+                  Don't Forget
+                </Text>
+              </Pressable>
+            </View>
 
             <View style={styles.iconActions}>
               <Pressable

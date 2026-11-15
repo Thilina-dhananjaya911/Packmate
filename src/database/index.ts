@@ -4,6 +4,7 @@ import { APP_INFO } from '../constants';
 import { DATABASE_SCHEMA_SQL } from './migrations/schema';
 import { SEED_CATEGORIES, SEED_TEMPLATES } from './seed/seedData';
 import { getTodayISO } from '../utils/dateUtils';
+import { seedEssentialDataIfNeeded } from './queries/essentialQueries';
 
 interface PackmateGlobalScope {
   __PACKMATE_SQLITE_DB__?: SQLite.SQLiteDatabase;
@@ -130,6 +131,7 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
       }
       await db.execAsync(DATABASE_SCHEMA_SQL);
       await seedInitialDataIfNeeded(db);
+      await seedEssentialDataIfNeeded(db);
       await syncAutomaticTripStatuses(db);
       scope.__PACKMATE_SQLITE_DB__ = db;
       attachWebTeardown(db);

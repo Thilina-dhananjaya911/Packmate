@@ -239,6 +239,7 @@ export async function updateTripStatus(
 export async function deleteTrip(tripId: number): Promise<void> {
   const db = await getDatabase();
   await db.withTransactionAsync(async () => {
+    await db.runAsync('DELETE FROM trip_essential_items WHERE trip_id = ?', [tripId]);
     await db.runAsync('DELETE FROM packing_items WHERE trip_id = ?', [tripId]);
     await db.runAsync('DELETE FROM trips WHERE id = ?', [tripId]);
   });

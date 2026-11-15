@@ -21,6 +21,8 @@ import {
   MapPin,
   Plus,
   Settings,
+  ShieldAlert,
+  ShieldCheck,
   Sparkles,
 } from 'lucide-react-native';
 import { useAppContext } from '../context/AppContext';
@@ -220,8 +222,20 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
               }
               style={styles.heroPrimaryBtn}
             >
-              <CheckCircle2 size={16} color="#172B4D" strokeWidth={2.4} />
-              <Text style={styles.heroPrimaryBtnText}>Open Checklist</Text>
+              <CheckCircle2 size={15} color="#172B4D" strokeWidth={2.4} />
+              <Text style={styles.heroPrimaryBtnText}>Checklist</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() =>
+                navigation.navigate('DontForgetDashboard', {
+                  tripId: upcomingHeroTrip.id,
+                })
+              }
+              style={styles.heroVerifyBtn}
+            >
+              <ShieldAlert size={15} color="#FFFFFF" strokeWidth={2.4} />
+              <Text style={styles.heroVerifyBtnText}>Don't Forget</Text>
             </Pressable>
 
             <Pressable
@@ -232,8 +246,8 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
               }
               style={styles.heroSecondaryBtn}
             >
-              <Text style={styles.heroSecondaryBtnText}>Trip Overview</Text>
-              <ArrowRight size={15} color="#FFFFFF" />
+              <Text style={styles.heroSecondaryBtnText}>Overview</Text>
+              <ArrowRight size={14} color="#FFFFFF" />
             </Pressable>
           </View>
         </LinearGradient>
@@ -317,6 +331,46 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Upcoming Trip Hero or Empty State */}
         <View style={styles.sectionBlock}>{renderHeroSection()}</View>
+
+        {/* Don't Forget Mode Quick Access Banner */}
+        {dashboardStats.totalTrips > 0 ? (
+          <AnimatedPressableCard
+            onPress={() =>
+              navigation.navigate('DontForgetDashboard', {
+                tripId: upcomingHeroTrip?.id,
+              })
+            }
+            style={[styles.dontForgetCard, theme.shadows.sm]}
+          >
+            <LinearGradient
+              colors={['#172B4D', '#1B3560', '#22477E']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.dontForgetGrad}
+            >
+              <View style={styles.dontForgetLeft}>
+                <View style={styles.dontForgetIconWrap}>
+                  <ShieldAlert size={22} color="#36C9A5" strokeWidth={2.4} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <View style={styles.dontForgetPill}>
+                    <Sparkles size={11} color="#36C9A5" />
+                    <Text style={styles.dontForgetPillText}>
+                      SAFETY DEPARTURE VERIFICATION
+                    </Text>
+                  </View>
+                  <Text style={styles.dontForgetTitle}>Don't Forget Mode</Text>
+                  <Text style={styles.dontForgetSub}>
+                    Verify passports, IDs, keys, tickets & medications before departure
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.dontForgetRight}>
+                <ArrowRight size={18} color="#36C9A5" strokeWidth={2.5} />
+              </View>
+            </LinearGradient>
+          </AnimatedPressableCard>
+        ) : null}
 
         {/* Dynamic SQLite Statistics Grid */}
         <View style={styles.sectionBlock}>
@@ -756,17 +810,32 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   heroPrimaryBtn: {
-    flex: 1.2,
+    flex: 1.1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 7,
+    gap: 5,
     backgroundColor: '#FFFFFF',
     paddingVertical: 12,
     borderRadius: 14,
   },
   heroPrimaryBtnText: {
-    fontSize: 13,
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#172B4D',
+  },
+  heroVerifyBtn: {
+    flex: 1.2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    backgroundColor: '#36C9A5',
+    paddingVertical: 12,
+    borderRadius: 14,
+  },
+  heroVerifyBtnText: {
+    fontSize: 12,
     fontWeight: '800',
     color: '#172B4D',
   },
@@ -775,15 +844,74 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 5,
     backgroundColor: 'rgba(255, 255, 255, 0.14)',
     paddingVertical: 12,
     borderRadius: 14,
   },
   heroSecondaryBtnText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
     color: '#FFFFFF',
+  },
+  dontForgetCard: {
+    borderRadius: 22,
+    overflow: 'hidden',
+    marginTop: 18,
+  },
+  dontForgetGrad: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 22,
+  },
+  dontForgetLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+    paddingRight: 10,
+  },
+  dontForgetIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: 'rgba(54, 201, 165, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dontForgetPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 4,
+  },
+  dontForgetPillText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#36C9A5',
+    letterSpacing: 0.6,
+  },
+  dontForgetTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.2,
+  },
+  dontForgetSub: {
+    fontSize: 12,
+    lineHeight: 17,
+    color: 'rgba(255, 255, 255, 0.75)',
+    marginTop: 2,
+  },
+  dontForgetRight: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   statsRow: {
     flexDirection: 'row',

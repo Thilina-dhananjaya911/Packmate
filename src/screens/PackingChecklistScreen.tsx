@@ -26,6 +26,7 @@ import {
   Layers,
   Minus,
   Plus,
+  ShieldAlert,
   SlidersHorizontal,
   Sparkles,
   Trash2,
@@ -376,6 +377,19 @@ export const PackingChecklistScreen: React.FC<Props> = ({
         onBack={() => navigation.goBack()}
         rightElement={
           <View style={{ flexDirection: 'row', gap: 8 }}>
+            <Pressable
+              onPress={() =>
+                navigation.navigate('DontForgetDashboard', { tripId })
+              }
+              style={[
+                styles.headerActionBtn,
+                {
+                  backgroundColor: theme.colors.dangerSoft,
+                },
+              ]}
+            >
+              <ShieldAlert size={17} color={theme.colors.danger} />
+            </Pressable>
             <Pressable
               onPress={() =>
                 navigation.navigate('MainTabs', {
