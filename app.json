@@ -16,7 +16,8 @@
       "package": "com.packmate.app"
     },
     "plugins": [
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-status-bar"
     ]
   }
 }
