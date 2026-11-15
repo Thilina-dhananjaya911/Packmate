@@ -279,12 +279,12 @@ export const ItemDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
                     { color: theme.colors.primaryText, marginBottom: 2 },
                   ]}
                 >
-                  Essential Priority
+                  Essential Priority (Don't Forget)
                 </Text>
                 <Text
                   style={{ fontSize: 12, color: theme.colors.secondaryText }}
                 >
-                  Highlight as must-pack essential
+                  Highlight as must-pack essential for this journey
                 </Text>
               </View>
               <Switch
@@ -379,7 +379,7 @@ export const ItemDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
             <PrimaryButton
               label="Save Item Changes"
               onPress={handleSave}
-              variant="secondary"
+              variant="lime"
               loading={saving}
             />
             <PrimaryButton
@@ -418,13 +418,16 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 36,
+    paddingBottom: 40,
     gap: 16,
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
   },
   packedBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: 22,
     borderWidth: 1.4,
     padding: 16,
   },
@@ -437,9 +440,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   card: {
-    borderRadius: 22,
+    borderRadius: 24,
     borderWidth: 1,
-    padding: 18,
+    padding: 20,
   },
   label: {
     fontSize: 14,

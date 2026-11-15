@@ -41,12 +41,12 @@ export const GeometricIllustration: React.FC<GeometricIllustrationProps> = ({
         <Svg width={size} height={size} viewBox="0 0 220 220">
           <Defs>
             <LinearGradient id="orb1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <Stop offset="0%" stopColor="#4C9AFF" stopOpacity="0.22" />
-              <Stop offset="100%" stopColor="#36C9A5" stopOpacity="0.08" />
+              <Stop offset="0%" stopColor="#2563EB" stopOpacity="0.22" />
+              <Stop offset="100%" stopColor="#10B981" stopOpacity="0.09" />
             </LinearGradient>
             <LinearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <Stop offset="0%" stopColor="#172B4D" />
-              <Stop offset="100%" stopColor="#264B84" />
+              <Stop offset="0%" stopColor="#0B1528" />
+              <Stop offset="100%" stopColor="#1E3A70" />
             </LinearGradient>
           </Defs>
 
@@ -55,7 +55,7 @@ export const GeometricIllustration: React.FC<GeometricIllustrationProps> = ({
             cx="110"
             cy="110"
             r="74"
-            stroke="#4C9AFF"
+            stroke="#2563EB"
             strokeOpacity="0.25"
             strokeWidth="1.5"
             strokeDasharray="6 6"
@@ -66,18 +66,18 @@ export const GeometricIllustration: React.FC<GeometricIllustrationProps> = ({
             <>
               {/* Route Card & Flight Arc */}
               <Rect x="38" y="56" width="144" height="108" rx="22" fill="url(#cardGrad)" />
-              <Rect x="54" y="74" width="54" height="8" rx="4" fill="#4C9AFF" />
+              <Rect x="54" y="74" width="54" height="8" rx="4" fill="#2563EB" />
               <Rect x="54" y="90" width="84" height="6" rx="3" fill="rgba(255,255,255,0.45)" />
               <Path
                 d="M58 136 Q110 96 162 136"
-                stroke="#36C9A5"
+                stroke="#10B981"
                 strokeWidth="3"
                 strokeDasharray="5 5"
                 fill="none"
               />
-              <Circle cx="58" cy="136" r="6" fill="#4C9AFF" />
-              <Circle cx="162" cy="136" r="7" fill="#36C9A5" />
-              <Circle cx="172" cy="54" r="18" fill="#36C9A5" />
+              <Circle cx="58" cy="136" r="6" fill="#2563EB" />
+              <Circle cx="162" cy="136" r="7" fill="#10B981" />
+              <Circle cx="172" cy="54" r="18" fill="#10B981" />
               <Path
                 d="M166 54 L170 58 L179 49"
                 stroke="#FFFFFF"
@@ -94,18 +94,18 @@ export const GeometricIllustration: React.FC<GeometricIllustrationProps> = ({
               {/* Layered Smart Category Cards */}
               <Rect x="48" y="44" width="124" height="132" rx="22" fill="url(#cardGrad)" />
               <Rect x="64" y="66" width="92" height="22" rx="8" fill="rgba(255,255,255,0.12)" />
-              <Circle cx="76" cy="77" r="5" fill="#36C9A5" />
+              <Circle cx="76" cy="77" r="5" fill="#10B981" />
               <Rect x="88" y="74" width="54" height="6" rx="3" fill="#FFFFFF" />
 
               <Rect x="64" y="98" width="92" height="22" rx="8" fill="rgba(255,255,255,0.12)" />
-              <Circle cx="76" cy="109" r="5" fill="#4C9AFF" />
+              <Circle cx="76" cy="109" r="5" fill="#2563EB" />
               <Rect x="88" y="106" width="60" height="6" rx="3" fill="#FFFFFF" />
 
               <Rect x="64" y="130" width="92" height="22" rx="8" fill="rgba(255,255,255,0.12)" />
               <Circle cx="76" cy="141" r="5" fill="#F59E0B" />
               <Rect x="88" y="138" width="44" height="6" rx="3" fill="#FFFFFF" />
 
-              <Circle cx="168" cy="160" r="20" fill="#4C9AFF" />
+              <Circle cx="168" cy="160" r="20" fill="#2563EB" />
               <Line x1="168" y1="152" x2="168" y2="168" stroke="#FFF" strokeWidth="3" strokeLinecap="round" />
               <Line x1="160" y1="160" x2="176" y2="160" stroke="#FFF" strokeWidth="3" strokeLinecap="round" />
             </>
@@ -127,7 +127,7 @@ export const GeometricIllustration: React.FC<GeometricIllustrationProps> = ({
                 cx="110"
                 cy="104"
                 r="36"
-                stroke="#36C9A5"
+                stroke="#10B981"
                 strokeWidth="9"
                 strokeDasharray="180 226"
                 strokeLinecap="round"
@@ -141,7 +141,7 @@ export const GeometricIllustration: React.FC<GeometricIllustrationProps> = ({
                 strokeLinejoin="round"
                 fill="none"
               />
-              <Rect x="74" y="152" width="72" height="7" rx="3.5" fill="#4C9AFF" />
+              <Rect x="74" y="152" width="72" height="7" rx="3.5" fill="#2563EB" />
             </>
           )}
         </Svg>

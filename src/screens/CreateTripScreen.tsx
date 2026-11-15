@@ -519,12 +519,17 @@ export const CreateTripScreen: React.FC<Props> = ({ navigation, route }) => {
                       styles.envChip,
                       {
                         backgroundColor: selected
-                          ? theme.colors.infoSoft
+                          ? theme.colors.accentLime
+                          : theme.isDark
+                          ? 'rgba(255, 255, 255, 0.08)'
                           : theme.colors.surfaceSubtle,
                         borderColor: selected
-                          ? theme.colors.secondaryBlue
+                          ? 'transparent'
+                          : theme.isDark
+                          ? 'rgba(255, 255, 255, 0.12)'
                           : 'transparent',
                       },
+                      selected ? theme.shadows.limeGlow : null,
                     ]}
                   >
                     <DynamicIcon
@@ -532,7 +537,7 @@ export const CreateTripScreen: React.FC<Props> = ({ navigation, route }) => {
                       size={13}
                       color={
                         selected
-                          ? theme.colors.secondaryBlue
+                          ? theme.colors.limeText
                           : theme.colors.secondaryText
                       }
                     />
@@ -541,8 +546,9 @@ export const CreateTripScreen: React.FC<Props> = ({ navigation, route }) => {
                         styles.envChipText,
                         {
                           color: selected
-                            ? theme.colors.secondaryBlue
+                            ? theme.colors.limeText
                             : theme.colors.secondaryText,
+                          fontWeight: selected ? '800' : '600',
                         },
                       ]}
                     >
@@ -939,7 +945,7 @@ export const CreateTripScreen: React.FC<Props> = ({ navigation, route }) => {
                   : 'Save Trip'
               }
               onPress={handleSaveTrip}
-              variant="secondary"
+              variant="lime"
               loading={saving}
             />
           </View>
@@ -1054,8 +1060,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 40,
+    paddingBottom: 44,
     gap: 16,
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
   },
   reuseBanner: {
     flexDirection: 'row',
@@ -1071,34 +1080,35 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   card: {
-    borderRadius: 22,
+    borderRadius: 24,
     borderWidth: 1,
-    padding: 18,
+    padding: 20,
   },
   fieldLabel: {
     fontSize: 14,
     fontWeight: '700',
     marginBottom: 8,
+    letterSpacing: 0.1,
   },
   helperLabel: {
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   input: {
     borderWidth: 1,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    height: 48,
+    borderRadius: 15,
+    paddingHorizontal: 16,
+    height: 50,
     fontSize: 15,
   },
   iconInputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    height: 48,
-    gap: 9,
+    borderRadius: 15,
+    paddingHorizontal: 16,
+    height: 50,
+    gap: 10,
   },
   iconInput: {
     flex: 1,

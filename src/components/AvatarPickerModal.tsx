@@ -43,8 +43,8 @@ export const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
           style={[
             styles.dialog,
             {
-              backgroundColor: theme.colors.card,
-              borderColor: theme.colors.border,
+              backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+              borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
             },
             theme.shadows.lg,
           ]}
@@ -68,8 +68,8 @@ export const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
               style={[
                 styles.closeBtn,
                 {
-                  backgroundColor: theme.colors.background,
-                  borderColor: theme.colors.border,
+                  backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.background,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
                 },
               ]}
             >
@@ -96,10 +96,10 @@ export const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
                     {
                       backgroundColor: isSelected
                         ? theme.colors.infoSoft
-                        : theme.colors.background,
+                        : theme.isDark ? 'rgba(255, 255, 255, 0.04)' : theme.colors.background,
                       borderColor: isSelected
-                        ? item.accentColor
-                        : theme.colors.border,
+                        ? theme.colors.accentLime
+                        : theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.border,
                       borderWidth: isSelected ? 2 : 1,
                     },
                   ]}
@@ -123,10 +123,10 @@ export const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
                       <View
                         style={[
                           styles.checkBadge,
-                          { backgroundColor: item.accentColor },
+                          { backgroundColor: theme.colors.accentLime },
                         ]}
                       >
-                        <Check size={11} color="#FFFFFF" strokeWidth={3} />
+                        <Check size={11} color={theme.colors.limeText} strokeWidth={3} />
                       </View>
                     ) : null}
                   </View>
@@ -136,7 +136,7 @@ export const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
                       styles.avatarLabel,
                       {
                         color: isSelected
-                          ? item.accentColor
+                          ? (theme.isDark ? theme.colors.accentLime : theme.colors.secondaryBlue)
                           : theme.colors.primaryText,
                         fontWeight: isSelected ? '800' : '600',
                       },
@@ -154,6 +154,7 @@ export const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
               label="Close"
               onPress={onClose}
               variant="outline"
+              pill
               compact
             />
           </View>

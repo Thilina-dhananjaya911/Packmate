@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Camera, LucideIcon } from 'lucide-react-native';
+import { Camera } from 'lucide-react-native';
 import { PROFILE_AVATARS } from '../constants';
 import { useAppTheme } from '../context/ThemeContext';
 import { DynamicIcon } from './DynamicIcon';
@@ -24,7 +24,7 @@ export const AvatarView: React.FC<AvatarViewProps> = ({
   const { theme } = useAppTheme();
 
   const meta = PROFILE_AVATARS.find((a) => a.id === avatarId) ?? PROFILE_AVATARS[0];
-  const accentColor = meta?.accentColor ?? theme.colors.secondaryBlue;
+  const accentColor = meta?.accentColor ?? theme.colors.accentLime;
   const iconName = meta?.iconName ?? 'Compass';
 
   const iconSize = Math.round(size * 0.48);
@@ -44,8 +44,8 @@ export const AvatarView: React.FC<AvatarViewProps> = ({
     <View style={[styles.wrapper, { width: size, height: size }]}>
       <LinearGradient
         colors={[
-          theme.isDark ? '#1E3A68' : '#EFF6FF',
-          theme.isDark ? '#142544' : '#DBEAFE',
+          theme.isDark ? '#231548' : '#EFF6FF',
+          theme.isDark ? '#140D2E' : '#DBEAFE',
         ]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -77,12 +77,12 @@ export const AvatarView: React.FC<AvatarViewProps> = ({
               width: badgeSize,
               height: badgeSize,
               borderRadius: badgeSize / 2,
-              backgroundColor: theme.colors.secondaryBlue,
-              borderColor: theme.colors.card,
+              backgroundColor: theme.colors.accentLime,
+              borderColor: theme.isDark ? '#0B0718' : '#FFFFFF',
             },
           ]}
         >
-          <Camera size={badgeIconSize} color="#FFFFFF" strokeWidth={2.6} />
+          <Camera size={badgeIconSize} color={theme.colors.limeText} strokeWidth={2.6} />
         </View>
       ) : null}
     </View>
@@ -124,8 +124,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
   },
 });

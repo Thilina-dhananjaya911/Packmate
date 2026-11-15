@@ -331,6 +331,57 @@ export const ONBOARDING_SLIDES = [
   },
 ];
 
+export const PROFILE_AVATARS: ProfileAvatarOption[] = [
+  {
+    id: 'avatar-explorer',
+    label: 'Explorer',
+    iconName: 'Compass',
+    accentColor: '#4C9AFF',
+  },
+  {
+    id: 'avatar-globe',
+    label: 'Global Nomad',
+    iconName: 'Globe',
+    accentColor: '#36C9A5',
+  },
+  {
+    id: 'avatar-mountain',
+    label: 'Highlander',
+    iconName: 'Mountain',
+    accentColor: '#10B981',
+  },
+  {
+    id: 'avatar-sun',
+    label: 'Sunseeker',
+    iconName: 'Sun',
+    accentColor: '#F59E0B',
+  },
+  {
+    id: 'avatar-business',
+    label: 'Executive',
+    iconName: 'Briefcase',
+    accentColor: '#172B4D',
+  },
+  {
+    id: 'avatar-camper',
+    label: 'Camper',
+    iconName: 'Tent',
+    accentColor: '#059669',
+  },
+  {
+    id: 'avatar-city',
+    label: 'Urbanite',
+    iconName: 'Building2',
+    accentColor: '#EC4899',
+  },
+  {
+    id: 'avatar-jet',
+    label: 'Jetsetter',
+    iconName: 'Luggage',
+    accentColor: '#6366F1',
+  },
+];
+
 export const TRAVEL_STYLES: {
   value: TravelStyle;
   label: string;
@@ -406,57 +457,6 @@ export const LUGGAGE_TYPES: {
 ];
 
 export const WEIGHT_LIMIT_PRESETS: number[] = [7, 10, 15, 20, 23, 25, 30];
-
-export const PROFILE_AVATARS: ProfileAvatarOption[] = [
-  {
-    id: 'avatar-explorer',
-    label: 'Explorer',
-    iconName: 'Compass',
-    accentColor: '#4C9AFF',
-  },
-  {
-    id: 'avatar-globe',
-    label: 'Global Nomad',
-    iconName: 'Globe',
-    accentColor: '#36C9A5',
-  },
-  {
-    id: 'avatar-mountain',
-    label: 'Highlander',
-    iconName: 'Mountain',
-    accentColor: '#10B981',
-  },
-  {
-    id: 'avatar-sun',
-    label: 'Sunseeker',
-    iconName: 'Sun',
-    accentColor: '#F59E0B',
-  },
-  {
-    id: 'avatar-business',
-    label: 'Executive',
-    iconName: 'Briefcase',
-    accentColor: '#172B4D',
-  },
-  {
-    id: 'avatar-camper',
-    label: 'Camper',
-    iconName: 'Tent',
-    accentColor: '#059669',
-  },
-  {
-    id: 'avatar-city',
-    label: 'Urbanite',
-    iconName: 'Building2',
-    accentColor: '#EC4899',
-  },
-  {
-    id: 'avatar-jet',
-    label: 'Jetsetter',
-    iconName: 'Luggage',
-    accentColor: '#6366F1',
-  },
-];
 
 export const POPULAR_COUNTRIES: string[] = [
   'Sri Lanka',

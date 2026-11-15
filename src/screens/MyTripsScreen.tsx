@@ -1,12 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import {
   FlatList,
+  Image,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -31,6 +34,7 @@ import { StatusBadge, TripTypeBadge } from '../components/Badges';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { EmptyState } from '../components/EmptyState';
 import { FilterChipOption, FilterChips, SearchBar } from '../components/SearchAndFilter';
+import { getDestinationImage } from '../constants/travelImages';
 import {
   MainTabParamList,
   RootStackParamList,
@@ -121,8 +125,7 @@ export const MyTripsScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const renderTripCard = ({ item }: { item: TripWithProgress }) => {
-    const meta = TRIP_TYPES.find((t) => t.value === item.trip_type);
-    const accent = meta?.accentColor ?? theme.colors.secondaryBlue;
+    const destImg = getDestinationImage(item.destination_type).thumbnail;
 
     return (
       <AnimatedPressableCard
@@ -130,14 +133,28 @@ export const MyTripsScreen: React.FC<Props> = ({ navigation }) => {
         style={[
           styles.tripCard,
           {
-            backgroundColor: theme.colors.card,
-            borderColor: theme.colors.border,
+            backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.78)' : theme.colors.card,
+            borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
           },
           theme.shadows.sm,
         ]}
       >
-        {/* Top Accent Bar */}
-        <View style={[styles.accentStrip, { backgroundColor: accent }]} />
+        {/* Photo Banner with Glass Badges */}
+        <View style={styles.cardPhotoBanner}>
+          <Image
+            source={{ uri: destImg }}
+            style={styles.cardPhotoImage}
+            resizeMode="cover"
+          />
+          <LinearGradient
+            colors={['rgba(15, 10, 30, 0.20)', 'rgba(15, 10, 30, 0.85)']}
+            style={StyleSheet.absoluteFill}
+          />
+          <View style={styles.photoOverlayTop}>
+            <TripTypeBadge tripType={item.trip_type} />
+            <StatusBadge status={item.status} />
+          </View>
+        </View>
 
         <View style={styles.cardBody}>
           <View style={styles.topRow}>
@@ -149,7 +166,7 @@ export const MyTripsScreen: React.FC<Props> = ({ navigation }) => {
                 {item.trip_name}
               </Text>
               <View style={styles.metaInline}>
-                <MapPin size={13} color={theme.colors.secondaryBlue} />
+                <MapPin size={13} color={theme.colors.accentLime} />
                 <Text
                   numberOfLines={1}
                   style={[styles.destText, { color: theme.colors.secondaryText }]}
@@ -158,29 +175,34 @@ export const MyTripsScreen: React.FC<Props> = ({ navigation }) => {
                 </Text>
               </View>
             </View>
-            <StatusBadge status={item.status} />
           </View>
 
           <View style={styles.infoPillsRow}>
-            <TripTypeBadge tripType={item.trip_type} />
             <View
               style={[
                 styles.miniInfoPill,
-                { backgroundColor: theme.colors.surfaceSubtle },
+                {
+                  backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.surfaceSubtle,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.10)' : 'transparent',
+                  borderWidth: 1,
+                },
               ]}
             >
               <Calendar size={12} color={theme.colors.secondaryText} />
               <Text
                 style={[styles.miniInfoText, { color: theme.colors.secondaryText }]}
               >
-                {formatDateRange(item.departure_date, item.return_date)} (
-                {item.trip_duration}d)
+                {formatDateRange(item.departure_date, item.return_date)} ({item.trip_duration}d)
               </Text>
             </View>
             <View
               style={[
                 styles.miniInfoPill,
-                { backgroundColor: theme.colors.surfaceSubtle },
+                {
+                  backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.surfaceSubtle,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.10)' : 'transparent',
+                  borderWidth: 1,
+                },
               ]}
             >
               <Users size={12} color={theme.colors.secondaryText} />
@@ -206,7 +228,7 @@ export const MyTripsScreen: React.FC<Props> = ({ navigation }) => {
                   {
                     color:
                       item.progress_percentage >= 100
-                        ? theme.colors.accentMint
+                        ? theme.colors.accentLime
                         : theme.colors.primaryText,
                   },
                 ]}
@@ -214,31 +236,40 @@ export const MyTripsScreen: React.FC<Props> = ({ navigation }) => {
                 {item.progress_percentage}%
               </Text>
             </View>
-            <AnimatedProgressBar percentage={item.progress_percentage} height={7} />
+            <AnimatedProgressBar
+              percentage={item.progress_percentage}
+              height={6}
+              trackColor={theme.isDark ? 'rgba(255, 255, 255, 0.10)' : theme.colors.surfaceSubtle}
+              fillColor={theme.colors.accentLime}
+            />
           </View>
 
           {/* Card Footer Actions */}
           <View
             style={[
               styles.actionsRow,
-              { borderTopColor: theme.colors.border },
+              { borderTopColor: theme.isDark ? 'rgba(255, 255, 255, 0.10)' : theme.colors.border },
             ]}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1, flexWrap: 'wrap' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, flexWrap: 'wrap' }}>
               <Pressable
                 onPress={() =>
                   navigation.navigate('PackingChecklist', { tripId: item.id })
                 }
                 style={[
                   styles.checklistBtn,
-                  { backgroundColor: theme.colors.infoSoft },
+                  {
+                    backgroundColor: theme.isDark ? 'rgba(212, 255, 0, 0.16)' : theme.colors.infoSoft,
+                    borderColor: theme.isDark ? 'rgba(212, 255, 0, 0.30)' : 'transparent',
+                    borderWidth: 1,
+                  },
                 ]}
               >
-                <CheckSquare size={14} color={theme.colors.secondaryBlue} />
+                <CheckSquare size={14} color={theme.isDark ? theme.colors.accentLime : theme.colors.secondaryBlue} />
                 <Text
                   style={[
                     styles.checklistBtnText,
-                    { color: theme.colors.secondaryBlue },
+                    { color: theme.isDark ? theme.colors.accentLime : theme.colors.secondaryBlue },
                   ]}
                 >
                   List
@@ -251,14 +282,18 @@ export const MyTripsScreen: React.FC<Props> = ({ navigation }) => {
                 }
                 style={[
                   styles.checklistBtn,
-                  { backgroundColor: theme.colors.dangerSoft },
+                  {
+                    backgroundColor: theme.isDark ? 'rgba(168, 85, 247, 0.18)' : theme.colors.dangerSoft,
+                    borderColor: theme.isDark ? 'rgba(168, 85, 247, 0.35)' : 'transparent',
+                    borderWidth: 1,
+                  },
                 ]}
               >
-                <ShieldAlert size={14} color={theme.colors.danger} />
+                <ShieldAlert size={14} color={theme.isDark ? '#C084FC' : theme.colors.danger} />
                 <Text
                   style={[
                     styles.checklistBtnText,
-                    { color: theme.colors.danger },
+                    { color: theme.isDark ? '#C084FC' : theme.colors.danger },
                   ]}
                 >
                   Don't Forget
@@ -274,10 +309,10 @@ export const MyTripsScreen: React.FC<Props> = ({ navigation }) => {
                 hitSlop={8}
                 style={[
                   styles.smallIconBtn,
-                  { backgroundColor: theme.colors.surfaceSubtle },
+                  { backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.surfaceSubtle },
                 ]}
               >
-                <Edit3 size={15} color={theme.colors.primaryText} />
+                <Edit3 size={14} color={theme.colors.primaryText} />
               </Pressable>
 
               <Pressable
@@ -288,7 +323,7 @@ export const MyTripsScreen: React.FC<Props> = ({ navigation }) => {
                   { backgroundColor: theme.colors.dangerSoft },
                 ]}
               >
-                <Trash2 size={15} color={theme.colors.danger} />
+                <Trash2 size={14} color={theme.colors.danger} />
               </Pressable>
             </View>
           </View>
@@ -302,81 +337,82 @@ export const MyTripsScreen: React.FC<Props> = ({ navigation }) => {
       edges={['top']}
       style={[styles.safe, { backgroundColor: theme.colors.background }]}
     >
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={[styles.headerTitle, { color: theme.colors.primaryText }]}>
-            My Trips
-          </Text>
-          <Text style={[styles.headerSub, { color: theme.colors.secondaryText }]}>
-            {trips.length} {trips.length === 1 ? 'journey' : 'journeys'} stored
-            offline
-          </Text>
-        </View>
-
-        <View style={styles.headerRight}>
-          <Pressable
-            onPress={() =>
-              setSortOrder((s) => (s === 'asc' ? 'desc' : 'asc'))
-            }
-            style={[
-              styles.sortBtn,
-              {
-                backgroundColor: theme.colors.card,
-                borderColor: theme.colors.border,
-              },
-            ]}
-          >
-            <ArrowUpDown size={15} color={theme.colors.primaryText} />
-            <Text style={[styles.sortText, { color: theme.colors.primaryText }]}>
-              {sortOrder === 'asc' ? 'Soonest' : 'Latest'}
+      <View style={styles.containerConstrained}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View>
+            <Text style={[styles.headerTitle, { color: theme.colors.primaryText }]}>
+              My Trips
             </Text>
-          </Pressable>
+            <Text style={[styles.headerSub, { color: theme.colors.secondaryText }]}>
+              {trips.length} {trips.length === 1 ? 'journey' : 'journeys'} stored offline
+            </Text>
+          </View>
 
-          <Pressable
-            onPress={() => navigation.navigate('CreateTrip')}
-            style={[
-              styles.addFab,
-              { backgroundColor: theme.colors.secondaryBlue },
-              theme.shadows.blueGlow,
-            ]}
-          >
-            <Plus size={21} color="#FFFFFF" strokeWidth={2.6} />
-          </Pressable>
+          <View style={styles.headerRight}>
+            <Pressable
+              onPress={() =>
+                setSortOrder((s) => (s === 'asc' ? 'desc' : 'asc'))
+              }
+              style={[
+                styles.sortBtn,
+                {
+                  backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.card,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
+                },
+              ]}
+            >
+              <ArrowUpDown size={14} color={theme.colors.primaryText} />
+              <Text style={[styles.sortText, { color: theme.colors.primaryText }]}>
+                {sortOrder === 'asc' ? 'Soonest' : 'Latest'}
+              </Text>
+            </Pressable>
+
+            {/* Neon Lime + Button (from Reference Image) */}
+            <Pressable
+              onPress={() => navigation.navigate('CreateTrip')}
+              style={[
+                styles.addFab,
+                { backgroundColor: theme.colors.accentLime },
+                theme.shadows.limeGlow,
+                Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+              ]}
+            >
+              <Plus size={22} color={theme.colors.limeText} strokeWidth={3} />
+            </Pressable>
+          </View>
         </View>
-      </View>
 
-      {/* Search & Filters */}
-      <View style={styles.controlsWrap}>
-        <SearchBar
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search trips by name or destination..."
-        />
-        <View style={{ marginTop: 10 }}>
-          <FilterChips
-            options={statusOptions}
-            selectedValue={statusFilter}
-            onSelect={setStatusFilter}
+        {/* Search & Filters */}
+        <View style={styles.controlsWrap}>
+          <SearchBar
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search trips by name or destination..."
           />
+          <View style={{ marginTop: 8 }}>
+            <FilterChips
+              options={statusOptions}
+              selectedValue={statusFilter}
+              onSelect={setStatusFilter}
+            />
+          </View>
+          <View style={{ marginTop: 4 }}>
+            <FilterChips
+              options={typeOptions}
+              selectedValue={typeFilter}
+              onSelect={setTypeFilter}
+            />
+          </View>
         </View>
-        <View style={{ marginTop: 4 }}>
-          <FilterChips
-            options={typeOptions}
-            selectedValue={typeFilter}
-            onSelect={setTypeFilter}
-          />
-        </View>
-      </View>
 
-      <FlatList
-        data={filteredTrips}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={renderTripCard}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          trips.length === 0 ? (
+        <FlatList
+          data={filteredTrips}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={renderTripCard}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
             <EmptyState
               variant="empty-trips"
               title="Your Trip List Is Empty"
@@ -384,28 +420,17 @@ export const MyTripsScreen: React.FC<Props> = ({ navigation }) => {
               actionLabel="Create New Trip"
               onAction={() => navigation.navigate('CreateTrip')}
             />
-          ) : (
-            <EmptyState
-              variant="empty-search"
-              title="No Matching Trips"
-              description="No trips match your current search or filter criteria. Try clearing filters."
-              actionLabel="Reset Filters"
-              onAction={() => {
-                setSearchQuery('');
-                setStatusFilter('All');
-                setTypeFilter('All');
-              }}
-            />
-          )
-        }
-      />
+          }
+        />
+      </View>
 
       <ConfirmModal
         visible={Boolean(tripToDelete)}
-        tone="danger"
         title="Delete Trip?"
-        message={`Are you sure you want to permanently delete "${tripToDelete?.trip_name}" and all ${tripToDelete?.total_items ?? 0} packing items from SQLite?`}
+        message={`Are you sure you want to remove "${tripToDelete?.trip_name}"? All associated checklist items will be permanently erased.`}
         confirmLabel="Delete Trip"
+        cancelLabel="Keep Trip"
+        isDestructive
         loading={deleting}
         onConfirm={handleConfirmDelete}
         onCancel={() => setTripToDelete(null)}
@@ -418,17 +443,23 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
   },
+  containerConstrained: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 760,
+    alignSelf: 'center',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
     paddingTop: 12,
-    paddingBottom: 10,
+    paddingBottom: 8,
   },
   headerTitle: {
-    fontSize: 25,
-    fontWeight: '800',
+    fontSize: 26,
+    fontWeight: '900',
     letterSpacing: -0.4,
   },
   headerSub: {
@@ -445,8 +476,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 12,
-    height: 40,
-    borderRadius: 13,
+    paddingVertical: 7,
+    borderRadius: 9999,
     borderWidth: 1,
   },
   sortText: {
@@ -456,27 +487,39 @@ const styles = StyleSheet.create({
   addFab: {
     width: 42,
     height: 42,
-    borderRadius: 14,
+    borderRadius: 21,
     alignItems: 'center',
     justifyContent: 'center',
   },
   controlsWrap: {
-    paddingHorizontal: 20,
-    paddingBottom: 8,
+    paddingHorizontal: 18,
+    marginBottom: 8,
   },
   listContent: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 32,
+    paddingHorizontal: 18,
+    paddingBottom: 40,
+    paddingTop: 4,
   },
   tripCard: {
     borderRadius: 22,
     borderWidth: 1,
+    marginBottom: 16,
     overflow: 'hidden',
-    marginBottom: 14,
   },
-  accentStrip: {
-    height: 5,
+  cardPhotoBanner: {
+    height: 100,
+    width: '100%',
+    position: 'relative',
+    justifyContent: 'flex-start',
+    padding: 12,
+  },
+  cardPhotoImage: {
+    ...StyleSheet.absoluteFill,
+  },
+  photoOverlayTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     width: '100%',
   },
   cardBody: {
@@ -484,8 +527,8 @@ const styles = StyleSheet.create({
   },
   topRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'flex-start',
+    justifyContent: 'space-between',
   },
   tripName: {
     fontSize: 17,
@@ -495,17 +538,17 @@ const styles = StyleSheet.create({
   metaInline: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    marginTop: 4,
+    gap: 4,
+    marginTop: 3,
   },
   destText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   infoPillsRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     alignItems: 'center',
+    flexWrap: 'wrap',
     gap: 8,
     marginTop: 12,
   },
@@ -513,12 +556,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    paddingHorizontal: 9,
+    paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 999,
+    borderRadius: 9999,
   },
   miniInfoText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
   },
   progressWrap: {
@@ -526,12 +569,12 @@ const styles = StyleSheet.create({
   },
   progressLabels: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 6,
   },
   progressSub: {
     fontSize: 12,
-    fontWeight: '600',
   },
   progressPercent: {
     fontSize: 13,
@@ -548,13 +591,13 @@ const styles = StyleSheet.create({
   checklistBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 7,
-    paddingHorizontal: 13,
-    paddingVertical: 8,
-    borderRadius: 11,
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 9999,
   },
   checklistBtnText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
   },
   iconActions: {
@@ -563,9 +606,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   smallIconBtn: {
-    width: 35,
-    height: 35,
-    borderRadius: 11,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },

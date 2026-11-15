@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleProp, ViewStyle } from 'react-native';
+import { Platform, Pressable, StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -29,6 +29,11 @@ export const AnimatedPressableCard: React.FC<AnimatedPressableCardProps> = ({
     transform: [{ scale: scale.value }],
   }));
 
+  const webPointerStyle =
+    Platform.OS === 'web' && onPress && !disabled
+      ? ({ cursor: 'pointer' } as unknown as ViewStyle)
+      : null;
+
   return (
     <AnimatedPressable
       disabled={disabled || !onPress}
@@ -41,7 +46,7 @@ export const AnimatedPressableCard: React.FC<AnimatedPressableCardProps> = ({
       onPressOut={() => {
         scale.value = withSpring(1, { damping: 16, stiffness: 280 });
       }}
-      style={[style, animatedStyle]}
+      style={[webPointerStyle, style, animatedStyle]}
     >
       {children}
     </AnimatedPressable>

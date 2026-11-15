@@ -130,14 +130,14 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
               <View
                 style={[
                   styles.pill,
-                  { backgroundColor: theme.colors.infoSoft },
+                  { backgroundColor: theme.isDark ? 'rgba(212, 255, 0, 0.12)' : theme.colors.infoSoft },
                 ]}
               >
-                <Sparkles size={12} color={theme.colors.secondaryBlue} />
+                <Sparkles size={12} color={theme.colors.accentLime} />
                 <Text
                   style={[
                     styles.pillText,
-                    { color: theme.colors.secondaryBlue },
+                    { color: theme.colors.accentLime },
                   ]}
                 >
                   WELCOME TO PACKMATE
@@ -146,7 +146,7 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             <View style={styles.brandTitleRow}>
-              <BrandMark size={38} variant="navy" />
+              <BrandMark size={38} variant="light" />
               <Text
                 style={[styles.brandTitle, { color: theme.colors.primaryText }]}
               >
@@ -162,13 +162,13 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
             </Text>
           </View>
 
-          {/* Avatar Section */}
+          {/* Avatar Selector Card */}
           <View
             style={[
               styles.avatarSection,
               {
-                backgroundColor: theme.colors.card,
-                borderColor: theme.colors.border,
+                backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+                borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.10)' : theme.colors.border,
               },
               theme.shadows.xs,
             ]}
@@ -176,16 +176,13 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
             <AvatarView
               avatarId={avatarId}
               name={fullName}
-              size={88}
+              size={76}
               showEditBadge
               onPress={() => setShowAvatarPicker(true)}
             />
             <View style={styles.avatarTextWrap}>
               <Text
-                style={[
-                  styles.avatarTitle,
-                  { color: theme.colors.primaryText },
-                ]}
+                style={[styles.avatarTitle, { color: theme.colors.primaryText }]}
               >
                 Travel Avatar
               </Text>
@@ -195,7 +192,7 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                   { color: theme.colors.secondaryText },
                 ]}
               >
-                Choose an avatar that reflects your packing persona
+                Choose an icon that matches your travel identity
               </Text>
               <Pressable
                 onPress={() => setShowAvatarPicker(true)}
@@ -204,177 +201,175 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                 <Text
                   style={[
                     styles.changeAvatarText,
-                    { color: theme.colors.secondaryBlue },
+                    { color: theme.colors.accentLime },
                   ]}
                 >
-                  Select Avatar Options →
+                  Change Avatar
                 </Text>
               </Pressable>
             </View>
           </View>
 
-          {/* Section 1: Personal Information */}
+          {/* Personal Information Form */}
           <View
             style={[
               styles.card,
               {
-                backgroundColor: theme.colors.card,
-                borderColor: theme.colors.border,
+                backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+                borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.10)' : theme.colors.border,
               },
               theme.shadows.xs,
             ]}
           >
             <View style={styles.sectionTitleRow}>
-              <User size={18} color={theme.colors.secondaryBlue} />
+              <User size={18} color={theme.colors.accentLime} />
               <Text
                 style={[
                   styles.sectionTitle,
                   { color: theme.colors.primaryText },
                 ]}
               >
-                Personal Information
+                Personal Details
               </Text>
             </View>
 
-            {/* Full Name (Required) */}
+            {/* Full Name Input */}
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
                 <Text
                   style={[styles.inputLabel, { color: theme.colors.primaryText }]}
                 >
-                  Full Name
+                  Full Name <Text style={styles.requiredStar}>*</Text>
                 </Text>
-                <Text style={styles.requiredStar}>*</Text>
               </View>
               <View
                 style={[
                   styles.inputBox,
                   {
-                    backgroundColor: theme.colors.background,
+                    backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.05)' : theme.colors.background,
                     borderColor: errors.fullName
                       ? theme.colors.danger
-                      : theme.colors.border,
+                      : theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
                   },
                 ]}
               >
-                <User size={16} color={theme.colors.secondaryText} />
+                <User size={17} color={theme.colors.secondaryText} />
                 <TextInput
                   value={fullName}
                   onChangeText={(val) => {
                     setFullName(val);
-                    if (errors.fullName) {
+                    if (errors.fullName)
                       setErrors((e) => ({ ...e, fullName: undefined }));
-                    }
                   }}
-                  placeholder="e.g. Maya Fernando"
-                  placeholderTextColor={theme.colors.mutedText}
+                  placeholder="e.g. Alex Butler"
+                  placeholderTextColor={theme.colors.secondaryText}
                   style={[
                     styles.textInput,
                     { color: theme.colors.primaryText },
                   ]}
-                  autoCapitalize="words"
                 />
               </View>
               {errors.fullName ? (
-                <Text style={[styles.errorText, { color: theme.colors.danger }]}>
+                <Text
+                  style={[styles.errorText, { color: theme.colors.danger }]}
+                >
                   {errors.fullName}
                 </Text>
               ) : null}
             </View>
 
-            {/* Country (Required) */}
+            {/* Country Input */}
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
                 <Text
                   style={[styles.inputLabel, { color: theme.colors.primaryText }]}
                 >
-                  Home Country
+                  Home Country <Text style={styles.requiredStar}>*</Text>
                 </Text>
-                <Text style={styles.requiredStar}>*</Text>
               </View>
               <View
                 style={[
                   styles.inputBox,
                   {
-                    backgroundColor: theme.colors.background,
+                    backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.05)' : theme.colors.background,
                     borderColor: errors.country
                       ? theme.colors.danger
-                      : theme.colors.border,
+                      : theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
                   },
                 ]}
               >
-                <MapPin size={16} color={theme.colors.secondaryText} />
+                <Globe size={17} color={theme.colors.secondaryText} />
                 <TextInput
                   value={country}
                   onChangeText={(val) => {
                     setCountry(val);
-                    if (errors.country) {
+                    if (errors.country)
                       setErrors((e) => ({ ...e, country: undefined }));
-                    }
                   }}
                   placeholder="e.g. Sri Lanka"
-                  placeholderTextColor={theme.colors.mutedText}
+                  placeholderTextColor={theme.colors.secondaryText}
                   style={[
                     styles.textInput,
                     { color: theme.colors.primaryText },
                   ]}
-                  autoCapitalize="words"
                 />
               </View>
               {errors.country ? (
-                <Text style={[styles.errorText, { color: theme.colors.danger }]}>
+                <Text
+                  style={[styles.errorText, { color: theme.colors.danger }]}
+                >
                   {errors.country}
                 </Text>
               ) : null}
 
-              {/* Quick Country Suggestions */}
+              {/* Quick Country Suggestion Chips */}
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.chipsRow}
               >
-                {POPULAR_COUNTRIES.slice(0, 8).map((c) => (
-                  <Pressable
-                    key={c}
-                    onPress={() => {
-                      setCountry(c);
-                      if (errors.country) {
-                        setErrors((e) => ({ ...e, country: undefined }));
-                      }
-                    }}
-                    style={[
-                      styles.countryChip,
-                      {
-                        backgroundColor:
-                          country.toLowerCase() === c.toLowerCase()
-                            ? theme.colors.infoSoft
-                            : theme.colors.background,
-                        borderColor:
-                          country.toLowerCase() === c.toLowerCase()
-                            ? theme.colors.secondaryBlue
-                            : theme.colors.border,
-                      },
-                    ]}
-                  >
-                    <Text
+                {POPULAR_COUNTRIES.slice(0, 8).map((c) => {
+                  const isSelected = country.toLowerCase() === c.toLowerCase();
+                  return (
+                    <Pressable
+                      key={c}
+                      onPress={() => {
+                        setCountry(c);
+                        if (errors.country)
+                          setErrors((e) => ({ ...e, country: undefined }));
+                      }}
                       style={[
-                        styles.chipText,
+                        styles.countryChip,
                         {
-                          color:
-                            country.toLowerCase() === c.toLowerCase()
-                              ? theme.colors.secondaryBlue
-                              : theme.colors.secondaryText,
+                          backgroundColor: isSelected
+                            ? theme.colors.accentLime
+                            : theme.isDark ? 'rgba(255, 255, 255, 0.06)' : theme.colors.background,
+                          borderColor: isSelected
+                            ? theme.colors.accentLime
+                            : theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
                         },
                       ]}
                     >
-                      {c}
-                    </Text>
-                  </Pressable>
-                ))}
+                      <Text
+                        style={[
+                          styles.chipText,
+                          {
+                            color: isSelected
+                              ? theme.colors.limeText
+                              : theme.colors.primaryText,
+                            fontWeight: isSelected ? '800' : '500',
+                          },
+                        ]}
+                      >
+                        {c}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
               </ScrollView>
             </View>
 
-            {/* Email (Optional) */}
+            {/* Email Address (Optional) */}
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
                 <Text
@@ -385,44 +380,45 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                 <Text
                   style={[
                     styles.optionalTag,
-                    { color: theme.colors.mutedText },
+                    { color: theme.colors.secondaryText },
                   ]}
                 >
-                  (Optional)
+                  Optional
                 </Text>
               </View>
               <View
                 style={[
                   styles.inputBox,
                   {
-                    backgroundColor: theme.colors.background,
+                    backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.05)' : theme.colors.background,
                     borderColor: errors.email
                       ? theme.colors.danger
-                      : theme.colors.border,
+                      : theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
                   },
                 ]}
               >
-                <Mail size={16} color={theme.colors.secondaryText} />
+                <Mail size={17} color={theme.colors.secondaryText} />
                 <TextInput
                   value={email}
                   onChangeText={(val) => {
                     setEmail(val);
-                    if (errors.email) {
+                    if (errors.email)
                       setErrors((e) => ({ ...e, email: undefined }));
-                    }
                   }}
-                  placeholder="e.g. maya.travels@example.com"
-                  placeholderTextColor={theme.colors.mutedText}
+                  placeholder="alex@example.com"
+                  placeholderTextColor={theme.colors.secondaryText}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
                   style={[
                     styles.textInput,
                     { color: theme.colors.primaryText },
                   ]}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
                 />
               </View>
               {errors.email ? (
-                <Text style={[styles.errorText, { color: theme.colors.danger }]}>
+                <Text
+                  style={[styles.errorText, { color: theme.colors.danger }]}
+                >
                   {errors.email}
                 </Text>
               ) : null}
@@ -439,57 +435,57 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                 <Text
                   style={[
                     styles.optionalTag,
-                    { color: theme.colors.mutedText },
+                    { color: theme.colors.secondaryText },
                   ]}
                 >
-                  (Optional)
+                  Optional
                 </Text>
               </View>
               <View
                 style={[
                   styles.inputBox,
                   {
-                    backgroundColor: theme.colors.background,
-                    borderColor: theme.colors.border,
+                    backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.05)' : theme.colors.background,
+                    borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
                   },
                 ]}
               >
-                <Phone size={16} color={theme.colors.secondaryText} />
+                <Phone size={17} color={theme.colors.secondaryText} />
                 <TextInput
                   value={phone}
                   onChangeText={setPhone}
-                  placeholder="e.g. +94 77 123 4567"
-                  placeholderTextColor={theme.colors.mutedText}
+                  placeholder="+94 77 123 4567"
+                  placeholderTextColor={theme.colors.secondaryText}
+                  keyboardType="phone-pad"
                   style={[
                     styles.textInput,
                     { color: theme.colors.primaryText },
                   ]}
-                  keyboardType="phone-pad"
                 />
               </View>
             </View>
           </View>
 
-          {/* Section 2: Travel Preferences */}
+          {/* Travel Preferences Form */}
           <View
             style={[
               styles.card,
               {
-                backgroundColor: theme.colors.card,
-                borderColor: theme.colors.border,
+                backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+                borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.10)' : theme.colors.border,
               },
               theme.shadows.xs,
             ]}
           >
             <View style={styles.sectionTitleRow}>
-              <Compass size={18} color={theme.colors.accentMint} />
+              <Briefcase size={18} color={theme.colors.accentLime} />
               <Text
                 style={[
                   styles.sectionTitle,
                   { color: theme.colors.primaryText },
                 ]}
               >
-                Travel Preferences
+                Travel Persona & Packing Preferences
               </Text>
             </View>
 
@@ -498,7 +494,7 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
               <Text
                 style={[styles.inputLabel, { color: theme.colors.primaryText }]}
               >
-                Preferred Travel Style
+                Primary Travel Style
               </Text>
               <Text
                 style={[
@@ -506,39 +502,40 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                   { color: theme.colors.secondaryText },
                 ]}
               >
-                Tailors intelligent checklist scaling and item priorities
+                Used to tailor item recommendation presets
               </Text>
-
               <View style={styles.optionsStack}>
-                {TRAVEL_STYLES.map((ts) => {
-                  const isSelected = travelStyle === ts.value;
+                {TRAVEL_STYLES.map((styleItem) => {
+                  const isSelected = travelStyle === styleItem.value;
                   return (
                     <Pressable
-                      key={ts.value}
-                      onPress={() => setTravelStyle(ts.value)}
+                      key={styleItem.value}
+                      onPress={() => setTravelStyle(styleItem.value)}
                       style={[
                         styles.styleCard,
                         {
                           backgroundColor: isSelected
-                            ? `${ts.accentColor}12`
-                            : theme.colors.background,
+                            ? theme.colors.infoSoft
+                            : theme.isDark ? 'rgba(255, 255, 255, 0.04)' : theme.colors.background,
                           borderColor: isSelected
-                            ? ts.accentColor
-                            : theme.colors.border,
-                          borderWidth: isSelected ? 2 : 1,
+                            ? theme.colors.accentLime
+                            : theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.border,
+                          borderWidth: isSelected ? 1.8 : 1,
                         },
                       ]}
                     >
                       <View
                         style={[
                           styles.styleIconWrap,
-                          { backgroundColor: `${ts.accentColor}20` },
+                          {
+                            backgroundColor: `${styleItem.accentColor}25`,
+                          },
                         ]}
                       >
                         <DynamicIcon
-                          name={ts.icon}
+                          name={styleItem.icon}
                           size={18}
-                          color={ts.accentColor}
+                          color={styleItem.accentColor}
                         />
                       </View>
                       <View style={{ flex: 1 }}>
@@ -546,14 +543,12 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                           style={[
                             styles.styleLabel,
                             {
-                              color: isSelected
-                                ? ts.accentColor
-                                : theme.colors.primaryText,
-                              fontWeight: isSelected ? '800' : '700',
+                              color: theme.colors.primaryText,
+                              fontWeight: isSelected ? '800' : '600',
                             },
                           ]}
                         >
-                          {ts.label}
+                          {styleItem.label}
                         </Text>
                         <Text
                           style={[
@@ -561,26 +556,34 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                             { color: theme.colors.secondaryText },
                           ]}
                         >
-                          {ts.shortDesc}
+                          {styleItem.shortDesc}
                         </Text>
                       </View>
-                      {isSelected ? (
-                        <View
-                          style={[
-                            styles.checkCircle,
-                            { backgroundColor: ts.accentColor },
-                          ]}
-                        >
-                          <Check size={12} color="#FFFFFF" strokeWidth={3} />
-                        </View>
-                      ) : null}
+                      <View
+                        style={[
+                          styles.checkCircle,
+                          {
+                            backgroundColor: isSelected
+                              ? theme.colors.accentLime
+                              : 'transparent',
+                            borderColor: isSelected
+                              ? theme.colors.accentLime
+                              : theme.colors.secondaryText,
+                            borderWidth: isSelected ? 0 : 1.5,
+                          },
+                        ]}
+                      >
+                        {isSelected ? (
+                          <Check size={12} color={theme.colors.limeText} strokeWidth={3} />
+                        ) : null}
+                      </View>
                     </Pressable>
                   );
                 })}
               </View>
             </View>
 
-            {/* Luggage Type Selector */}
+            {/* Preferred Luggage Type */}
             <View style={styles.inputGroup}>
               <Text
                 style={[styles.inputLabel, { color: theme.colors.primaryText }]}
@@ -588,34 +591,34 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                 Preferred Luggage Type
               </Text>
               <View style={styles.luggageRow}>
-                {LUGGAGE_TYPES.map((lt) => {
-                  const isSelected = luggageType === lt.value;
+                {LUGGAGE_TYPES.map((l) => {
+                  const isSelected = luggageType === l.value;
                   return (
                     <Pressable
-                      key={lt.value}
+                      key={l.value}
                       onPress={() => {
-                        setLuggageType(lt.value);
-                        setWeightLimit(String(lt.defaultWeight));
+                        setLuggageType(l.value);
+                        setWeightLimit(String(l.defaultWeight));
                       }}
                       style={[
                         styles.luggageCard,
                         {
                           backgroundColor: isSelected
                             ? theme.colors.infoSoft
-                            : theme.colors.background,
+                            : theme.isDark ? 'rgba(255, 255, 255, 0.04)' : theme.colors.background,
                           borderColor: isSelected
-                            ? theme.colors.secondaryBlue
-                            : theme.colors.border,
-                          borderWidth: isSelected ? 2 : 1,
+                            ? theme.colors.accentLime
+                            : theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.border,
+                          borderWidth: isSelected ? 1.8 : 1,
                         },
                       ]}
                     >
                       <DynamicIcon
-                        name={lt.icon}
+                        name={l.icon}
                         size={22}
                         color={
                           isSelected
-                            ? theme.colors.secondaryBlue
+                            ? (theme.isDark ? theme.colors.accentLime : theme.colors.secondaryBlue)
                             : theme.colors.secondaryText
                         }
                       />
@@ -624,13 +627,13 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                           styles.luggageLabel,
                           {
                             color: isSelected
-                              ? theme.colors.secondaryBlue
+                              ? (theme.isDark ? theme.colors.accentLime : theme.colors.secondaryBlue)
                               : theme.colors.primaryText,
                             fontWeight: isSelected ? '800' : '600',
                           },
                         ]}
                       >
-                        {lt.label}
+                        {l.label}
                       </Text>
                     </Pressable>
                   );
@@ -638,24 +641,20 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
               </View>
             </View>
 
-            {/* Luggage Weight Limit */}
+            {/* Default Luggage Weight Limit */}
             <View style={styles.inputGroup}>
-              <View style={styles.labelRow}>
-                <Text
-                  style={[styles.inputLabel, { color: theme.colors.primaryText }]}
-                >
-                  Default Luggage Weight Limit (kg)
-                </Text>
-                <Scale size={16} color={theme.colors.secondaryBlue} />
-              </View>
-
+              <Text
+                style={[styles.inputLabel, { color: theme.colors.primaryText }]}
+              >
+                Default Luggage Weight Limit
+              </Text>
               <View style={styles.weightInputRow}>
                 <View
                   style={[
                     styles.weightInputBox,
                     {
-                      backgroundColor: theme.colors.background,
-                      borderColor: theme.colors.border,
+                      backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.05)' : theme.colors.background,
+                      borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
                     },
                   ]}
                 >
@@ -663,13 +662,10 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                     value={weightLimit}
                     onChangeText={setWeightLimit}
                     keyboardType="numeric"
-                    placeholder="20"
-                    placeholderTextColor={theme.colors.mutedText}
                     style={[
                       styles.weightTextInput,
                       { color: theme.colors.primaryText },
                     ]}
-                    maxLength={3}
                   />
                   <Text
                     style={[
@@ -681,14 +677,14 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                   </Text>
                 </View>
 
-                {/* Preset Chips */}
+                {/* Presets Row */}
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.presetsRow}
                 >
                   {WEIGHT_LIMIT_PRESETS.map((preset) => {
-                    const isSelected = weightLimit === String(preset);
+                    const isSelected = String(preset) === weightLimit;
                     return (
                       <Pressable
                         key={preset}
@@ -697,11 +693,11 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                           styles.presetChip,
                           {
                             backgroundColor: isSelected
-                              ? theme.colors.secondaryBlue
-                              : theme.colors.background,
+                              ? theme.colors.accentLime
+                              : theme.isDark ? 'rgba(255, 255, 255, 0.06)' : theme.colors.background,
                             borderColor: isSelected
-                              ? theme.colors.secondaryBlue
-                              : theme.colors.border,
+                              ? theme.colors.accentLime
+                              : theme.isDark ? 'rgba(255, 255, 255, 0.12)' : theme.colors.border,
                           },
                         ]}
                       >
@@ -710,7 +706,7 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
                             styles.presetText,
                             {
                               color: isSelected
-                                ? '#FFFFFF'
+                                ? theme.colors.limeText
                                 : theme.colors.secondaryText,
                               fontWeight: isSelected ? '800' : '600',
                             },
@@ -731,9 +727,10 @@ export const ProfileSetupScreen: React.FC<Props> = ({ navigation }) => {
             <PrimaryButton
               label="Complete Profile & Start Planning"
               onPress={handleSave}
-              variant="mint"
+              variant="lime"
+              pill
               loading={saving}
-              rightIcon={<ArrowRight size={18} color="#FFFFFF" strokeWidth={2.4} />}
+              rightIcon={<ArrowRight size={18} color={theme.colors.limeText} strokeWidth={2.4} />}
             />
           </View>
         </ScrollView>

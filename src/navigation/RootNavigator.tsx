@@ -111,6 +111,7 @@ export const RootNavigator: React.FC = () => {
           component={MainTabNavigator}
           options={{ animation: 'fade' }}
         />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         <Stack.Screen name="CreateTrip" component={CreateTripScreen} />
         <Stack.Screen name="TripDetails" component={TripDetailsScreen} />
         <Stack.Screen

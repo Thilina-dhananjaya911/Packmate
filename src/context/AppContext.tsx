@@ -49,10 +49,10 @@ interface AppContextValue {
   notifyDataChanged: () => Promise<void>;
   completeOnboarding: () => Promise<void>;
   resetOnboarding: () => Promise<void>;
-  retryDbInit: () => Promise<void>;
   saveProfile: (input: SaveProfileInput) => Promise<UserProfile>;
   updateProfile: (input: Partial<SaveProfileInput>) => Promise<UserProfile>;
   resetProfile: () => Promise<void>;
+  retryDbInit: () => Promise<void>;
 }
 
 const DEFAULT_STATS: DashboardStats = {
@@ -123,7 +123,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setProfileStats(pStats);
   }, []);
 
-  const initDatabaseFlow = useCallback(async () => {
+  const initDb = useCallback(async () => {
     try {
       await getDatabase();
       const onboarded = await isOnboardingCompleted();
@@ -142,38 +142,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [loadCoreData]);
 
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        await getDatabase();
-        const onboarded = await isOnboardingCompleted();
-        await loadCoreData();
-        if (mounted) {
-          setHasCompletedOnboarding(onboarded);
-          setIsDbReady(true);
-          setDbError(null);
-        }
-      } catch (err) {
-        if (mounted) {
-          setDbError(
-            err instanceof Error
-              ? err.message
-              : 'Unable to initialize offline SQLite storage.'
-          );
-          setIsDbReady(true);
-        }
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [loadCoreData]);
+    initDb();
+  }, [initDb]);
 
   const retryDbInit = useCallback(async () => {
     setIsDbReady(false);
     setDbError(null);
-    await initDatabaseFlow();
-  }, [initDatabaseFlow]);
+    await initDb();
+  }, [initDb]);
 
   const refreshAll = useCallback(async () => {
     try {
@@ -246,10 +222,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       notifyDataChanged,
       completeOnboarding,
       resetOnboarding,
-      retryDbInit,
       saveProfile,
       updateProfile,
       resetProfile,
+      retryDbInit,
     }),
     [
       isDbReady,
@@ -270,10 +246,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       notifyDataChanged,
       completeOnboarding,
       resetOnboarding,
-      retryDbInit,
       saveProfile,
       updateProfile,
       resetProfile,
+      retryDbInit,
     ]
   );
 

@@ -15,8 +15,6 @@ import {
   Briefcase,
   Check,
   CheckCircle2,
-  Compass,
-  Luggage,
   Mail,
   MapPin,
   Phone,
@@ -148,8 +146,10 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
             style={[
               styles.avatarSection,
               {
-                backgroundColor: theme.colors.card,
-                borderColor: theme.colors.border,
+                backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+                borderColor: theme.isDark
+                  ? 'rgba(255, 255, 255, 0.10)'
+                  : theme.colors.border,
               },
               theme.shadows.xs,
             ]}
@@ -162,13 +162,8 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
               onPress={() => setShowAvatarPicker(true)}
             />
             <View style={styles.avatarTextWrap}>
-              <Text
-                style={[
-                  styles.avatarTitle,
-                  { color: theme.colors.primaryText },
-                ]}
-              >
-                Profile Avatar
+              <Text style={[styles.avatarTitle, { color: theme.colors.primaryText }]}>
+                Travel Avatar
               </Text>
               <Text
                 style={[
@@ -176,7 +171,7 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                   { color: theme.colors.secondaryText },
                 ]}
               >
-                Tap to pick a different persona
+                Tap below or on your avatar to select another travel persona
               </Text>
               <Pressable
                 onPress={() => setShowAvatarPicker(true)}
@@ -185,10 +180,10 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                 <Text
                   style={[
                     styles.changeAvatarText,
-                    { color: theme.colors.secondaryBlue },
+                    { color: theme.colors.accentLime },
                   ]}
                 >
-                  Change Avatar →
+                  Change Avatar
                 </Text>
               </Pressable>
             </View>
@@ -199,14 +194,16 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
             style={[
               styles.card,
               {
-                backgroundColor: theme.colors.card,
-                borderColor: theme.colors.border,
+                backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+                borderColor: theme.isDark
+                  ? 'rgba(255, 255, 255, 0.10)'
+                  : theme.colors.border,
               },
               theme.shadows.xs,
             ]}
           >
             <View style={styles.sectionTitleRow}>
-              <User size={18} color={theme.colors.secondaryBlue} />
+              <User size={18} color={theme.colors.accentLime} />
               <Text
                 style={[
                   styles.sectionTitle,
@@ -223,41 +220,45 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                 <Text
                   style={[styles.inputLabel, { color: theme.colors.primaryText }]}
                 >
-                  Full Name
+                  Full Name <Text style={styles.requiredStar}>*</Text>
                 </Text>
-                <Text style={styles.requiredStar}>*</Text>
               </View>
               <View
                 style={[
                   styles.inputBox,
                   {
-                    backgroundColor: theme.colors.background,
+                    backgroundColor: theme.isDark
+                      ? 'rgba(255, 255, 255, 0.05)'
+                      : theme.colors.background,
                     borderColor: errors.fullName
                       ? theme.colors.danger
+                      : theme.isDark
+                      ? 'rgba(255, 255, 255, 0.12)'
                       : theme.colors.border,
                   },
                 ]}
               >
-                <User size={16} color={theme.colors.secondaryText} />
+                <User size={17} color={theme.colors.secondaryText} />
                 <TextInput
                   value={fullName}
                   onChangeText={(val) => {
                     setFullName(val);
-                    if (errors.fullName) {
+                    if (errors.fullName)
                       setErrors((e) => ({ ...e, fullName: undefined }));
-                    }
                   }}
-                  placeholder="Your Full Name"
-                  placeholderTextColor={theme.colors.mutedText}
+                  placeholder="e.g. Alex Traveler"
+                  placeholderTextColor={theme.colors.secondaryText}
+                  autoCapitalize="words"
                   style={[
                     styles.textInput,
                     { color: theme.colors.primaryText },
                   ]}
-                  autoCapitalize="words"
                 />
               </View>
               {errors.fullName ? (
-                <Text style={[styles.errorText, { color: theme.colors.danger }]}>
+                <Text
+                  style={[styles.errorText, { color: theme.colors.danger }]}
+                >
                   {errors.fullName}
                 </Text>
               ) : null}
@@ -269,93 +270,101 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                 <Text
                   style={[styles.inputLabel, { color: theme.colors.primaryText }]}
                 >
-                  Home Country
+                  Home Country <Text style={styles.requiredStar}>*</Text>
                 </Text>
-                <Text style={styles.requiredStar}>*</Text>
               </View>
               <View
                 style={[
                   styles.inputBox,
                   {
-                    backgroundColor: theme.colors.background,
+                    backgroundColor: theme.isDark
+                      ? 'rgba(255, 255, 255, 0.05)'
+                      : theme.colors.background,
                     borderColor: errors.country
                       ? theme.colors.danger
+                      : theme.isDark
+                      ? 'rgba(255, 255, 255, 0.12)'
                       : theme.colors.border,
                   },
                 ]}
               >
-                <MapPin size={16} color={theme.colors.secondaryText} />
+                <MapPin size={17} color={theme.colors.secondaryText} />
                 <TextInput
                   value={country}
                   onChangeText={(val) => {
                     setCountry(val);
-                    if (errors.country) {
+                    if (errors.country)
                       setErrors((e) => ({ ...e, country: undefined }));
-                    }
                   }}
                   placeholder="e.g. Sri Lanka"
-                  placeholderTextColor={theme.colors.mutedText}
+                  placeholderTextColor={theme.colors.secondaryText}
+                  autoCapitalize="words"
                   style={[
                     styles.textInput,
                     { color: theme.colors.primaryText },
                   ]}
-                  autoCapitalize="words"
                 />
               </View>
               {errors.country ? (
-                <Text style={[styles.errorText, { color: theme.colors.danger }]}>
+                <Text
+                  style={[styles.errorText, { color: theme.colors.danger }]}
+                >
                   {errors.country}
                 </Text>
               ) : null}
 
-              {/* Country Suggestions */}
+              {/* Quick Country Chips */}
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.chipsRow}
               >
-                {POPULAR_COUNTRIES.slice(0, 8).map((c) => (
-                  <Pressable
-                    key={c}
-                    onPress={() => {
-                      setCountry(c);
-                      if (errors.country) {
-                        setErrors((e) => ({ ...e, country: undefined }));
-                      }
-                    }}
-                    style={[
-                      styles.countryChip,
-                      {
-                        backgroundColor:
-                          country.toLowerCase() === c.toLowerCase()
-                            ? theme.colors.infoSoft
-                            : theme.colors.background,
-                        borderColor:
-                          country.toLowerCase() === c.toLowerCase()
-                            ? theme.colors.secondaryBlue
-                            : theme.colors.border,
-                      },
-                    ]}
-                  >
-                    <Text
+                {POPULAR_COUNTRIES.slice(0, 8).map((c) => {
+                  const isSelected = country.toLowerCase() === c.toLowerCase();
+                  return (
+                    <Pressable
+                      key={c}
+                      onPress={() => {
+                        setCountry(c);
+                        if (errors.country)
+                          setErrors((e) => ({ ...e, country: undefined }));
+                      }}
                       style={[
-                        styles.chipText,
+                        styles.countryChip,
                         {
-                          color:
-                            country.toLowerCase() === c.toLowerCase()
-                              ? theme.colors.secondaryBlue
-                              : theme.colors.secondaryText,
+                          backgroundColor: isSelected
+                            ? theme.colors.accentLime
+                            : theme.isDark
+                            ? 'rgba(255, 255, 255, 0.06)'
+                            : theme.colors.background,
+                          borderColor: isSelected
+                            ? theme.colors.accentLime
+                            : theme.isDark
+                            ? 'rgba(255, 255, 255, 0.12)'
+                            : theme.colors.border,
                         },
                       ]}
                     >
-                      {c}
-                    </Text>
-                  </Pressable>
-                ))}
+                      <Text
+                        style={[
+                          styles.chipText,
+                          {
+                            color: isSelected
+                              ? theme.colors.limeText
+                              : theme.colors.primaryText,
+                            fontWeight: isSelected ? '800' : '500',
+                          },
+                        ]}
+                      >
+                        {c}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
               </ScrollView>
             </View>
 
-            {/* Email */}
+            {/* Email Address */}
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
                 <Text
@@ -366,50 +375,55 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                 <Text
                   style={[
                     styles.optionalTag,
-                    { color: theme.colors.mutedText },
+                    { color: theme.colors.secondaryText },
                   ]}
                 >
-                  (Optional)
+                  Optional
                 </Text>
               </View>
               <View
                 style={[
                   styles.inputBox,
                   {
-                    backgroundColor: theme.colors.background,
+                    backgroundColor: theme.isDark
+                      ? 'rgba(255, 255, 255, 0.05)'
+                      : theme.colors.background,
                     borderColor: errors.email
                       ? theme.colors.danger
+                      : theme.isDark
+                      ? 'rgba(255, 255, 255, 0.12)'
                       : theme.colors.border,
                   },
                 ]}
               >
-                <Mail size={16} color={theme.colors.secondaryText} />
+                <Mail size={17} color={theme.colors.secondaryText} />
                 <TextInput
                   value={email}
                   onChangeText={(val) => {
                     setEmail(val);
-                    if (errors.email) {
+                    if (errors.email)
                       setErrors((e) => ({ ...e, email: undefined }));
-                    }
                   }}
-                  placeholder="name@example.com"
-                  placeholderTextColor={theme.colors.mutedText}
+                  placeholder="alex@example.com"
+                  placeholderTextColor={theme.colors.secondaryText}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
                   style={[
                     styles.textInput,
                     { color: theme.colors.primaryText },
                   ]}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
                 />
               </View>
               {errors.email ? (
-                <Text style={[styles.errorText, { color: theme.colors.danger }]}>
+                <Text
+                  style={[styles.errorText, { color: theme.colors.danger }]}
+                >
                   {errors.email}
                 </Text>
               ) : null}
             </View>
 
-            {/* Phone */}
+            {/* Phone Number */}
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
                 <Text
@@ -420,32 +434,36 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                 <Text
                   style={[
                     styles.optionalTag,
-                    { color: theme.colors.mutedText },
+                    { color: theme.colors.secondaryText },
                   ]}
                 >
-                  (Optional)
+                  Optional
                 </Text>
               </View>
               <View
                 style={[
                   styles.inputBox,
                   {
-                    backgroundColor: theme.colors.background,
-                    borderColor: theme.colors.border,
+                    backgroundColor: theme.isDark
+                      ? 'rgba(255, 255, 255, 0.05)'
+                      : theme.colors.background,
+                    borderColor: theme.isDark
+                      ? 'rgba(255, 255, 255, 0.12)'
+                      : theme.colors.border,
                   },
                 ]}
               >
-                <Phone size={16} color={theme.colors.secondaryText} />
+                <Phone size={17} color={theme.colors.secondaryText} />
                 <TextInput
                   value={phone}
                   onChangeText={setPhone}
                   placeholder="+94 77 123 4567"
-                  placeholderTextColor={theme.colors.mutedText}
+                  placeholderTextColor={theme.colors.secondaryText}
+                  keyboardType="phone-pad"
                   style={[
                     styles.textInput,
                     { color: theme.colors.primaryText },
                   ]}
-                  keyboardType="phone-pad"
                 />
               </View>
             </View>
@@ -456,21 +474,23 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
             style={[
               styles.card,
               {
-                backgroundColor: theme.colors.card,
-                borderColor: theme.colors.border,
+                backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+                borderColor: theme.isDark
+                  ? 'rgba(255, 255, 255, 0.10)'
+                  : theme.colors.border,
               },
               theme.shadows.xs,
             ]}
           >
             <View style={styles.sectionTitleRow}>
-              <Compass size={18} color={theme.colors.accentMint} />
+              <Briefcase size={18} color={theme.colors.accentLime} />
               <Text
                 style={[
                   styles.sectionTitle,
                   { color: theme.colors.primaryText },
                 ]}
               >
-                Travel Preferences
+                Travel Preferences & Packing Style
               </Text>
             </View>
 
@@ -479,38 +499,44 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
               <Text
                 style={[styles.inputLabel, { color: theme.colors.primaryText }]}
               >
-                Preferred Travel Style
+                Primary Travel Style
               </Text>
               <View style={styles.optionsStack}>
-                {TRAVEL_STYLES.map((ts) => {
-                  const isSelected = travelStyle === ts.value;
+                {TRAVEL_STYLES.map((styleItem) => {
+                  const isSelected = travelStyle === styleItem.value;
                   return (
                     <Pressable
-                      key={ts.value}
-                      onPress={() => setTravelStyle(ts.value)}
+                      key={styleItem.value}
+                      onPress={() => setTravelStyle(styleItem.value)}
                       style={[
                         styles.styleCard,
                         {
                           backgroundColor: isSelected
-                            ? `${ts.accentColor}12`
+                            ? theme.colors.infoSoft
+                            : theme.isDark
+                            ? 'rgba(255, 255, 255, 0.04)'
                             : theme.colors.background,
                           borderColor: isSelected
-                            ? ts.accentColor
+                            ? theme.colors.accentLime
+                            : theme.isDark
+                            ? 'rgba(255, 255, 255, 0.08)'
                             : theme.colors.border,
-                          borderWidth: isSelected ? 2 : 1,
+                          borderWidth: isSelected ? 1.8 : 1,
                         },
                       ]}
                     >
                       <View
                         style={[
                           styles.styleIconWrap,
-                          { backgroundColor: `${ts.accentColor}20` },
+                          {
+                            backgroundColor: `${styleItem.accentColor}25`,
+                          },
                         ]}
                       >
                         <DynamicIcon
-                          name={ts.icon}
+                          name={styleItem.icon}
                           size={18}
-                          color={ts.accentColor}
+                          color={styleItem.accentColor}
                         />
                       </View>
                       <View style={{ flex: 1 }}>
@@ -518,14 +544,12 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                           style={[
                             styles.styleLabel,
                             {
-                              color: isSelected
-                                ? ts.accentColor
-                                : theme.colors.primaryText,
-                              fontWeight: isSelected ? '800' : '700',
+                              color: theme.colors.primaryText,
+                              fontWeight: isSelected ? '800' : '600',
                             },
                           ]}
                         >
-                          {ts.label}
+                          {styleItem.label}
                         </Text>
                         <Text
                           style={[
@@ -533,26 +557,38 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                             { color: theme.colors.secondaryText },
                           ]}
                         >
-                          {ts.shortDesc}
+                          {styleItem.shortDesc}
                         </Text>
                       </View>
-                      {isSelected ? (
-                        <View
-                          style={[
-                            styles.checkCircle,
-                            { backgroundColor: ts.accentColor },
-                          ]}
-                        >
-                          <Check size={12} color="#FFFFFF" strokeWidth={3} />
-                        </View>
-                      ) : null}
+                      <View
+                        style={[
+                          styles.checkCircle,
+                          {
+                            backgroundColor: isSelected
+                              ? theme.colors.accentLime
+                              : 'transparent',
+                            borderColor: isSelected
+                              ? theme.colors.accentLime
+                              : theme.colors.secondaryText,
+                            borderWidth: isSelected ? 0 : 1.5,
+                          },
+                        ]}
+                      >
+                        {isSelected ? (
+                          <Check
+                            size={12}
+                            color={theme.colors.limeText}
+                            strokeWidth={3}
+                          />
+                        ) : null}
+                      </View>
                     </Pressable>
                   );
                 })}
               </View>
             </View>
 
-            {/* Luggage Type */}
+            {/* Preferred Luggage Type */}
             <View style={styles.inputGroup}>
               <Text
                 style={[styles.inputLabel, { color: theme.colors.primaryText }]}
@@ -560,33 +596,40 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                 Preferred Luggage Type
               </Text>
               <View style={styles.luggageRow}>
-                {LUGGAGE_TYPES.map((lt) => {
-                  const isSelected = luggageType === lt.value;
+                {LUGGAGE_TYPES.map((l) => {
+                  const isSelected = luggageType === l.value;
                   return (
                     <Pressable
-                      key={lt.value}
+                      key={l.value}
                       onPress={() => {
-                        setLuggageType(lt.value);
+                        setLuggageType(l.value);
+                        setWeightLimit(String(l.defaultWeight));
                       }}
                       style={[
                         styles.luggageCard,
                         {
                           backgroundColor: isSelected
                             ? theme.colors.infoSoft
+                            : theme.isDark
+                            ? 'rgba(255, 255, 255, 0.04)'
                             : theme.colors.background,
                           borderColor: isSelected
-                            ? theme.colors.secondaryBlue
+                            ? theme.colors.accentLime
+                            : theme.isDark
+                            ? 'rgba(255, 255, 255, 0.08)'
                             : theme.colors.border,
-                          borderWidth: isSelected ? 2 : 1,
+                          borderWidth: isSelected ? 1.8 : 1,
                         },
                       ]}
                     >
                       <DynamicIcon
-                        name={lt.icon}
+                        name={l.icon}
                         size={22}
                         color={
                           isSelected
-                            ? theme.colors.secondaryBlue
+                            ? theme.isDark
+                              ? theme.colors.accentLime
+                              : theme.colors.secondaryBlue
                             : theme.colors.secondaryText
                         }
                       />
@@ -595,13 +638,15 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                           styles.luggageLabel,
                           {
                             color: isSelected
-                              ? theme.colors.secondaryBlue
+                              ? theme.isDark
+                                ? theme.colors.accentLime
+                                : theme.colors.secondaryBlue
                               : theme.colors.primaryText,
                             fontWeight: isSelected ? '800' : '600',
                           },
                         ]}
                       >
-                        {lt.label}
+                        {l.label}
                       </Text>
                     </Pressable>
                   );
@@ -609,24 +654,24 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
               </View>
             </View>
 
-            {/* Weight Limit */}
+            {/* Default Luggage Weight Limit */}
             <View style={styles.inputGroup}>
-              <View style={styles.labelRow}>
-                <Text
-                  style={[styles.inputLabel, { color: theme.colors.primaryText }]}
-                >
-                  Default Luggage Weight Limit (kg)
-                </Text>
-                <Scale size={16} color={theme.colors.secondaryBlue} />
-              </View>
-
+              <Text
+                style={[styles.inputLabel, { color: theme.colors.primaryText }]}
+              >
+                Default Luggage Weight Limit
+              </Text>
               <View style={styles.weightInputRow}>
                 <View
                   style={[
                     styles.weightInputBox,
                     {
-                      backgroundColor: theme.colors.background,
-                      borderColor: theme.colors.border,
+                      backgroundColor: theme.isDark
+                        ? 'rgba(255, 255, 255, 0.05)'
+                        : theme.colors.background,
+                      borderColor: theme.isDark
+                        ? 'rgba(255, 255, 255, 0.12)'
+                        : theme.colors.border,
                     },
                   ]}
                 >
@@ -634,13 +679,13 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                     value={weightLimit}
                     onChangeText={setWeightLimit}
                     keyboardType="numeric"
+                    maxLength={3}
                     placeholder="20"
-                    placeholderTextColor={theme.colors.mutedText}
+                    placeholderTextColor={theme.colors.secondaryText}
                     style={[
                       styles.weightTextInput,
                       { color: theme.colors.primaryText },
                     ]}
-                    maxLength={3}
                   />
                   <Text
                     style={[
@@ -652,14 +697,14 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                   </Text>
                 </View>
 
-                {/* Preset Chips */}
+                {/* Presets Row */}
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.presetsRow}
                 >
                   {WEIGHT_LIMIT_PRESETS.map((preset) => {
-                    const isSelected = weightLimit === String(preset);
+                    const isSelected = String(preset) === weightLimit;
                     return (
                       <Pressable
                         key={preset}
@@ -668,10 +713,14 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                           styles.presetChip,
                           {
                             backgroundColor: isSelected
-                              ? theme.colors.secondaryBlue
+                              ? theme.colors.accentLime
+                              : theme.isDark
+                              ? 'rgba(255, 255, 255, 0.06)'
                               : theme.colors.background,
                             borderColor: isSelected
-                              ? theme.colors.secondaryBlue
+                              ? theme.colors.accentLime
+                              : theme.isDark
+                              ? 'rgba(255, 255, 255, 0.12)'
                               : theme.colors.border,
                           },
                         ]}
@@ -681,7 +730,7 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
                             styles.presetText,
                             {
                               color: isSelected
-                                ? '#FFFFFF'
+                                ? theme.colors.limeText
                                 : theme.colors.secondaryText,
                               fontWeight: isSelected ? '800' : '600',
                             },
@@ -703,14 +752,22 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
               label="Cancel"
               onPress={() => navigation.goBack()}
               variant="outline"
+              pill
               style={{ flex: 1 }}
             />
             <PrimaryButton
               label="Save Changes"
               onPress={handleSave}
-              variant="primary"
+              variant="lime"
+              pill
               loading={saving}
-              icon={<CheckCircle2 size={16} color="#FFFFFF" strokeWidth={2.4} />}
+              rightIcon={
+                <CheckCircle2
+                  size={16}
+                  color={theme.colors.limeText}
+                  strokeWidth={2.4}
+                />
+              }
               style={{ flex: 1.4 }}
             />
           </View>

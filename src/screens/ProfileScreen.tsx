@@ -17,9 +17,7 @@ import {
   CheckCircle2,
   ChevronRight,
   Compass,
-  Database,
   Edit3,
-  FolderCheck,
   Globe,
   Info,
   Luggage,
@@ -126,18 +124,18 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.topBar}>
           <View>
             <Text style={[styles.screenHeading, { color: theme.colors.primaryText }]}>
-              My Travel Profile
+              Traveler Profile
             </Text>
             <Text style={[styles.screenSubheading, { color: theme.colors.secondaryText }]}>
               Personalized offline travel workspace
             </Text>
           </View>
-          <BrandMark size={36} variant="navy" />
+          <BrandMark size={36} variant="light" />
         </View>
 
         {/* Profile Hero Header Card */}
         <LinearGradient
-          colors={theme.colors.heroGradient}
+          colors={theme.isDark ? ['#1A1035', '#2A1852', '#140D2E'] : theme.colors.heroGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.heroCard, theme.shadows.lg]}
@@ -155,23 +153,27 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
             <View style={styles.heroIdentity}>
               <View style={styles.heroPill}>
-                <Sparkles size={11} color="#36C9A5" />
-                <Text style={styles.heroPillText}>OFFLINE TRAVELLER</Text>
+                <Sparkles size={11} color={theme.colors.accentLime} />
+                <Text style={[styles.heroPillText, { color: theme.colors.accentLime }]}>
+                  {userProfile.travelStyle.toUpperCase()}
+                </Text>
               </View>
 
-              <Text numberOfLines={1} style={styles.heroName}>
+              <Text style={styles.heroName} numberOfLines={1}>
                 {userProfile.fullName}
               </Text>
 
               <View style={styles.heroMetaRow}>
-                <MapPin size={13} color="#4C9AFF" />
-                <Text style={styles.heroCountry}>{userProfile.country}</Text>
+                <MapPin size={13} color="#D4FF00" />
+                <Text style={styles.heroCountry} numberOfLines={1}>
+                  {userProfile.country}
+                </Text>
               </View>
 
               {userProfile.email ? (
                 <View style={styles.heroMetaRow}>
-                  <Mail size={12} color="rgba(255, 255, 255, 0.75)" />
-                  <Text numberOfLines={1} style={styles.heroEmail}>
+                  <Mail size={12} color="rgba(255, 255, 255, 0.70)" />
+                  <Text style={styles.heroEmail} numberOfLines={1}>
                     {userProfile.email}
                   </Text>
                 </View>
@@ -182,37 +184,46 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.heroActionRow}>
             <Pressable
               onPress={() => navigation.navigate('EditProfile')}
-              style={styles.heroEditBtn}
+              style={({ pressed }) => [
+                styles.heroEditBtn,
+                {
+                  backgroundColor: theme.colors.accentLime,
+                  opacity: pressed ? 0.88 : 1,
+                },
+              ]}
             >
-              <Edit3 size={15} color="#172B4D" strokeWidth={2.4} />
-              <Text style={styles.heroEditBtnText}>Edit Profile</Text>
+              <Edit3 size={15} color={theme.colors.limeText} strokeWidth={2.4} />
+              <Text style={[styles.heroEditBtnText, { color: theme.colors.limeText }]}>
+                Edit Profile
+              </Text>
             </Pressable>
 
             <Pressable
               onPress={() => setShowAvatarPicker(true)}
-              style={styles.heroAvatarBtn}
+              style={({ pressed }) => [
+                styles.heroAvatarBtn,
+                { opacity: pressed ? 0.85 : 1 },
+              ]}
             >
-              <Sparkles size={14} color="#FFFFFF" />
+              <User size={15} color="#FFFFFF" strokeWidth={2.2} />
               <Text style={styles.heroAvatarBtnText}>Change Avatar</Text>
             </Pressable>
           </View>
         </LinearGradient>
 
-        {/* Dynamic SQLite Profile Statistics */}
+        {/* Profile Statistics Strip */}
         <View style={styles.sectionBlock}>
           <Text style={[styles.sectionTitle, { color: theme.colors.primaryText }]}>
-            Travel & Packing Activity
+            Travel & Packing Records
           </Text>
           <View style={styles.statsGrid}>
-            <AnimatedPressableCard
-              onPress={() => navigation.navigate('MyTrips')}
+            <View
               style={[
                 styles.statCard,
                 {
-                  backgroundColor: theme.colors.card,
-                  borderColor: theme.colors.border,
+                  backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.10)' : theme.colors.border,
                 },
-                theme.shadows.xs,
               ]}
             >
               <View
@@ -221,7 +232,7 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                   { backgroundColor: theme.colors.infoSoft },
                 ]}
               >
-                <Compass size={18} color={theme.colors.secondaryBlue} />
+                <Compass size={16} color={theme.colors.secondaryBlue} strokeWidth={2.4} />
               </View>
               <Text style={[styles.statValue, { color: theme.colors.primaryText }]}>
                 {profileStats.totalTrips}
@@ -229,17 +240,15 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
               <Text style={[styles.statTitle, { color: theme.colors.secondaryText }]}>
                 Total Trips
               </Text>
-            </AnimatedPressableCard>
+            </View>
 
-            <AnimatedPressableCard
-              onPress={() => navigation.navigate('History')}
+            <View
               style={[
                 styles.statCard,
                 {
-                  backgroundColor: theme.colors.card,
-                  borderColor: theme.colors.border,
+                  backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.10)' : theme.colors.border,
                 },
-                theme.shadows.xs,
               ]}
             >
               <View
@@ -248,24 +257,23 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                   { backgroundColor: theme.colors.successSoft },
                 ]}
               >
-                <FolderCheck size={18} color={theme.colors.accentMint} />
+                <CheckCircle2 size={16} color={theme.colors.accentLime} strokeWidth={2.4} />
               </View>
-              <Text style={[styles.statValue, { color: theme.colors.accentMint }]}>
+              <Text style={[styles.statValue, { color: theme.colors.primaryText }]}>
                 {profileStats.completedTrips}
               </Text>
               <Text style={[styles.statTitle, { color: theme.colors.secondaryText }]}>
                 Completed
               </Text>
-            </AnimatedPressableCard>
+            </View>
 
             <View
               style={[
                 styles.statCard,
                 {
-                  backgroundColor: theme.colors.card,
-                  borderColor: theme.colors.border,
+                  backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.10)' : theme.colors.border,
                 },
-                theme.shadows.xs,
               ]}
             >
               <View
@@ -274,71 +282,149 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                   { backgroundColor: theme.colors.warningSoft },
                 ]}
               >
-                <Luggage size={18} color="#D97706" />
+                <Luggage size={16} color="#F59E0B" strokeWidth={2.4} />
               </View>
               <Text style={[styles.statValue, { color: theme.colors.primaryText }]}>
                 {profileStats.totalPackedItems}
               </Text>
               <Text style={[styles.statTitle, { color: theme.colors.secondaryText }]}>
-                Items Packed
-              </Text>
-            </View>
-
-            <View
-              style={[
-                styles.statCard,
-                {
-                  backgroundColor: theme.colors.card,
-                  borderColor: theme.colors.border,
-                },
-                theme.shadows.xs,
-              ]}
-            >
-              <View
-                style={[
-                  styles.statIconCircle,
-                  { backgroundColor: theme.colors.navySoft },
-                ]}
-              >
-                <CheckCircle2 size={18} color={theme.colors.secondaryBlue} />
-              </View>
-              <Text style={[styles.statValue, { color: theme.colors.secondaryBlue }]}>
-                {profileStats.completionRate}%
-              </Text>
-              <Text style={[styles.statTitle, { color: theme.colors.secondaryText }]}>
-                Packed Rate
+                Packed Items
               </Text>
             </View>
           </View>
         </View>
 
-        {/* Personal Information Details */}
+        {/* Travel Preferences Card */}
         <View
           style={[
             styles.card,
             {
-              backgroundColor: theme.colors.card,
-              borderColor: theme.colors.border,
+              backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+              borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.10)' : theme.colors.border,
             },
-            theme.shadows.xs,
           ]}
         >
           <View style={styles.cardHeaderRow}>
             <View style={styles.cardTitleWrap}>
-              <User size={18} color={theme.colors.secondaryBlue} />
-              <Text
-                style={[styles.cardTitle, { color: theme.colors.primaryText }]}
-              >
-                Personal Information
+              <Briefcase size={18} color={theme.colors.accentLime} />
+              <Text style={[styles.cardTitle, { color: theme.colors.primaryText }]}>
+                Travel Preferences
               </Text>
             </View>
-            <Pressable
-              onPress={() => navigation.navigate('EditProfile')}
-              hitSlop={8}
+            <Pressable onPress={() => navigation.navigate('EditProfile')}>
+              <Text style={[styles.editLink, { color: theme.colors.accentLime }]}>
+                Edit
+              </Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.prefGrid}>
+            <View
+              style={[
+                styles.prefItem,
+                {
+                  backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.04)' : theme.colors.background,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.border,
+                },
+              ]}
             >
-              <Text
-                style={[styles.editLink, { color: theme.colors.secondaryBlue }]}
+              <View
+                style={[
+                  styles.prefIconWrap,
+                  { backgroundColor: `${selectedTravelStyleMeta.accentColor}25` },
+                ]}
               >
+                <DynamicIcon
+                  name={selectedTravelStyleMeta.icon}
+                  size={20}
+                  color={selectedTravelStyleMeta.accentColor}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.prefItemTitle, { color: theme.colors.primaryText }]}>
+                  {selectedTravelStyleMeta.label}
+                </Text>
+                <Text style={[styles.prefItemSub, { color: theme.colors.secondaryText }]}>
+                  {selectedTravelStyleMeta.shortDesc}
+                </Text>
+              </View>
+            </View>
+
+            <View
+              style={[
+                styles.prefItem,
+                {
+                  backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.04)' : theme.colors.background,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.border,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.prefIconWrap,
+                  { backgroundColor: theme.colors.infoSoft },
+                ]}
+              >
+                <Luggage size={20} color={theme.colors.secondaryBlue} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.prefItemTitle, { color: theme.colors.primaryText }]}>
+                  {selectedLuggageMeta.label}
+                </Text>
+                <Text style={[styles.prefItemSub, { color: theme.colors.secondaryText }]}>
+                  {selectedLuggageMeta.shortDesc}
+                </Text>
+              </View>
+            </View>
+
+            <View
+              style={[
+                styles.prefItem,
+                {
+                  backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.04)' : theme.colors.background,
+                  borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : theme.colors.border,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.prefIconWrap,
+                  { backgroundColor: theme.colors.warningSoft },
+                ]}
+              >
+                <Scale size={20} color="#F59E0B" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.prefItemTitle, { color: theme.colors.primaryText }]}>
+                  Luggage Weight Limit
+                </Text>
+                <Text style={[styles.prefItemSub, { color: theme.colors.secondaryText }]}>
+                  {userProfile.weightLimit} kg default airline luggage target
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Contact Information Details */}
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+              borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.10)' : theme.colors.border,
+            },
+          ]}
+        >
+          <View style={styles.cardHeaderRow}>
+            <View style={styles.cardTitleWrap}>
+              <User size={18} color={theme.colors.accentLime} />
+              <Text style={[styles.cardTitle, { color: theme.colors.primaryText }]}>
+                Contact Details
+              </Text>
+            </View>
+            <Pressable onPress={() => navigation.navigate('EditProfile')}>
+              <Text style={[styles.editLink, { color: theme.colors.accentLime }]}>
                 Edit
               </Text>
             </Pressable>
@@ -354,355 +440,78 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
               </Text>
             </View>
 
-            <View
-              style={[styles.divider, { backgroundColor: theme.colors.border }]}
-            />
+            <View style={[styles.divider, { backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.06)' : theme.colors.border }]} />
 
             <View style={styles.infoRow}>
               <Text style={[styles.infoLabel, { color: theme.colors.secondaryText }]}>
                 Home Country
               </Text>
               <View style={styles.valueWithIcon}>
-                <MapPin size={14} color={theme.colors.secondaryBlue} />
+                <Globe size={13} color={theme.colors.accentLime} />
                 <Text style={[styles.infoValue, { color: theme.colors.primaryText }]}>
                   {userProfile.country}
                 </Text>
               </View>
             </View>
 
-            <View
-              style={[styles.divider, { backgroundColor: theme.colors.border }]}
-            />
+            <View style={[styles.divider, { backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.06)' : theme.colors.border }]} />
 
             <View style={styles.infoRow}>
               <Text style={[styles.infoLabel, { color: theme.colors.secondaryText }]}>
                 Email Address
               </Text>
-              <Text
-                style={[
-                  styles.infoValue,
-                  {
-                    color: userProfile.email
-                      ? theme.colors.primaryText
-                      : theme.colors.mutedText,
-                  },
-                ]}
-              >
-                {userProfile.email || 'Not specified'}
+              <Text style={[styles.infoValue, { color: theme.colors.primaryText }]}>
+                {userProfile.email || 'Not provided'}
               </Text>
             </View>
 
-            <View
-              style={[styles.divider, { backgroundColor: theme.colors.border }]}
-            />
+            <View style={[styles.divider, { backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.06)' : theme.colors.border }]} />
 
             <View style={styles.infoRow}>
               <Text style={[styles.infoLabel, { color: theme.colors.secondaryText }]}>
                 Phone Number
               </Text>
-              <Text
-                style={[
-                  styles.infoValue,
-                  {
-                    color: userProfile.phone
-                      ? theme.colors.primaryText
-                      : theme.colors.mutedText,
-                  },
-                ]}
-              >
-                {userProfile.phone || 'Not specified'}
+              <Text style={[styles.infoValue, { color: theme.colors.primaryText }]}>
+                {userProfile.phone || 'Not provided'}
               </Text>
             </View>
           </View>
         </View>
 
-        {/* Travel Preferences */}
+        {/* Profile Actions: About & Reset Profile */}
         <View
           style={[
             styles.card,
             {
-              backgroundColor: theme.colors.card,
-              borderColor: theme.colors.border,
+              backgroundColor: theme.isDark ? '#160F2E' : theme.colors.card,
+              borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.10)' : theme.colors.border,
             },
-            theme.shadows.xs,
           ]}
         >
-          <View style={styles.cardHeaderRow}>
-            <View style={styles.cardTitleWrap}>
-              <Compass size={18} color={theme.colors.accentMint} />
-              <Text
-                style={[styles.cardTitle, { color: theme.colors.primaryText }]}
-              >
-                Travel Preferences
-              </Text>
-            </View>
-            <Pressable
-              onPress={() => navigation.navigate('EditProfile')}
-              hitSlop={8}
-            >
-              <Text
-                style={[styles.editLink, { color: theme.colors.secondaryBlue }]}
-              >
-                Edit
-              </Text>
-            </Pressable>
-          </View>
-
-          <View style={styles.prefGrid}>
-            {/* Travel Style Card */}
-            <View
-              style={[
-                styles.prefItem,
-                {
-                  backgroundColor: theme.colors.background,
-                  borderColor: theme.colors.border,
-                },
-              ]}
-            >
-              <View
-                style={[
-                  styles.prefIconWrap,
-                  {
-                    backgroundColor: `${selectedTravelStyleMeta.accentColor}18`,
-                  },
-                ]}
-              >
-                <DynamicIcon
-                  name={selectedTravelStyleMeta.icon}
-                  size={20}
-                  color={selectedTravelStyleMeta.accentColor}
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={[
-                    styles.prefItemTitle,
-                    { color: theme.colors.primaryText },
-                  ]}
-                >
-                  {userProfile.travelStyle}
-                </Text>
-                <Text
-                  style={[
-                    styles.prefItemSub,
-                    { color: theme.colors.secondaryText },
-                  ]}
-                >
-                  Preferred Travel Style
-                </Text>
-              </View>
-            </View>
-
-            {/* Luggage Type Card */}
-            <View
-              style={[
-                styles.prefItem,
-                {
-                  backgroundColor: theme.colors.background,
-                  borderColor: theme.colors.border,
-                },
-              ]}
-            >
-              <View
-                style={[
-                  styles.prefIconWrap,
-                  { backgroundColor: theme.colors.infoSoft },
-                ]}
-              >
-                <DynamicIcon
-                  name={selectedLuggageMeta.icon}
-                  size={20}
-                  color={theme.colors.secondaryBlue}
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={[
-                    styles.prefItemTitle,
-                    { color: theme.colors.primaryText },
-                  ]}
-                >
-                  {userProfile.luggageType}
-                </Text>
-                <Text
-                  style={[
-                    styles.prefItemSub,
-                    { color: theme.colors.secondaryText },
-                  ]}
-                >
-                  Preferred Luggage
-                </Text>
-              </View>
-            </View>
-
-            {/* Default Luggage Weight Limit Card */}
-            <View
-              style={[
-                styles.prefItem,
-                {
-                  backgroundColor: theme.colors.background,
-                  borderColor: theme.colors.border,
-                },
-              ]}
-            >
-              <View
-                style={[
-                  styles.prefIconWrap,
-                  { backgroundColor: theme.colors.warningSoft },
-                ]}
-              >
-                <Scale size={20} color="#D97706" />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={[
-                    styles.prefItemTitle,
-                    { color: theme.colors.primaryText },
-                  ]}
-                >
-                  {userProfile.weightLimit} kg
-                </Text>
-                <Text
-                  style={[
-                    styles.prefItemSub,
-                    { color: theme.colors.secondaryText },
-                  ]}
-                >
-                  Default Weight Allowance
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Profile Settings & Actions */}
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: theme.colors.card,
-              borderColor: theme.colors.border,
-            },
-            theme.shadows.xs,
-          ]}
-        >
-          <Text style={[styles.cardTitle, { color: theme.colors.primaryText }]}>
-            Profile Settings
-          </Text>
-
           <View style={styles.actionList}>
-            {/* Edit Profile */}
-            <Pressable
-              onPress={() => navigation.navigate('EditProfile')}
-              style={[
-                styles.actionItem,
-                { borderBottomColor: theme.colors.border },
-              ]}
-            >
-              <View
-                style={[
-                  styles.actionIconBox,
-                  { backgroundColor: theme.colors.infoSoft },
-                ]}
-              >
-                <Edit3 size={17} color={theme.colors.secondaryBlue} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={[
-                    styles.actionText,
-                    { color: theme.colors.primaryText },
-                  ]}
-                >
-                  Edit Profile
-                </Text>
-                <Text
-                  style={[
-                    styles.actionSub,
-                    { color: theme.colors.secondaryText },
-                  ]}
-                >
-                  Modify personal information and packing limits
-                </Text>
-              </View>
-              <ChevronRight size={18} color={theme.colors.mutedText} />
-            </Pressable>
-
-            {/* Change Avatar */}
-            <Pressable
-              onPress={() => setShowAvatarPicker(true)}
-              style={[
-                styles.actionItem,
-                { borderBottomColor: theme.colors.border },
-              ]}
-            >
-              <View
-                style={[
-                  styles.actionIconBox,
-                  { backgroundColor: theme.colors.successSoft },
-                ]}
-              >
-                <Sparkles size={17} color={theme.colors.accentMint} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={[
-                    styles.actionText,
-                    { color: theme.colors.primaryText },
-                  ]}
-                >
-                  Change Avatar
-                </Text>
-                <Text
-                  style={[
-                    styles.actionSub,
-                    { color: theme.colors.secondaryText },
-                  ]}
-                >
-                  Pick from curated travel avatar personas
-                </Text>
-              </View>
-              <ChevronRight size={18} color={theme.colors.mutedText} />
-            </Pressable>
-
-            {/* About PACKMATE */}
             <Pressable
               onPress={() => setShowAboutModal(true)}
-              style={[
-                styles.actionItem,
-                { borderBottomColor: theme.colors.border },
-              ]}
+              style={styles.actionItem}
             >
               <View
                 style={[
                   styles.actionIconBox,
-                  { backgroundColor: theme.colors.navySoft },
+                  { backgroundColor: theme.colors.infoSoft },
                 ]}
               >
-                <Info size={17} color={theme.colors.primaryNavy} />
+                <ShieldCheck size={18} color={theme.colors.secondaryBlue} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text
-                  style={[
-                    styles.actionText,
-                    { color: theme.colors.primaryText },
-                  ]}
-                >
-                  About PACKMATE
+                <Text style={[styles.actionText, { color: theme.colors.primaryText }]}>
+                  Local Storage & Privacy
                 </Text>
-                <Text
-                  style={[
-                    styles.actionSub,
-                    { color: theme.colors.secondaryText },
-                  ]}
-                >
-                  Version, offline SQLite storage and app details
+                <Text style={[styles.actionSub, { color: theme.colors.secondaryText }]}>
+                  100% offline SQLite storage • Zero external trackers
                 </Text>
               </View>
-              <ChevronRight size={18} color={theme.colors.mutedText} />
+              <ChevronRight size={18} color={theme.colors.secondaryText} />
             </Pressable>
 
-            {/* Reset Profile */}
             <Pressable
               onPress={() => setShowResetConfirm(true)}
               style={[styles.actionItem, { borderBottomWidth: 0 }]}
@@ -713,24 +522,17 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                   { backgroundColor: theme.colors.dangerSoft },
                 ]}
               >
-                <Trash2 size={17} color={theme.colors.danger} />
+                <RotateCcw size={18} color={theme.colors.danger} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text
-                  style={[styles.actionText, { color: theme.colors.danger }]}
-                >
-                  Reset Profile
+                <Text style={[styles.actionText, { color: theme.colors.danger }]}>
+                  Reset User Profile
                 </Text>
-                <Text
-                  style={[
-                    styles.actionSub,
-                    { color: theme.colors.secondaryText },
-                  ]}
-                >
-                  Clear profile only — your trips & packing data remain safe
+                <Text style={[styles.actionSub, { color: theme.colors.secondaryText }]}>
+                  Clears local profile info only. Preserves all trips & packing lists.
                 </Text>
               </View>
-              <ChevronRight size={18} color={theme.colors.mutedText} />
+              <ChevronRight size={18} color={theme.colors.secondaryText} />
             </Pressable>
           </View>
         </View>
@@ -744,25 +546,26 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         onClose={() => setShowAvatarPicker(false)}
       />
 
-      {/* Reset Profile Confirmation Modal */}
+      {/* Reset Confirmation Modal */}
       <ConfirmModal
         visible={showResetConfirm}
-        tone="danger"
-        title="Reset User Profile?"
-        message="This will reset your personal details and travel preferences. IMPORTANT: Your planned trips, packing checklists, history, and custom items will NOT be deleted."
+        title="Reset Local Profile?"
+        message="This will reset your traveler profile and packing preferences. Your existing trips, packing checklists, and history will remain completely untouched."
         confirmLabel="Reset Profile"
+        cancelLabel="Keep Profile"
+        isDestructive
         loading={resetting}
         onConfirm={handleConfirmReset}
         onCancel={() => setShowResetConfirm(false)}
       />
 
-      {/* About PACKMATE Modal */}
+      {/* About Privacy Modal */}
       <ConfirmModal
         visible={showAboutModal}
-        tone="info"
-        title={`About ${APP_INFO.NAME}`}
-        message={`${APP_INFO.FULL_TITLE}\nVersion ${APP_INFO.VERSION}\n\n${APP_INFO.VISION}\n\n100% Offline Architecture: All trips, profile details, and smart packing items are stored locally in SQLite without cloud dependencies.`}
+        title="PACKMATE Architecture"
+        message={`${APP_INFO.FULL_TITLE}\nVersion: ${APP_INFO.VERSION}\n\n100% Offline Architecture: All trips, profile details, and smart packing items are stored locally in SQLite without cloud dependencies.`}
         confirmLabel="Understood"
+        tone="info"
         onConfirm={() => setShowAboutModal(false)}
       />
     </SafeAreaView>
@@ -808,7 +611,7 @@ const styles = StyleSheet.create({
     width: 170,
     height: 170,
     borderRadius: 85,
-    backgroundColor: 'rgba(76, 154, 255, 0.14)',
+    backgroundColor: 'rgba(212, 255, 0, 0.08)',
   },
   heroTopRow: {
     flexDirection: 'row',
@@ -832,7 +635,6 @@ const styles = StyleSheet.create({
   heroPillText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#36C9A5',
     letterSpacing: 0.6,
   },
   heroName: {
@@ -868,14 +670,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 7,
-    backgroundColor: '#FFFFFF',
     paddingVertical: 11,
-    borderRadius: 14,
+    borderRadius: 9999,
   },
   heroEditBtnText: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#172B4D',
   },
   heroAvatarBtn: {
     flex: 1,
@@ -885,7 +685,7 @@ const styles = StyleSheet.create({
     gap: 6,
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
     paddingVertical: 11,
-    borderRadius: 14,
+    borderRadius: 9999,
   },
   heroAvatarBtnText: {
     fontSize: 13,

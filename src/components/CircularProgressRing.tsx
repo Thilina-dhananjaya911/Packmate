@@ -8,7 +8,10 @@ interface CircularProgressRingProps {
   size?: number;
   strokeWidth?: number;
   subtitle?: string;
+  sublabel?: string;
   lightText?: boolean;
+  textColor?: string;
+  strokeColor?: string;
 }
 
 export const CircularProgressRing: React.FC<CircularProgressRingProps> = ({
@@ -16,7 +19,10 @@ export const CircularProgressRing: React.FC<CircularProgressRingProps> = ({
   size = 128,
   strokeWidth = 11,
   subtitle,
+  sublabel,
   lightText = false,
+  textColor,
+  strokeColor,
 }) => {
   const { theme } = useAppTheme();
   const clamped = Math.min(100, Math.max(0, Math.round(percentage)));
@@ -24,11 +30,16 @@ export const CircularProgressRing: React.FC<CircularProgressRingProps> = ({
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (clamped / 100) * circumference;
 
+  const displaySubtitle = subtitle ?? sublabel;
   const activeStroke =
-    clamped >= 100 ? theme.colors.accentMint : theme.colors.secondaryBlue;
+    strokeColor ??
+    (clamped >= 100 ? theme.colors.accentLime : theme.colors.secondaryBlue);
   const trackStroke = lightText
     ? 'rgba(255, 255, 255, 0.16)'
     : theme.colors.surfaceSubtle;
+
+  const resolvedTextColor =
+    textColor ?? (lightText ? '#FFFFFF' : theme.colors.primaryText);
 
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
@@ -60,25 +71,25 @@ export const CircularProgressRing: React.FC<CircularProgressRingProps> = ({
           style={[
             styles.percentText,
             {
-              color: lightText ? '#FFFFFF' : theme.colors.primaryText,
+              color: resolvedTextColor,
               fontSize: size >= 110 ? 24 : 16,
             },
           ]}
         >
           {clamped}%
         </Text>
-        {subtitle ? (
+        {displaySubtitle ? (
           <Text
             style={[
               styles.subText,
               {
-                color: lightText
+                color: textColor ?? (lightText
                   ? 'rgba(255,255,255,0.76)'
-                  : theme.colors.secondaryText,
+                  : theme.colors.secondaryText),
               },
             ]}
           >
-            {subtitle}
+            {displaySubtitle}
           </Text>
         ) : null}
       </View>

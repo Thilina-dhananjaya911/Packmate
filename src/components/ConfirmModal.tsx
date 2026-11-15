@@ -11,6 +11,7 @@ interface ConfirmModalProps {
   confirmLabel?: string;
   cancelLabel?: string;
   tone?: 'danger' | 'success' | 'info';
+  isDestructive?: boolean;
   onConfirm: () => void;
   onCancel?: () => void;
   loading?: boolean;
@@ -23,14 +24,16 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
   tone = 'danger',
+  isDestructive,
   onConfirm,
   onCancel,
   loading = false,
 }) => {
   const { theme } = useAppTheme();
+  const effectiveTone = isDestructive ? 'danger' : tone;
 
   const getIconConfig = () => {
-    switch (tone) {
+    switch (effectiveTone) {
       case 'success':
         return {
           bg: theme.colors.successSoft,

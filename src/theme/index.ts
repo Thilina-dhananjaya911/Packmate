@@ -5,10 +5,17 @@ export interface ColorPalette {
   primaryNavy: string;
   secondaryBlue: string;
   accentMint: string;
+  accentLime: string;
+  limeSoft: string;
+  limeText: string;
+  accentViolet: string;
+  violetSoft: string;
   background: string;
   card: string;
   cardElevated: string;
   surfaceSubtle: string;
+  glassSurface: string;
+  glassBorder: string;
   primaryText: string;
   secondaryText: string;
   mutedText: string;
@@ -27,62 +34,82 @@ export interface ColorPalette {
   heroGradient: [string, string, string];
   accentGradient: [string, string];
   mintGradient: [string, string];
+  limeGradient: [string, string];
+  hologramGradient: [string, string, string];
 }
 
 export const LIGHT_COLORS: ColorPalette = {
-  primaryNavy: '#172B4D',
-  secondaryBlue: '#4C9AFF',
-  accentMint: '#36C9A5',
-  background: '#F7F9FC',
+  primaryNavy: '#160E30', // Deep luxury violet-navy
+  secondaryBlue: '#7C3AED', // Vivid royal violet
+  accentMint: '#059669', // Crisp emerald
+  accentLime: '#84CC16', // High-contrast volt lime for light backgrounds
+  limeSoft: 'rgba(132, 204, 22, 0.14)',
+  limeText: '#141E03',
+  accentViolet: '#7C3AED',
+  violetSoft: 'rgba(124, 58, 237, 0.10)',
+  background: '#F6F4FF', // Light lavender-tinted background
   card: '#FFFFFF',
   cardElevated: '#FFFFFF',
-  surfaceSubtle: '#EFF4FA',
-  primaryText: '#172B4D',
-  secondaryText: '#7A869A',
-  mutedText: '#97A0AF',
-  border: '#E8EDF3',
-  borderFocus: '#4C9AFF',
+  surfaceSubtle: '#EDE8FB',
+  glassSurface: 'rgba(255, 255, 255, 0.88)',
+  glassBorder: 'rgba(124, 58, 237, 0.14)',
+  primaryText: '#140C2E', // High contrast deep violet-slate
+  secondaryText: '#625880', // Midtone slate violet
+  mutedText: '#988FB6',
+  border: '#E4DCFA',
+  borderFocus: '#7C3AED',
   white: '#FFFFFF',
-  danger: '#E5484D',
-  dangerSoft: '#FEECEE',
+  danger: '#EF4444',
+  dangerSoft: 'rgba(239, 68, 68, 0.08)',
   warning: '#F59E0B',
-  warningSoft: '#FEF3C7',
-  success: '#36C9A5',
-  successSoft: '#E6F9F4',
-  infoSoft: '#EBF4FF',
-  navySoft: '#E9EEF6',
-  overlay: 'rgba(23, 43, 77, 0.52)',
-  heroGradient: ['#172B4D', '#1E3A68', '#264B84'],
-  accentGradient: ['#4C9AFF', '#2575FC'],
-  mintGradient: ['#36C9A5', '#1FA885'],
+  warningSoft: 'rgba(245, 158, 11, 0.10)',
+  success: '#10B981',
+  successSoft: 'rgba(16, 185, 129, 0.10)',
+  infoSoft: 'rgba(124, 58, 237, 0.08)',
+  navySoft: 'rgba(22, 14, 48, 0.06)',
+  overlay: 'rgba(14, 8, 30, 0.65)',
+  heroGradient: ['#1A103D', '#2B1663', '#492296'],
+  accentGradient: ['#7C3AED', '#6D28D9'],
+  mintGradient: ['#10B981', '#059669'],
+  limeGradient: ['#84CC16', '#65A30D'],
+  hologramGradient: ['#A855F7', '#6366F1', '#38BDF8'],
 };
 
 export const DARK_COLORS: ColorPalette = {
-  primaryNavy: '#172B4D',
-  secondaryBlue: '#4C9AFF',
-  accentMint: '#36C9A5',
-  background: '#0B1528',
-  card: '#13223B',
-  cardElevated: '#1A2D4D',
-  surfaceSubtle: '#182A47',
-  primaryText: '#F1F5F9',
-  secondaryText: '#94A3B8',
-  mutedText: '#64748B',
-  border: '#223659',
-  borderFocus: '#4C9AFF',
+  primaryNavy: '#130C28', // Deep twilight violet
+  secondaryBlue: '#8B5CF6', // Electric violet
+  accentMint: '#10B981', // Crisp mint
+  accentLime: '#D4FF00', // Signature electric lime / neon volt from reference
+  limeSoft: 'rgba(212, 255, 0, 0.16)',
+  limeText: '#0A0618', // High contrast text on lime
+  accentViolet: '#A855F7',
+  violetSoft: 'rgba(168, 85, 247, 0.18)',
+  background: '#0B0718', // Cosmic twilight background
+  card: '#160F2E', // Frosted deep violet card
+  cardElevated: '#1F153E', // Elevated interactive surface
+  surfaceSubtle: '#1C1338',
+  glassSurface: 'rgba(28, 19, 54, 0.76)',
+  glassBorder: 'rgba(255, 255, 255, 0.14)',
+  primaryText: '#FFFFFF',
+  secondaryText: '#9E97B8', // Soft lavender slate
+  mutedText: '#6D648B',
+  border: '#271B48',
+  borderFocus: '#D4FF00',
   white: '#FFFFFF',
-  danger: '#F87171',
-  dangerSoft: 'rgba(239, 68, 68, 0.16)',
+  danger: '#FF5C5C',
+  dangerSoft: 'rgba(255, 92, 92, 0.16)',
   warning: '#FBBF24',
-  warningSoft: 'rgba(245, 158, 11, 0.16)',
-  success: '#36C9A5',
-  successSoft: 'rgba(54, 201, 165, 0.16)',
-  infoSoft: 'rgba(76, 154, 255, 0.16)',
-  navySoft: 'rgba(76, 154, 255, 0.12)',
-  overlay: 'rgba(5, 10, 22, 0.72)',
-  heroGradient: ['#132544', '#1B3560', '#23457A'],
-  accentGradient: ['#4C9AFF', '#2575FC'],
-  mintGradient: ['#36C9A5', '#1FA885'],
+  warningSoft: 'rgba(251, 191, 36, 0.16)',
+  success: '#10B981',
+  successSoft: 'rgba(16, 185, 129, 0.16)',
+  infoSoft: 'rgba(139, 92, 246, 0.18)',
+  navySoft: 'rgba(22, 14, 48, 0.50)',
+  overlay: 'rgba(8, 5, 18, 0.84)',
+  heroGradient: ['#170F35', '#261452', '#3F1C7E'],
+  accentGradient: ['#8B5CF6', '#6D28D9'],
+  mintGradient: ['#10B981', '#059669'],
+  limeGradient: ['#D4FF00', '#B4E600'],
+  hologramGradient: ['#C084FC', '#6366F1', '#06B6D4'],
 };
 
 export const SPACING = {
@@ -102,8 +129,8 @@ export const RADIUS = {
   md: 16,
   lg: 20,
   xl: 24,
-  xxl: 30,
-  full: 999,
+  xxl: 28,
+  full: 9999,
 } as const;
 
 export const TYPOGRAPHY = {
@@ -113,26 +140,26 @@ export const TYPOGRAPHY = {
     default: 'System',
   }),
   hero: {
-    fontSize: 30,
-    lineHeight: 38,
+    fontSize: 32,
+    lineHeight: 40,
     fontWeight: '800' as const,
     letterSpacing: -0.6,
   },
   h1: {
-    fontSize: 24,
-    lineHeight: 32,
+    fontSize: 25,
+    lineHeight: 33,
     fontWeight: '800' as const,
     letterSpacing: -0.4,
   },
   h2: {
-    fontSize: 20,
-    lineHeight: 27,
+    fontSize: 21,
+    lineHeight: 28,
     fontWeight: '700' as const,
     letterSpacing: -0.3,
   },
   h3: {
     fontSize: 17,
-    lineHeight: 23,
+    lineHeight: 24,
     fontWeight: '700' as const,
     letterSpacing: -0.2,
   },
@@ -166,45 +193,59 @@ export const TYPOGRAPHY = {
 
 export const SHADOWS = {
   xs: {
-    shadowColor: '#172B4D',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 1,
   },
   sm: {
-    shadowColor: '#172B4D',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
     elevation: 3,
   },
   md: {
-    shadowColor: '#172B4D',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.09,
-    shadowRadius: 18,
-    elevation: 6,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.16,
+    shadowRadius: 16,
+    elevation: 5,
   },
   lg: {
-    shadowColor: '#172B4D',
-    shadowOffset: { width: 0, height: 14 },
-    shadowOpacity: 0.14,
-    shadowRadius: 26,
-    elevation: 10,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.22,
+    shadowRadius: 24,
+    elevation: 8,
   },
   blueGlow: {
-    shadowColor: '#4C9AFF',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.28,
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
     shadowRadius: 16,
-    elevation: 7,
+    elevation: 6,
   },
   mintGlow: {
-    shadowColor: '#36C9A5',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.30,
+    shadowRadius: 14,
+    elevation: 6,
+  },
+  limeGlow: {
+    shadowColor: '#D4FF00',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.40,
     shadowRadius: 16,
+    elevation: 6,
+  },
+  violetGlow: {
+    shadowColor: '#A855F7',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.38,
+    shadowRadius: 18,
     elevation: 7,
   },
 } as const;

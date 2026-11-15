@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS user_profile (
   country TEXT NOT NULL,
   email TEXT,
   phone TEXT,
-  avatar TEXT NOT NULL DEFAULT 'avatar-1',
+  avatar TEXT NOT NULL DEFAULT 'avatar-explorer',
   travel_style TEXT NOT NULL DEFAULT 'General Travel',
   luggage_type TEXT NOT NULL DEFAULT 'Backpack',
   weight_limit REAL NOT NULL DEFAULT 20.0,
@@ -129,7 +129,6 @@ CREATE TABLE IF NOT EXISTS trip_essential_items (
   FOREIGN KEY (definition_id) REFERENCES essential_item_definitions(id) ON DELETE SET NULL,
   UNIQUE(trip_id, item_name)
 );
-
 CREATE INDEX IF NOT EXISTS idx_trips_status ON trips(status);
 CREATE INDEX IF NOT EXISTS idx_trips_departure ON trips(departure_date);
 CREATE INDEX IF NOT EXISTS idx_packing_items_trip ON packing_items(trip_id);

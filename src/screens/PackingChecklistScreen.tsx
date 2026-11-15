@@ -61,7 +61,7 @@ import { formatDateRange } from '../utils/dateUtils';
 import { calculateProgressFromItems } from '../utils/progressUtils';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PackingChecklist'>;
-type PackedFilter = 'All' | 'Unpacked' | 'Packed';
+type PackedFilter = 'All' | 'Unpacked' | 'Packed' | 'DontForget';
 
 interface ChecklistItemRowProps {
   item: PackingItem;
@@ -111,15 +111,20 @@ const ChecklistItemRow: React.FC<ChecklistItemRowProps> = ({
           style={[
             styles.checkbox,
             {
-              backgroundColor: packed ? theme.colors.accentMint : 'transparent',
+              backgroundColor: packed ? theme.colors.accentLime : 'transparent',
               borderColor: packed
-                ? theme.colors.accentMint
-                : theme.colors.secondaryBlue,
+                ? theme.colors.accentLime
+                : theme.isDark
+                ? 'rgba(255, 255, 255, 0.25)'
+                : theme.colors.border,
             },
+            packed && theme.shadows.limeGlow,
             checkAnimStyle,
           ]}
         >
-          {packed ? <Check size={14} color="#FFFFFF" strokeWidth={3} /> : null}
+          {packed ? (
+            <Check size={14} color={theme.colors.limeText} strokeWidth={3} />
+          ) : null}
         </Animated.View>
       </Pressable>
 
@@ -151,9 +156,20 @@ const ChecklistItemRow: React.FC<ChecklistItemRowProps> = ({
             {item.category_name}
           </Text>
           {item.is_essential === 1 ? (
-            <Text style={[styles.dotMeta, { color: theme.colors.secondaryText }]}>
-              • Essential
-            </Text>
+            <View
+              style={[
+                styles.essentialBadge,
+                {
+                  backgroundColor: theme.colors.limeSoft,
+                  borderColor: 'rgba(212, 255, 0, 0.35)',
+                },
+              ]}
+            >
+              <Sparkles size={10} color={theme.colors.accentLime} />
+              <Text style={[styles.essentialBadgeText, { color: theme.colors.accentLime }]}>
+                Don't Forget
+              </Text>
+            </View>
           ) : null}
           {item.is_custom === 1 ? (
             <Text style={[styles.dotMeta, { color: theme.colors.accentMint }]}>
@@ -252,13 +268,19 @@ export const PackingChecklistScreen: React.FC<Props> = ({
 
   const progress = useMemo(() => calculateProgressFromItems(items), [items]);
 
+  const essentialCount = useMemo(
+    () => items.filter((i) => i.is_essential === 1).length,
+    [items]
+  );
+
   const packedOptions: FilterChipOption<PackedFilter>[] = useMemo(
     () => [
       { label: 'All Items', value: 'All', count: progress.totalItems },
       { label: 'Remaining', value: 'Unpacked', count: progress.remainingItems },
       { label: 'Packed', value: 'Packed', count: progress.packedItems },
+      { label: "Don't Forget", value: 'DontForget', count: essentialCount },
     ],
-    [progress]
+    [progress, essentialCount]
   );
 
   const categoryChipOptions: FilterChipOption<CategoryName | 'All'>[] = useMemo(
@@ -277,6 +299,7 @@ export const PackingChecklistScreen: React.FC<Props> = ({
     return items.filter((i) => {
       if (packedFilter === 'Packed' && i.is_packed !== 1) return false;
       if (packedFilter === 'Unpacked' && i.is_packed === 1) return false;
+      if (packedFilter === 'DontForget' && i.is_essential !== 1) return false;
       if (categoryFilter !== 'All' && i.category_name !== categoryFilter) {
         return false;
       }
@@ -548,6 +571,40 @@ export const PackingChecklistScreen: React.FC<Props> = ({
           </View>
         </View>
 
+        {/* Don't Forget Mode Banner */}
+        {packedFilter === 'DontForget' ? (
+          <View
+            style={[
+              styles.dontForgetBanner,
+              {
+                backgroundColor: theme.isDark ? 'rgba(28, 19, 54, 0.90)' : theme.colors.warningSoft,
+                borderColor: theme.isDark ? 'rgba(212, 255, 0, 0.35)' : 'rgba(245, 158, 11, 0.28)',
+              },
+              theme.shadows.sm,
+            ]}
+          >
+            <Sparkles size={18} color={theme.colors.accentLime} />
+            <View style={{ flex: 1 }}>
+              <Text
+                style={[
+                  styles.dontForgetTitle,
+                  { color: theme.colors.primaryText },
+                ]}
+              >
+                Don't Forget Mode Active
+              </Text>
+              <Text
+                style={[
+                  styles.dontForgetSub,
+                  { color: theme.colors.secondaryText },
+                ]}
+              >
+                Displaying {essentialCount} essential packing items prioritized for your journey.
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
         {/* Category Accordions */}
         {items.length === 0 ? (
           <EmptyState
@@ -694,8 +751,8 @@ export const PackingChecklistScreen: React.FC<Props> = ({
             setAddError(null);
             setShowAddModal(true);
           }}
-          variant="secondary"
-          icon={<Plus size={18} color="#FFFFFF" strokeWidth={2.6} />}
+          variant="lime"
+          icon={<Plus size={18} color={theme.colors.limeText} strokeWidth={2.6} />}
         />
       </View>
 
@@ -925,7 +982,7 @@ export const PackingChecklistScreen: React.FC<Props> = ({
                   <PrimaryButton
                     label="Save Item"
                     onPress={handleAddCustomItem}
-                    variant="secondary"
+                    variant="lime"
                     loading={addingItem}
                     style={{ flex: 1.3 }}
                   />
@@ -962,12 +1019,15 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 32,
+    paddingBottom: 36,
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
   },
   summaryCard: {
-    borderRadius: 22,
+    borderRadius: 24,
     borderWidth: 1,
-    padding: 18,
+    padding: 20,
     marginBottom: 16,
   },
   summaryTopRow: {
@@ -1117,21 +1177,61 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     padding: 4,
   },
+  essentialBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  essentialBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#D97706',
+    letterSpacing: 0.1,
+  },
+  dontForgetBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 14,
+    borderRadius: 18,
+    borderWidth: 1,
+    marginBottom: 14,
+  },
+  dontForgetTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: -0.2,
+  },
+  dontForgetSub: {
+    fontSize: 12,
+    marginTop: 2,
+    lineHeight: 17,
+  },
   bottomBar: {
     paddingHorizontal: 20,
     paddingVertical: 13,
     borderTopWidth: 1,
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
   },
   modalBackdrop: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
   },
   modalSheet: {
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    borderRadius: 28,
     borderWidth: 1,
-    padding: 20,
+    padding: 22,
     maxHeight: '88%',
+    maxWidth: 480,
+    width: '100%',
   },
   modalHeader: {
     flexDirection: 'row',

@@ -277,19 +277,24 @@ export const TemplateDetailsScreen: React.FC<Props> = ({
                         styles.tripChip,
                         {
                           backgroundColor: active
-                            ? theme.colors.primaryNavy
+                            ? theme.colors.accentLime
+                            : theme.isDark
+                            ? 'rgba(255, 255, 255, 0.08)'
                             : theme.colors.surfaceSubtle,
                           borderColor: active
-                            ? theme.colors.primaryNavy
+                            ? 'transparent'
+                            : theme.isDark
+                            ? 'rgba(255, 255, 255, 0.12)'
                             : theme.colors.border,
                         },
+                        active ? theme.shadows.limeGlow : null,
                       ]}
                     >
                       <Text
                         style={{
                           fontSize: 13,
                           fontWeight: '700',
-                          color: active ? '#FFFFFF' : theme.colors.primaryText,
+                          color: active ? theme.colors.limeText : theme.colors.primaryText,
                         }}
                       >
                         {t.trip_name} ({t.trip_duration}d • {t.traveller_count}p)
@@ -343,16 +348,16 @@ export const TemplateDetailsScreen: React.FC<Props> = ({
                       styles.checkbox,
                       {
                         backgroundColor: item.selected
-                          ? theme.colors.accentMint
+                          ? theme.colors.accentLime
                           : 'transparent',
                         borderColor: item.selected
-                          ? theme.colors.accentMint
+                          ? theme.colors.accentLime
                           : theme.colors.mutedText,
                       },
                     ]}
                   >
                     {item.selected ? (
-                      <Check size={13} color="#FFFFFF" strokeWidth={3} />
+                      <Check size={13} color={theme.colors.limeText} strokeWidth={3} />
                     ) : null}
                   </View>
                   <View style={{ flex: 1 }}>
@@ -440,7 +445,7 @@ export const TemplateDetailsScreen: React.FC<Props> = ({
           <PrimaryButton
             label={`Apply (${selectedItemsCount})`}
             onPress={handleApplyToSelectedTrip}
-            variant="secondary"
+            variant="lime"
             loading={applying}
             disabled={selectedItemsCount === 0}
             style={{ flex: 1.25 }}
@@ -482,12 +487,15 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 32,
+    paddingBottom: 36,
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
   },
   heroCard: {
-    borderRadius: 22,
+    borderRadius: 24,
     borderWidth: 1,
-    padding: 18,
+    padding: 20,
     marginBottom: 20,
   },
   heroTopRow: {
@@ -618,5 +626,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderTopWidth: 1,
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
   },
 });
